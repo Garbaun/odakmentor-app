@@ -69,7 +69,7 @@ const TEACHERS = [
 		grades: '5-8. sınıflar',
 		rating: 9.4,
 		votes: 72,
-		photo: 'https://images.unsplash.com/photo-1596495578065-8a5c4b34f3a5?q=80&w=1200&auto=format&fit=crop',
+		photo: require('@/assets/images/teachers/ayseyilmaz.png'),
 	},
 	{
 		id: 't2',
@@ -78,7 +78,7 @@ const TEACHERS = [
 		grades: '9-12. sınıflar',
 		rating: 9.1,
 		votes: 54,
-		photo: 'https://images.unsplash.com/photo-1554755229-ca4470e07232?q=80&w=1200&auto=format&fit=crop',
+		photo: require('@/assets/images/teachers/mehmetdemir.png'),
 	},
 	{
 		id: 't3',
@@ -87,7 +87,7 @@ const TEACHERS = [
 		grades: '4-12. sınıflar',
 		rating: 9.6,
 		votes: 103,
-		photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=1200&auto=format&fit=crop',
+		photo: require('@/assets/images/teachers/elifkara.png'),
 	},
 ];
 
@@ -277,7 +277,7 @@ export default function HomeScreen() {
 					>
 						{TEACHERS.map((tch) => (
 							<View key={tch.id} style={[styles.teacherCardRow]}> 
-								<Image source={{ uri: tch.photo }} style={styles.teacherImageThumb} />
+								<Image source={tch.photo} style={styles.teacherImageThumb} />
 								<View style={styles.teacherInfo}>
 									<ThemedText style={styles.teacherName}>{tch.name}</ThemedText>
 									<ThemedText style={styles.teacherMeta}>{tch.branch} • {tch.grades}</ThemedText>
