@@ -1,50 +1,77 @@
-# Welcome to your Expo app 👋
+# Odak Mentor
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Yapay zeka destekli, öğretmen ve öğrencileri bir araya getiren, web / iOS / Android üzerinde çalışan eğitim platformu.
 
-## Get started
+## Özellikler
+- Öğrenci/Öğretmen giriş akışları (yer tutucu sayfalar)
+- Beyaz zemin, açık gri paneller ve koyu mavi tipografi ile sade UI
+- Header: sol tarafta logo, sağ tarafta Ayarlar (modal)
+- Ayarlar modalı:
+  - Karanlık tema anahtarı (anlık tema geçişi)
+  - Bildirim izni isteme ve sistem ayarlarına yönlendirme (Android/iOS)
+  - Dil seçimi: TR / EN (başlıklar ve butonlar canlı değişir)
+  - Kısayollar: Profil/Öğrenci, Öğretmen Başvurusu
+- Yatay kaydırmalı "Öğretmenlerimiz" galerisi (ad, branş, sınıf aralığı, puan)
+- Animasyonlu sayaçlar: kayıtlı öğrenci / öğretmen / sanal sınıf
+- Alt tab bar: beyaz zemin
 
-1. Install dependencies
+## Teknoloji Yığını
+- React Native + Expo (router, managed workflow)
+- TypeScript
+- Zustand (hazırda `store/` dizini)
+- Firebase (hazırda `config/firebase.ts` örneği; env ile doldurun)
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Kurulum
 ```bash
-npm run reset-project
+npm install
+npx expo start
+```
+Web için:
+```bash
+npx expo start --web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Bildirimler için (gerekirse):
+```bash
+npm i expo-notifications
+```
+Android’de kanal tanımı otomatik yapılır; izin reddedilirse modalden “Sistem Ayarlarını Aç” ile yönlendirilebilir.
 
-## Learn more
+## Proje Yapısı (özet)
+```
+app/
+  (tabs)/
+    _layout.tsx        # Tab bar ayarları (beyaz zemin)
+    index.tsx          # Ana sayfa (logo, ayarlar, sayaçlar, öğretmenler)
+    explore.tsx        # Örnek sayfa
+  _layout.tsx          # Router stack
+components/
+  ThemedText.tsx, ThemedView.tsx, ui/*
+config/firebase.ts      # Firebase örnek konfig (env ile doldurun)
+constants/Colors.ts     # Renk paleti (light/dark + UI tonları)
+hooks/
+  useColorScheme.ts     # Tema override + setter
+assets/images/          # logo.png ve diğer görseller
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Ortam Değişkenleri
+`config/firebase.ts` içindeki değerleri kendi projenizin bilgileriyle güncelleyin. Production için env yönetimi önerilir.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Komutlar
+- `npm start` – Expo başlatır
+- `npm run android` / `npm run ios` / `npm run web`
+- `npm run lint`
 
-## Join the community
+## Sık Karşılaşılanlar
+- "Unable to resolve asset ./assets/icon.png": `app.json` içindeki yolların `assets/images/*` ile eşleştiğinden emin olun.
+- "expo-notifications bulunamadı": `npm i expo-notifications` ile ekleyin, ardından `npx expo start --clear`.
+- iOS simülator/web için ikon/splash uyarıları: `app.json` yolları ve dosyaların mevcut olduğundan emin olun.
 
-Join our community of developers creating universal apps.
+## Katkı
+PR ve issue’lar kabul edilir. Standart Conventional Commits tercih edilir.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Lisans
+MIT
+
+—
+Repo: https://github.com/Garbaun/odakmentor-app
