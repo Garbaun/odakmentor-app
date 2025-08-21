@@ -7,8 +7,10 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "web:build": "expo export -p web --output-dir docs --base-url . --clear && node scripts/patch-web-index.js",
+    "web:build": "expo export -p web --output-dir docs --clear && node scripts/patch-web-index.js",
     "web:serve": "npx serve docs",
+    "web:deploy": "npm run web:build && npx gh-pages -d docs -b gh-pages",
+    "web:publish-root": "npm run web:build && node scripts/publish-to-root.js",
     "lint": "expo lint",
     "build": "expo build",
     "eject": "expo eject"

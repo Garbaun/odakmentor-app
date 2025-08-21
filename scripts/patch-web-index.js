@@ -24,6 +24,10 @@ function patchIndexHtml(rootDir) {
   let html = fs.readFileSync(indexPath, 'utf8');
   // Ensure ESM
   html = html.replace('<script src="', '<script type="module" src="');
+  // Ensure <base href="./"> exists for relative module resolution on subpaths
+  if (!/\<base\s+href=\"\.\/\"/i.test(html)) {
+    html = html.replace('<head>', '<head>\n    <base href=\"./\">');
+  }
   // Make asset/script paths relative for GitHub Pages subpath
   html = html.replace('href="/favicon.ico"', 'href="./favicon.ico"');
   html = html.replace('src="/_expo/', 'src="./_expo/');
