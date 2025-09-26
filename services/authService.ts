@@ -1,10 +1,4 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { UserService, PasswordService } from './databaseService';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
-
+// Geçici Mock AuthService - Veritabanı bağlantısı olmadan test için
 export interface AuthResult {
   success: boolean;
   user?: any;
@@ -13,7 +7,7 @@ export interface AuthResult {
 }
 
 export class AuthService {
-  // Kullanıcı kaydı
+  // Mock kullanıcı kaydı
   static async register(userData: {
     email: string;
     password: string;
@@ -22,102 +16,100 @@ export class AuthService {
     role?: 'student' | 'teacher';
   }): Promise<AuthResult> {
     try {
-      // Email kontrolü
-      const existingUser = await UserService.getUserByEmail(userData.email);
-      if (existingUser) {
-        return { success: false, error: 'Bu email adresi zaten kullanılıyor' };
-      }
-
-      // Kullanıcı oluştur
-      const user = await UserService.createUser({
+      console.log('Mock register:', userData);
+      
+      // Geçici mock kullanıcı
+      const mockUser = {
+        id: 1,
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
-        role: userData.role || 'student'
-      });
+        role: userData.role || 'student',
+        status: 'active',
+        isEmailVerified: false,
+        isPhoneVerified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastLoginAt: null,
+        loginCount: 0
+      };
 
-      // Şifre hash'le ve kaydet
-      const passwordHash = await bcrypt.hash(userData.password, 12);
-      await PasswordService.setPassword(user.id, passwordHash);
+      // Mock token
+      const mockToken = 'mock-token-' + Date.now();
 
-      // Token oluştur
-      const token = this.generateToken(user.id, user.email, user.role);
-
-      return { success: true, user, token };
+      return { success: true, user: mockUser, token: mockToken };
     } catch (error) {
-      console.error('Kayıt hatası:', error);
+      console.error('Mock register error:', error);
       return { success: false, error: 'Kayıt sırasında bir hata oluştu' };
     }
   }
 
-  // Kullanıcı girişi
+  // Mock kullanıcı girişi
   static async login(email: string, password: string): Promise<AuthResult> {
     try {
-      // Kullanıcıyı bul
-      const user = await UserService.getUserByEmail(email);
-      if (!user) {
-        return { success: false, error: 'Geçersiz email veya şifre' };
-      }
+      console.log('Mock login:', email);
+      
+      // Geçici mock kullanıcı
+      const mockUser = {
+        id: 1,
+        email: email,
+        firstName: 'Test',
+        lastName: 'User',
+        role: 'student',
+        status: 'active',
+        isEmailVerified: true,
+        isPhoneVerified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString(),
+        loginCount: 1
+      };
 
-      // Şifre kontrolü
-      const passwordHash = await PasswordService.getPasswordHash(user.id);
-      if (!passwordHash) {
-        return { success: false, error: 'Şifre bulunamadı' };
-      }
+      // Mock token
+      const mockToken = 'mock-token-' + Date.now();
 
-      const isValidPassword = await bcrypt.compare(password, passwordHash);
-      if (!isValidPassword) {
-        return { success: false, error: 'Geçersiz email veya şifre' };
-      }
-
-      // Son giriş tarihini güncelle
-      await UserService.updateLastLogin(user.id);
-
-      // Token oluştur
-      const token = this.generateToken(user.id, user.email, user.role);
-
-      return { success: true, user, token };
+      return { success: true, user: mockUser, token: mockToken };
     } catch (error) {
-      console.error('Giriş hatası:', error);
+      console.error('Mock login error:', error);
       return { success: false, error: 'Giriş sırasında bir hata oluştu' };
     }
   }
 
-  // Token doğrulama
+  // Mock token doğrulama
   static async verifyToken(token: string): Promise<any> {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
-      const user = await UserService.getUser(decoded.userId);
-      return user;
+      console.log('Mock verify token:', token);
+      
+      // Geçici mock kullanıcı
+      const mockUser = {
+        id: 1,
+        email: 'test@test.com',
+        firstName: 'Test',
+        lastName: 'User',
+        role: 'student',
+        status: 'active',
+        isEmailVerified: true,
+        isPhoneVerified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString(),
+        loginCount: 1
+      };
+
+      return mockUser;
     } catch (error) {
-      console.error('Token doğrulama hatası:', error);
+      console.error('Mock verify token error:', error);
       return null;
     }
   }
 
-  // Token oluşturma
-  private static generateToken(userId: number, email: string, role: string): string {
-    return jwt.sign(
-      { userId, email, role, iat: Math.floor(Date.now() / 1000) },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
-  }
-
-  // Şifre sıfırlama
+  // Mock şifre sıfırlama
   static async resetPassword(email: string): Promise<AuthResult> {
     try {
-      const user = await UserService.getUserByEmail(email);
-      if (!user) {
-        return { success: false, error: 'Bu email adresi bulunamadı' };
-      }
-
-      // TODO: Email gönderme işlemi burada yapılacak
-      console.log(`Şifre sıfırlama linki gönderildi: ${email}`);
-
+      console.log('Mock reset password:', email);
       return { success: true };
     } catch (error) {
-      console.error('Şifre sıfırlama hatası:', error);
+      console.error('Mock reset password error:', error);
       return { success: false, error: 'Şifre sıfırlama sırasında bir hata oluştu' };
     }
   }
