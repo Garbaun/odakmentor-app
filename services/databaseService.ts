@@ -1,554 +1,126 @@
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  startAfter,
-  Timestamp,
-  writeBatch,
-  onSnapshot,
-  Unsubscribe
-} from 'firebase/firestore';
-import { db } from '@/config/firebase';
-import { 
-  User, 
-  StudentProfile, 
-  TeacherProfile, 
-  Course, 
-  Enrollment, 
-  Session, 
-  Progress, 
-  Notification, 
-  Payment, 
-  Analytics,
-  COLLECTIONS 
-} from '@/database/schema';
+import { Pool, PoolClient } from 'pg';
 
-// Utility function to convert Firestore timestamps
-const convertTimestamp = (timestamp: any): string => {
-  if (timestamp?.toDate) {
-    return timestamp.toDate().toISOString();
-  }
-  return timestamp;
+// Veritabanı konfigürasyonu
+const dbConfig = {
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || 'odakmentor_db',
+  user: process.env.DB_USER || 'odakmentor',
+  password: process.env.DB_PASSWORD || 'your_secure_password',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 };
 
-// User Service
+// Connection pool oluştur
+const pool = new Pool(dbConfig);
+
+// Veritabanı bağlantısını test et
+export async function testConnection(): Promise<void> {
+  try {
+    const client = await pool.connect();
+    console.log('✅ Veritabanı bağlantısı başarılı!');
+    console.log(`📊 Veritabanı: ${dbConfig.database}`);
+    console.log(`🏠 Host: ${dbConfig.host}:${dbConfig.port}`);
+    client.release();
+  } catch (error) {
+    console.error('❌ Veritabanı bağlantı hatası:', error);
+    throw error;
+  }
+}
+
+// Genel veritabanı işlemleri
+export class DatabaseService {
+  static async query(text: string, params?: any[]): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(text, params);
+      return result;
+    } finally {
+      client.release();
+    }
+  }
+
+  static async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await callback(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+}
+
+// Kullanıcı servisi
 export class UserService {
-  static async createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'loginCount'>): Promise<string> {
-    const now = new Date().toISOString();
-    const userWithTimestamps = {
-      ...userData,
-      createdAt: now,
-      updatedAt: now,
-      loginCount: 0,
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.USERS), userWithTimestamps);
-    return docRef.id;
+  static async createUser(userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    role?: 'student' | 'teacher' | 'admin';
+  }): Promise<any> {
+    const query = `
+      INSERT INTO users (email, first_name, last_name, role)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `;
+    const result = await DatabaseService.query(query, [
+      userData.email.toLowerCase(),
+      userData.firstName,
+      userData.lastName,
+      userData.role || 'student'
+    ]);
+    return result.rows[0];
   }
 
-  static async getUser(userId: string): Promise<User | null> {
-    const docRef = doc(db, COLLECTIONS.USERS, userId);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        lastLoginAt: data.lastLoginAt ? convertTimestamp(data.lastLoginAt) : undefined,
-      } as User;
-    }
-    return null;
+  static async getUserByEmail(email: string): Promise<any> {
+    const query = 'SELECT * FROM users WHERE email = $1';
+    const result = await DatabaseService.query(query, [email.toLowerCase()]);
+    return result.rows[0];
   }
 
-  static async getUserByEmail(email: string): Promise<User | null> {
-    const q = query(collection(db, COLLECTIONS.USERS), where('email', '==', email));
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        lastLoginAt: data.lastLoginAt ? convertTimestamp(data.lastLoginAt) : undefined,
-      } as User;
-    }
-    return null;
+  static async getUser(id: number): Promise<any> {
+    const query = 'SELECT * FROM users WHERE id = $1';
+    const result = await DatabaseService.query(query, [id]);
+    return result.rows[0];
   }
 
-  static async updateUser(userId: string, updates: Partial<User>): Promise<void> {
-    const docRef = doc(db, COLLECTIONS.USERS, userId);
-    await updateDoc(docRef, {
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    });
-  }
-
-  static async updateLastLogin(userId: string): Promise<void> {
-    const docRef = doc(db, COLLECTIONS.USERS, userId);
-    await updateDoc(docRef, {
-      lastLoginAt: new Date().toISOString(),
-      loginCount: await this.incrementLoginCount(userId),
-    });
-  }
-
-  private static async incrementLoginCount(userId: string): Promise<number> {
-    const user = await this.getUser(userId);
-    return user ? user.loginCount + 1 : 1;
-  }
-
-  static async getUsersByRole(role: 'student' | 'teacher' | 'admin'): Promise<User[]> {
-    const q = query(collection(db, COLLECTIONS.USERS), where('role', '==', role));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        lastLoginAt: data.lastLoginAt ? convertTimestamp(data.lastLoginAt) : undefined,
-      } as User;
-    });
+  static async updateLastLogin(id: number): Promise<void> {
+    const query = `
+      UPDATE users 
+      SET last_login_at = CURRENT_TIMESTAMP, login_count = login_count + 1
+      WHERE id = $1
+    `;
+    await DatabaseService.query(query, [id]);
   }
 }
 
-// Student Profile Service
-export class StudentProfileService {
-  static async createProfile(profileData: Omit<StudentProfile, 'createdAt' | 'updatedAt'>): Promise<void> {
-    const now = new Date().toISOString();
-    const profileWithTimestamps = {
-      ...profileData,
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    await addDoc(collection(db, COLLECTIONS.STUDENT_PROFILES), profileWithTimestamps);
+// Şifre servisi
+export class PasswordService {
+  static async setPassword(userId: number, passwordHash: string): Promise<void> {
+    const query = `
+      INSERT INTO user_passwords (user_id, password_hash)
+      VALUES ($1, $2)
+      ON CONFLICT (user_id)
+      DO UPDATE SET password_hash = $2, updated_at = CURRENT_TIMESTAMP
+    `;
+    await DatabaseService.query(query, [userId, passwordHash]);
   }
 
-  static async getProfile(userId: string): Promise<StudentProfile | null> {
-    const q = query(collection(db, COLLECTIONS.STUDENT_PROFILES), where('userId', '==', userId));
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      const data = doc.data();
-      return {
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      } as StudentProfile;
-    }
-    return null;
-  }
-
-  static async updateProfile(userId: string, updates: Partial<StudentProfile>): Promise<void> {
-    const q = query(collection(db, COLLECTIONS.STUDENT_PROFILES), where('userId', '==', userId));
-    const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-      const docRef = doc(db, COLLECTIONS.STUDENT_PROFILES, querySnapshot.docs[0].id);
-      await updateDoc(docRef, {
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      });
-    }
+  static async getPasswordHash(userId: number): Promise<string | null> {
+    const query = 'SELECT password_hash FROM user_passwords WHERE user_id = $1';
+    const result = await DatabaseService.query(query, [userId]);
+    return result.rows[0]?.password_hash || null;
   }
 }
 
-// Course Service
-export class CourseService {
-  static async createCourse(courseData: Omit<Course, 'id' | 'createdAt' | 'updatedAt' | 'enrollmentCount'>): Promise<string> {
-    const now = new Date().toISOString();
-    const courseWithTimestamps = {
-      ...courseData,
-      createdAt: now,
-      updatedAt: now,
-      enrollmentCount: 0,
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.COURSES), courseWithTimestamps);
-    return docRef.id;
-  }
-
-  static async getCourse(courseId: string): Promise<Course | null> {
-    const docRef = doc(db, COLLECTIONS.COURSES, courseId);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      } as Course;
-    }
-    return null;
-  }
-
-  static async getCoursesByTeacher(teacherId: string): Promise<Course[]> {
-    const q = query(collection(db, COLLECTIONS.COURSES), where('teacherId', '==', teacherId));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      } as Course;
-    });
-  }
-
-  static async getActiveCourses(): Promise<Course[]> {
-    const q = query(
-      collection(db, COLLECTIONS.COURSES), 
-      where('isActive', '==', true),
-      where('isPublic', '==', true),
-      orderBy('createdAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      } as Course;
-    });
-  }
-}
-
-// Enrollment Service
-export class EnrollmentService {
-  static async createEnrollment(enrollmentData: Omit<Enrollment, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
-    const now = new Date().toISOString();
-    const enrollmentWithTimestamps = {
-      ...enrollmentData,
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.ENROLLMENTS), enrollmentWithTimestamps);
-    return docRef.id;
-  }
-
-  static async getEnrollmentsByStudent(studentId: string): Promise<Enrollment[]> {
-    const q = query(collection(db, COLLECTIONS.ENROLLMENTS), where('studentId', '==', studentId));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        startDate: convertTimestamp(data.startDate),
-        endDate: data.endDate ? convertTimestamp(data.endDate) : undefined,
-      } as Enrollment;
-    });
-  }
-
-  static async getEnrollmentsByCourse(courseId: string): Promise<Enrollment[]> {
-    const q = query(collection(db, COLLECTIONS.ENROLLMENTS), where('courseId', '==', courseId));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        startDate: convertTimestamp(data.startDate),
-        endDate: data.endDate ? convertTimestamp(data.endDate) : undefined,
-      } as Enrollment;
-    });
-  }
-
-  static async updateEnrollmentProgress(enrollmentId: string, progress: Partial<Enrollment['progress']>): Promise<void> {
-    const docRef = doc(db, COLLECTIONS.ENROLLMENTS, enrollmentId);
-    await updateDoc(docRef, {
-      progress: progress,
-      updatedAt: new Date().toISOString(),
-    });
-  }
-}
-
-// Session Service
-export class SessionService {
-  static async createSession(sessionData: Omit<Session, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
-    const now = new Date().toISOString();
-    const sessionWithTimestamps = {
-      ...sessionData,
-      createdAt: now,
-      updatedAt: now,
-      scheduledAt: convertTimestamp(sessionData.scheduledAt),
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.SESSIONS), sessionWithTimestamps);
-    return docRef.id;
-  }
-
-  static async getSessionsByStudent(studentId: string): Promise<Session[]> {
-    const q = query(
-      collection(db, COLLECTIONS.SESSIONS), 
-      where('studentId', '==', studentId),
-      orderBy('scheduledAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        scheduledAt: convertTimestamp(data.scheduledAt),
-        actualStartTime: data.actualStartTime ? convertTimestamp(data.actualStartTime) : undefined,
-        actualEndTime: data.actualEndTime ? convertTimestamp(data.actualEndTime) : undefined,
-      } as Session;
-    });
-  }
-
-  static async getUpcomingSessions(studentId: string): Promise<Session[]> {
-    const now = new Date().toISOString();
-    const q = query(
-      collection(db, COLLECTIONS.SESSIONS), 
-      where('studentId', '==', studentId),
-      where('scheduledAt', '>=', now),
-      where('status', '==', 'scheduled'),
-      orderBy('scheduledAt', 'asc')
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        scheduledAt: convertTimestamp(data.scheduledAt),
-        actualStartTime: data.actualStartTime ? convertTimestamp(data.actualStartTime) : undefined,
-        actualEndTime: data.actualEndTime ? convertTimestamp(data.actualEndTime) : undefined,
-      } as Session;
-    });
-  }
-}
-
-// Progress Service
-export class ProgressService {
-  static async createProgress(progressData: Omit<Progress, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
-    const now = new Date().toISOString();
-    const progressWithTimestamps = {
-      ...progressData,
-      createdAt: now,
-      updatedAt: now,
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.PROGRESS), progressWithTimestamps);
-    return docRef.id;
-  }
-
-  static async getProgressByStudent(studentId: string): Promise<Progress[]> {
-    const q = query(
-      collection(db, COLLECTIONS.PROGRESS), 
-      where('studentId', '==', studentId),
-      orderBy('createdAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      } as Progress;
-    });
-  }
-
-  static async getProgressByCourse(courseId: string): Promise<Progress[]> {
-    const q = query(
-      collection(db, COLLECTIONS.PROGRESS), 
-      where('courseId', '==', courseId),
-      orderBy('createdAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-      } as Progress;
-    });
-  }
-}
-
-// Notification Service
-export class NotificationService {
-  static async createNotification(notificationData: Omit<Notification, 'id' | 'createdAt'>): Promise<string> {
-    const now = new Date().toISOString();
-    const notificationWithTimestamp = {
-      ...notificationData,
-      createdAt: now,
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.NOTIFICATIONS), notificationWithTimestamp);
-    return docRef.id;
-  }
-
-  static async getNotificationsByUser(userId: string): Promise<Notification[]> {
-    const q = query(
-      collection(db, COLLECTIONS.NOTIFICATIONS), 
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      limit(50)
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: convertTimestamp(data.createdAt),
-        sentAt: data.sentAt ? convertTimestamp(data.sentAt) : undefined,
-        scheduledFor: data.scheduledFor ? convertTimestamp(data.scheduledFor) : undefined,
-      } as Notification;
-    });
-  }
-
-  static async markAsRead(notificationId: string): Promise<void> {
-    const docRef = doc(db, COLLECTIONS.NOTIFICATIONS, notificationId);
-    await updateDoc(docRef, { isRead: true });
-  }
-
-  static async markAllAsRead(userId: string): Promise<void> {
-    const q = query(
-      collection(db, COLLECTIONS.NOTIFICATIONS), 
-      where('userId', '==', userId),
-      where('isRead', '==', false)
-    );
-    const querySnapshot = await getDocs(q);
-    
-    const batch = writeBatch(db);
-    querySnapshot.docs.forEach(doc => {
-      batch.update(doc.ref, { isRead: true });
-    });
-    
-    await batch.commit();
-  }
-}
-
-// Analytics Service
-export class AnalyticsService {
-  static async trackEvent(eventData: Omit<Analytics, 'id' | 'timestamp'>): Promise<string> {
-    const now = new Date().toISOString();
-    const analyticsWithTimestamp = {
-      ...eventData,
-      timestamp: now,
-    };
-    
-    const docRef = await addDoc(collection(db, COLLECTIONS.ANALYTICS), analyticsWithTimestamp);
-    return docRef.id;
-  }
-
-  static async getAnalyticsByUser(userId: string, limitCount: number = 100): Promise<Analytics[]> {
-    const q = query(
-      collection(db, COLLECTIONS.ANALYTICS), 
-      where('userId', '==', userId),
-      orderBy('timestamp', 'desc'),
-      limit(limitCount)
-    );
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        timestamp: convertTimestamp(data.timestamp),
-      } as Analytics;
-    });
-  }
-}
-
-// Real-time listeners
-export class RealtimeService {
-  static subscribeToUserNotifications(
-    userId: string, 
-    callback: (notifications: Notification[]) => void
-  ): Unsubscribe {
-    const q = query(
-      collection(db, COLLECTIONS.NOTIFICATIONS), 
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc'),
-      limit(20)
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const notifications = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          createdAt: convertTimestamp(data.createdAt),
-          sentAt: data.sentAt ? convertTimestamp(data.sentAt) : undefined,
-          scheduledFor: data.scheduledFor ? convertTimestamp(data.scheduledFor) : undefined,
-        } as Notification;
-      });
-      callback(notifications);
-    });
-  }
-
-  static subscribeToStudentProgress(
-    studentId: string, 
-    callback: (progress: Progress[]) => void
-  ): Unsubscribe {
-    const q = query(
-      collection(db, COLLECTIONS.PROGRESS), 
-      where('studentId', '==', studentId),
-      orderBy('createdAt', 'desc'),
-      limit(50)
-    );
-    
-    return onSnapshot(q, (querySnapshot) => {
-      const progress = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          createdAt: convertTimestamp(data.createdAt),
-          updatedAt: convertTimestamp(data.updatedAt),
-        } as Progress;
-      });
-      callback(progress);
-    });
-  }
+// Pool'u kapatma fonksiyonu
+export async function closePool(): Promise<void> {
+  await pool.end();
 }

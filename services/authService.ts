@@ -1,384 +1,124 @@
-import { 
-  GoogleAuthProvider, 
-  signInWithCredential, 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-  User,
-  UserCredential
-} from 'firebase/auth';
-import { auth } from '@/config/firebase';
-import { UserService, StudentProfileService, TeacherProfileService } from './databaseService';
-import { User as UserType, StudentProfile, TeacherProfile } from '@/database/schema';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { UserService, PasswordService } from './databaseService';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 export interface AuthResult {
   success: boolean;
-  user?: UserType;
+  user?: any;
+  token?: string;
   error?: string;
-  isNewUser?: boolean;
-}
-
-export interface GoogleAuthResult {
-  success: boolean;
-  user?: UserType;
-  error?: string;
-  isNewUser?: boolean;
 }
 
 export class AuthService {
-  /**
-   * Email ve şifre ile kayıt olma
-   */
-  static async registerWithEmail(
-    email: string, 
-    password: string, 
-    firstName: string, 
-    lastName: string,
-    role: 'student' | 'teacher' = 'student'
-  ): Promise<AuthResult> {
+  // Kullanıcı kaydı
+  static async register(userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    role?: 'student' | 'teacher';
+  }): Promise<AuthResult> {
     try {
-      // Firebase Authentication ile kullanıcı oluştur
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
-
-      // Email doğrulama gönder
-      await sendEmailVerification(firebaseUser);
-
-      // Veritabanında kullanıcı profili oluştur
-      const userData: Omit<UserType, 'id' | 'createdAt' | 'updatedAt' | 'loginCount'> = {
-        email: email.toLowerCase(),
-        firstName,
-        lastName,
-        role,
-        status: 'active',
-        isEmailVerified: false,
-        isPhoneVerified: false,
-        preferences: {
-          language: 'tr',
-          notifications: {
-            email: true,
-            sms: true,
-            push: true,
-          },
-          privacy: {
-            profileVisible: true,
-            progressVisible: role === 'student' ? false : true,
-          },
-        },
-        subscription: {
-          plan: 'free',
-          startDate: new Date().toISOString(),
-          isActive: true,
-        },
-      };
-
-      const userId = await UserService.createUser(userData);
-
-      // Role göre detay profil oluştur
-      if (role === 'student') {
-        const studentProfile: Omit<StudentProfile, 'createdAt' | 'updatedAt'> = {
-          userId,
-          grade: 0, // Kullanıcıdan alınacak
-          parentInfo: {
-            name: '',
-            phone: '',
-            relationship: 'other',
-          },
-          academicInfo: {
-            currentLevel: 'beginner',
-            weakSubjects: [],
-            strongSubjects: [],
-            interests: [],
-          },
-          learningStyle: {
-            visual: 50,
-            auditory: 50,
-            kinesthetic: 50,
-            reading: 50,
-          },
-          goals: {
-            shortTerm: [],
-            longTerm: [],
-            careerAspirations: [],
-          },
-        };
-        await StudentProfileService.createProfile(studentProfile);
-      } else if (role === 'teacher') {
-        const teacherProfile: Omit<TeacherProfile, 'createdAt' | 'updatedAt'> = {
-          userId,
-          specialization: [],
-          experience: 0,
-          education: [],
-          certifications: [],
-          languages: [
-            {
-              language: 'Türkçe',
-              level: 'native',
-            },
-          ],
-          availability: {
-            timeSlots: [],
-            timezone: 'Europe/Istanbul',
-          },
-          rating: {
-            average: 0,
-            totalReviews: 0,
-            breakdown: {
-              teaching: 0,
-              communication: 0,
-              punctuality: 0,
-              knowledge: 0,
-            },
-          },
-          bio: '',
-          hourlyRate: 0,
-          isAvailable: false,
-        };
-        await TeacherProfileService.createProfile(teacherProfile);
+      // Email kontrolü
+      const existingUser = await UserService.getUserByEmail(userData.email);
+      if (existingUser) {
+        return { success: false, error: 'Bu email adresi zaten kullanılıyor' };
       }
 
-      // Son giriş zamanını güncelle
-      await UserService.updateLastLogin(userId);
+      // Kullanıcı oluştur
+      const user = await UserService.createUser({
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: userData.role || 'student'
+      });
 
-      return {
-        success: true,
-        user: { ...userData, id: userId },
-        isNewUser: true,
-      };
+      // Şifre hash'le ve kaydet
+      const passwordHash = await bcrypt.hash(userData.password, 12);
+      await PasswordService.setPassword(user.id, passwordHash);
 
-    } catch (error: any) {
+      // Token oluştur
+      const token = this.generateToken(user.id, user.email, user.role);
+
+      return { success: true, user, token };
+    } catch (error) {
       console.error('Kayıt hatası:', error);
-      return {
-        success: false,
-        error: this.getErrorMessage(error.code),
-      };
+      return { success: false, error: 'Kayıt sırasında bir hata oluştu' };
     }
   }
 
-  /**
-   * Email ve şifre ile giriş yapma
-   */
-  static async signInWithEmail(email: string, password: string): Promise<AuthResult> {
+  // Kullanıcı girişi
+  static async login(email: string, password: string): Promise<AuthResult> {
     try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
-
-      // Veritabanından kullanıcı bilgilerini al
-      const user = await UserService.getUserByEmail(email.toLowerCase());
+      // Kullanıcıyı bul
+      const user = await UserService.getUserByEmail(email);
       if (!user) {
-        return {
-          success: false,
-          error: 'Kullanıcı profili bulunamadı',
-        };
+        return { success: false, error: 'Geçersiz email veya şifre' };
       }
 
-      // Son giriş zamanını güncelle
+      // Şifre kontrolü
+      const passwordHash = await PasswordService.getPasswordHash(user.id);
+      if (!passwordHash) {
+        return { success: false, error: 'Şifre bulunamadı' };
+      }
+
+      const isValidPassword = await bcrypt.compare(password, passwordHash);
+      if (!isValidPassword) {
+        return { success: false, error: 'Geçersiz email veya şifre' };
+      }
+
+      // Son giriş tarihini güncelle
       await UserService.updateLastLogin(user.id);
 
-      return {
-        success: true,
-        user,
-        isNewUser: false,
-      };
+      // Token oluştur
+      const token = this.generateToken(user.id, user.email, user.role);
 
-    } catch (error: any) {
-      console.error('Giriş hatası:', error);
-      return {
-        success: false,
-        error: this.getErrorMessage(error.code),
-      };
-    }
-  }
-
-  /**
-   * Google ile giriş/kayıt yapma
-   */
-  static async signInWithGoogle(googleCredential: any): Promise<GoogleAuthResult> {
-    try {
-      // Firebase Authentication ile Google credential'ı kullan
-      const credential = GoogleAuthProvider.credential(googleCredential.idToken);
-      const userCredential: UserCredential = await signInWithCredential(auth, credential);
-      const firebaseUser = userCredential.user;
-
-      // Kullanıcının daha önce kayıtlı olup olmadığını kontrol et
-      const existingUser = await UserService.getUserByEmail(firebaseUser.email?.toLowerCase() || '');
-      
-      if (existingUser) {
-        // Mevcut kullanıcı - giriş yap
-        await UserService.updateLastLogin(existingUser.id);
-        return {
-          success: true,
-          user: existingUser,
-          isNewUser: false,
-        };
-      } else {
-        // Yeni kullanıcı - kayıt oluştur
-        const userData: Omit<UserType, 'id' | 'createdAt' | 'updatedAt' | 'loginCount'> = {
-          email: firebaseUser.email?.toLowerCase() || '',
-          firstName: firebaseUser.displayName?.split(' ')[0] || 'Kullanıcı',
-          lastName: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
-          profileImage: firebaseUser.photoURL || undefined,
-          role: 'student', // Varsayılan olarak öğrenci
-          status: 'active',
-          isEmailVerified: firebaseUser.emailVerified,
-          isPhoneVerified: false,
-          preferences: {
-            language: 'tr',
-            notifications: {
-              email: true,
-              sms: true,
-              push: true,
-            },
-            privacy: {
-              profileVisible: true,
-              progressVisible: false,
-            },
-          },
-          subscription: {
-            plan: 'free',
-            startDate: new Date().toISOString(),
-            isActive: true,
-          },
-        };
-
-        const userId = await UserService.createUser(userData);
-
-        // Öğrenci profili oluştur
-        const studentProfile: Omit<StudentProfile, 'createdAt' | 'updatedAt'> = {
-          userId,
-          grade: 0, // Kullanıcıdan alınacak
-          parentInfo: {
-            name: '',
-            phone: '',
-            relationship: 'other',
-          },
-          academicInfo: {
-            currentLevel: 'beginner',
-            weakSubjects: [],
-            strongSubjects: [],
-            interests: [],
-          },
-          learningStyle: {
-            visual: 50,
-            auditory: 50,
-            kinesthetic: 50,
-            reading: 50,
-          },
-          goals: {
-            shortTerm: [],
-            longTerm: [],
-            careerAspirations: [],
-          },
-        };
-        await StudentProfileService.createProfile(studentProfile);
-
-        // Son giriş zamanını güncelle
-        await UserService.updateLastLogin(userId);
-
-        return {
-          success: true,
-          user: { ...userData, id: userId },
-          isNewUser: true,
-        };
-      }
-
-    } catch (error: any) {
-      console.error('Google giriş hatası:', error);
-      return {
-        success: false,
-        error: this.getErrorMessage(error.code),
-      };
-    }
-  }
-
-  /**
-   * Şifre sıfırlama emaili gönderme
-   */
-  static async resetPassword(email: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      await sendPasswordResetEmail(auth, email);
-      return { success: true };
-    } catch (error: any) {
-      console.error('Şifre sıfırlama hatası:', error);
-      return {
-        success: false,
-        error: this.getErrorMessage(error.code),
-      };
-    }
-  }
-
-  /**
-   * Email doğrulama gönderme
-   */
-  static async sendEmailVerification(): Promise<{ success: boolean; error?: string }> {
-    try {
-      if (auth.currentUser) {
-        await sendEmailVerification(auth.currentUser);
-        return { success: true };
-      }
-      return {
-        success: false,
-        error: 'Kullanıcı oturum açmamış',
-      };
-    } catch (error: any) {
-      console.error('Email doğrulama hatası:', error);
-      return {
-        success: false,
-        error: this.getErrorMessage(error.code),
-      };
-    }
-  }
-
-  /**
-   * Çıkış yapma
-   */
-  static async signOut(): Promise<{ success: boolean; error?: string }> {
-    try {
-      await auth.signOut();
-      return { success: true };
-    } catch (error: any) {
-      console.error('Çıkış hatası:', error);
-      return {
-        success: false,
-        error: 'Çıkış yapılırken bir hata oluştu',
-      };
-    }
-  }
-
-  /**
-   * Mevcut kullanıcıyı getir
-   */
-  static async getCurrentUser(): Promise<UserType | null> {
-    try {
-      if (auth.currentUser?.email) {
-        return await UserService.getUserByEmail(auth.currentUser.email.toLowerCase());
-      }
-      return null;
+      return { success: true, user, token };
     } catch (error) {
-      console.error('Mevcut kullanıcı getirme hatası:', error);
+      console.error('Giriş hatası:', error);
+      return { success: false, error: 'Giriş sırasında bir hata oluştu' };
+    }
+  }
+
+  // Token doğrulama
+  static async verifyToken(token: string): Promise<any> {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const user = await UserService.getUser(decoded.userId);
+      return user;
+    } catch (error) {
+      console.error('Token doğrulama hatası:', error);
       return null;
     }
   }
 
-  /**
-   * Firebase hata kodlarını Türkçe mesajlara çevir
-   */
-  private static getErrorMessage(errorCode: string): string {
-    const errorMessages: { [key: string]: string } = {
-      'auth/email-already-in-use': 'Bu email adresi zaten kullanımda',
-      'auth/invalid-email': 'Geçersiz email adresi',
-      'auth/operation-not-allowed': 'Bu işlem şu anda izin verilmiyor',
-      'auth/weak-password': 'Şifre çok zayıf. En az 6 karakter olmalı',
-      'auth/user-disabled': 'Bu hesap devre dışı bırakılmış',
-      'auth/user-not-found': 'Bu email adresi ile kayıtlı kullanıcı bulunamadı',
-      'auth/wrong-password': 'Yanlış şifre',
-      'auth/invalid-credential': 'Geçersiz kimlik bilgileri',
-      'auth/too-many-requests': 'Çok fazla deneme yapıldı. Lütfen daha sonra tekrar deneyin',
-      'auth/network-request-failed': 'Ağ bağlantısı hatası',
-      'auth/requires-recent-login': 'Bu işlem için tekrar giriş yapmanız gerekiyor',
-    };
+  // Token oluşturma
+  private static generateToken(userId: number, email: string, role: string): string {
+    return jwt.sign(
+      { userId, email, role, iat: Math.floor(Date.now() / 1000) },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+  }
 
-    return errorMessages[errorCode] || 'Beklenmeyen bir hata oluştu';
+  // Şifre sıfırlama
+  static async resetPassword(email: string): Promise<AuthResult> {
+    try {
+      const user = await UserService.getUserByEmail(email);
+      if (!user) {
+        return { success: false, error: 'Bu email adresi bulunamadı' };
+      }
+
+      // TODO: Email gönderme işlemi burada yapılacak
+      console.log(`Şifre sıfırlama linki gönderildi: ${email}`);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Şifre sıfırlama hatası:', error);
+      return { success: false, error: 'Şifre sıfırlama sırasında bir hata oluştu' };
+    }
   }
 }
