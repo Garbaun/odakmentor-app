@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Disallow admin panel
+Disallow: /admin/
+
+# Allow all other content
+Allow: /blog/
+Allow: /teacher/
+Allow: /student/
+Allow: /register/
+Allow: /privacy/
+
+# Crawl delay
+Crawl-delay: 1

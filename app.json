@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Odak Mentor",
+    "slug": "odak-mentor",
+    "version": "1.0.0",
+    "platforms": ["web"],
+    "orientation": "default",
+    "icon": "./assets/images/logo.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#667eea"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro",
+      "viewport": "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+      "meta": {
+        "title": "Odak Mentor - Yapay Zeka Destekli Online Eğitim Platformu",
+        "description": "Odak Mentor ile yapay zeka destekli kişiselleştirilmiş eğitim deneyimi yaşayın. Öğrenci ve öğretmenler için modern online eğitim platformu.",
+        "keywords": "online eğitim, yapay zeka, özel ders, öğrenci, öğretmen, eğitim platformu, kişiselleştirilmiş eğitim",
+        "og:title": "Odak Mentor - Yapay Zeka Destekli Online Eğitim",
+        "og:description": "Yapay zeka destekli kişiselleştirilmiş eğitim deneyimi. Modern online eğitim platformu.",
+        "og:image": "./assets/images/logo.png",
+        "og:type": "website",
+        "twitter:card": "summary_large_image",
+        "twitter:title": "Odak Mentor - Yapay Zeka Destekli Online Eğitim",
+        "twitter:description": "Yapay zeka destekli kişiselleştirilmiş eğitim deneyimi.",
+        "twitter:image": "./assets/images/logo.png"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "odak-mentor",
+    "extra": {
+      "router": { "basePath": "/odakmentor-app" },
+      "eas": {
+        "projectId": "1f90da54-2681-4ca4-9426-b006c1d79775"
+      }
+    },
+    "owner": "odakmentor"
+  }
+}

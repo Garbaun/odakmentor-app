@@ -1,0 +1,124 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Image, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { colors, globalStyles } from '@/styles/globalStyles';
+
+interface TopBarProps {
+  currentPage?: string;
+  onCategoriesPress?: () => void;
+  onCartPress?: () => void;
+}
+
+export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarProps) {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { width: windowWidth } = useWindowDimensions();
+
+  const handleCategoriesPress = () => {
+    if (onCategoriesPress) {
+      onCategoriesPress();
+    }
+  };
+
+  const handleCartPress = () => {
+    if (onCartPress) {
+      onCartPress();
+    }
+  };
+
+  return (
+    <View style={globalStyles.topRegion}>
+      {/* Kategori Barı */}
+      <View style={[globalStyles.topStrip, { paddingHorizontal: Platform.OS === 'web' ? Math.max(16, Math.round(windowWidth * 0.15)) : 16 }]}>
+        <TouchableOpacity style={globalStyles.kategorilerContainer} onPress={handleCategoriesPress}>
+          <Image source={require('@/assets/images/kategoriler.png')} style={globalStyles.topStripImg} resizeMode="contain" />
+        </TouchableOpacity>
+        
+        {/* Sağa yaslanmış butonlar */}
+        <View style={globalStyles.topStripRightButtons}>
+          <TouchableOpacity 
+            style={globalStyles.topStripButton} 
+            onPress={() => router.push('/blog')}
+          >
+            <Text style={[globalStyles.topStripButtonText, currentPage === 'blog' && { fontWeight: '700' }]}>
+              Blog
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={globalStyles.topStripButton} 
+            onPress={() => router.push('/corporate')}
+          >
+            <Text style={[globalStyles.topStripButtonText, currentPage === 'corporate' && { fontWeight: '700' }]}>
+              Kurumsal
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={globalStyles.topStripButton} 
+            onPress={() => router.push('/teacher')}
+          >
+            <Text style={[globalStyles.topStripButtonText, currentPage === 'teacher' && { fontWeight: '700' }]}>
+              Eğitmenler
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={globalStyles.topStripButton} 
+            onPress={() => router.push('/about')}
+          >
+            <Text style={[globalStyles.topStripButtonText, currentPage === 'about' && { fontWeight: '700' }]}>
+              Hakkımızda
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Logo Barı (H1) */}
+      <View style={[globalStyles.topBar, { paddingTop: insets.top + 3, height: insets.top + 90, paddingHorizontal: Platform.OS === 'web' ? Math.max(16, Math.round(windowWidth * 0.15)) : 16 }]}>
+        <View style={globalStyles.topBarRow}>
+          <TouchableOpacity onPress={() => router.push('/')}>
+            <Image source={require('@/assets/images/logo.png')} style={globalStyles.topBarLogo} resizeMode="contain" />
+          </TouchableOpacity>
+          <View style={globalStyles.topBarActions}>
+            {/* Dil Seçici */}
+            <View style={globalStyles.languageSelector}>
+              <View style={globalStyles.languageIcon}>
+                <View style={globalStyles.languageIconLeft}>
+                  <Text style={globalStyles.languageIconText}>A</Text>
+                </View>
+                <View style={globalStyles.languageIconRight}>
+                  <Text style={globalStyles.languageIconText}>文</Text>
+                </View>
+              </View>
+              <Text style={globalStyles.languageText}>TR</Text>
+            </View>
+
+            {/* Özel Ders Al */}
+            <TouchableOpacity style={globalStyles.actionLink} onPress={handleCategoriesPress}>
+              <Text style={globalStyles.actionLinkText}>Özel Ders Al</Text>
+            </TouchableOpacity>
+            
+            {/* Separator */}
+            <View style={globalStyles.separator} />
+            
+            {/* Sepet */}
+            <TouchableOpacity style={globalStyles.actionLink} onPress={handleCartPress}>
+              <MaterialIcons name="shopping-cart" size={20} color={colors.secondary} />
+            </TouchableOpacity>
+            
+            {/* Oturum Aç */}
+            <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/student')}>
+              <Text style={globalStyles.actionLinkText}>Oturum Aç</Text>
+            </TouchableOpacity>
+            
+            {/* Kayıt Ol */}
+            <TouchableOpacity style={globalStyles.registerButton} onPress={() => router.push('/register')}>
+              <Text style={globalStyles.registerButtonText}>Kayıt Ol</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}

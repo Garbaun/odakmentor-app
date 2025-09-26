@@ -1,0 +1,672 @@
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { GOOGLE_ANDROID_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from '@/config/authProviders';
+import { auth } from '@/config/firebase';
+import { Colors } from '@/constants/Colors';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as Google from 'expo-auth-session/providers/google';
+import { useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import { GoogleAuthProvider, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import React, { useState } from 'react';
+import { Alert, Dimensions, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+WebBrowser.maybeCompleteAuthSession();
+
+// Ülke kodları listesi
+const COUNTRIES = [
+	{ code: 'TR', name: 'Türkiye', dialCode: '+90', flag: '🇹🇷' },
+	{ code: 'US', name: 'Amerika', dialCode: '+1', flag: '🇺🇸' },
+	{ code: 'DE', name: 'Almanya', dialCode: '+49', flag: '🇩🇪' },
+	{ code: 'FR', name: 'Fransa', dialCode: '+33', flag: '🇫🇷' },
+	{ code: 'GB', name: 'İngiltere', dialCode: '+44', flag: '🇬🇧' },
+	{ code: 'IT', name: 'İtalya', dialCode: '+39', flag: '🇮🇹' },
+	{ code: 'ES', name: 'İspanya', dialCode: '+34', flag: '🇪🇸' },
+	{ code: 'NL', name: 'Hollanda', dialCode: '+31', flag: '🇳🇱' },
+	{ code: 'BE', name: 'Belçika', dialCode: '+32', flag: '🇧🇪' },
+	{ code: 'CH', name: 'İsviçre', dialCode: '+41', flag: '🇨🇭' },
+];
+
+// Standart radius değerleri
+const RADIUS = {
+	xs: 4,
+	sm: 8,
+	md: 12,
+	lg: 16,
+	xl: 20,
+	xxl: 24,
+};
+
+// Neomorfik gölge stilleri
+const NEOMORPHIC_SHADOW = {
+	shadowColor: '#000',
+	shadowOffset: { width: 2, height: 2 },
+	shadowOpacity: 0.1,
+	shadowRadius: 4,
+	elevation: 3,
+};
+
+const TEXT = '#1e3a8a';
+const BORDER = '#e5e7eb';
+const PANEL_BG = '#f5f5f5';
+
+const { width } = Dimensions.get('window');
+
+export default function RegisterScreen() {
+	const colors = Colors['light'];
+	const router = useRouter();
+	const insets = useSafeAreaInsets();
+	const [visible, setVisible] = useState(true);
+
+	const [formData, setFormData] = useState({
+		firstName: '',
+		lastName: '',
+		email: '',
+		password: '',
+		confirmPassword: '',
+		phone: '',
+		userType: 'student' as 'student' | 'teacher'
+	});
+	const [loading, setLoading] = useState(false);
+	const [kvkkAccepted, setKvkkAccepted] = useState(false);
+	const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]); // Türkiye varsayılan
+	const [showCountryPicker, setShowCountryPicker] = useState(false);
+
+	// Google Auth
+	const [request, response, promptAsync] = Google.useAuthRequest({
+		webClientId: GOOGLE_WEB_CLIENT_ID,
+		iosClientId: GOOGLE_IOS_CLIENT_ID,
+		androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+		expoClientId: GOOGLE_WEB_CLIENT_ID,
+	});
+
+	const handleGoogle = async () => {
+		try {
+			const res = await promptAsync();
+			if (res?.type === 'success') {
+				const idToken = (res as any)?.params?.id_token ?? res?.authentication?.idToken ?? null;
+				if (!idToken) {
+					Alert.alert('Google', 'Google kimlik doğrulama başarısız: idToken alınamadı.');
+					return;
+				}
+				const credential = GoogleAuthProvider.credential(idToken);
+				await createUserWithEmailAndPassword(auth, '', ''); // Google ile kayıt
+				router.replace('/');
+			}
+		} catch (e) {
+			Alert.alert('Google', 'Google ile kayıt sırasında bir sorun oluştu.');
+		}
+	};
+
+	const onRegister = async () => {
+		const { firstName, lastName, email, password, confirmPassword, phone, userType } = formData;
+		
+		if (!firstName || !lastName || !email || !password || !confirmPassword) {
+			Alert.alert('Uyarı', 'Tüm alanları doldurun.');
+			return;
+		}
+
+		if (password !== confirmPassword) {
+			Alert.alert('Uyarı', 'Şifreler eşleşmiyor.');
+			return;
+		}
+
+		// Şifre güvenlik kontrolü
+		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,32}$/;
+		if (!passwordRegex.test(password)) {
+			Alert.alert('Uyarı', 'Şifre büyük harf, küçük harf ve rakam içermeli, 8-32 karakter arası olmalıdır.');
+			return;
+		}
+
+		if (!kvkkAccepted) {
+			Alert.alert('Uyarı', 'KVKK metnini kabul etmelisiniz.');
+			return;
+		}
+
+		try {
+			setLoading(true);
+			const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+			
+			// E-posta doğrulama gönder
+			await sendEmailVerification(userCredential.user);
+			
+			Alert.alert(
+				'Kayıt Başarılı!', 
+				'E-posta adresinize doğrulama bağlantısı gönderildi. Lütfen e-postanızı kontrol edin.',
+				[{ text: 'Tamam', onPress: () => router.replace('/') }]
+			);
+		} catch (e: any) {
+			const code: string = e?.code ?? '';
+			let message = 'Kayıt sırasında bir sorun oluştu.';
+			if (code === 'auth/email-already-in-use') message = 'Bu e-posta adresi zaten kullanılıyor.';
+			else if (code === 'auth/invalid-email') message = 'Geçersiz e-posta adresi.';
+			else if (code === 'auth/weak-password') message = 'Şifre çok zayıf.';
+			Alert.alert('Hata', message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const updateFormData = (field: string, value: string) => {
+		setFormData(prev => ({ ...prev, [field]: value }));
+	};
+
+	const closeModal = () => {
+		setVisible(false);
+		router.back();
+	};
+
+	return (
+		<Modal visible={visible} transparent animationType="fade" onRequestClose={closeModal}>
+			<View style={[styles.modalOverlay, { paddingTop: insets.top + 8, justifyContent: 'flex-start', alignItems: 'center' }]} pointerEvents="box-none">
+				<Pressable style={styles.modalBackdrop} onPress={closeModal} />
+				<View style={[styles.modalCard, { maxHeight: '90%' }]}>
+					<View style={styles.modalHeaderTopRow}>
+						<TouchableOpacity style={styles.modalBackRow} activeOpacity={0.7} onPress={closeModal}>
+							<MaterialIcons name="arrow-back" size={22} color={TEXT} />
+							<ThemedText style={styles.modalBackText}>Geri</ThemedText>
+						</TouchableOpacity>
+						<View style={{ position: 'absolute', left: 0, right: 0, alignItems: 'center' }} pointerEvents="none">
+							<ThemedText style={styles.modalTitle}>Kayıt Ol</ThemedText>
+						</View>
+						<TouchableOpacity onPress={closeModal}>
+							<MaterialIcons name="close" size={22} color={TEXT} />
+						</TouchableOpacity>
+					</View>
+
+					<ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingBottom: 24 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+						<ThemedView style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+							<ThemedText style={[styles.title, { color: colors.textPrimary }]}>Ücretsiz Hesap Oluştur</ThemedText>
+							<ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>Eğitim yolculuğuna başlamak için hesabını oluştur.</ThemedText>
+
+							{/* Kullanıcı Tipi Seçimi */}
+							<View style={styles.userTypeContainer}>
+						<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Hesap Tipi</ThemedText>
+						<View style={styles.userTypeRow}>
+							<TouchableOpacity 
+								style={[
+									styles.userTypeBtn, 
+									{ backgroundColor: formData.userType === 'student' ? colors.primary : colors.surface, borderColor: colors.border }
+								]} 
+								onPress={() => updateFormData('userType', 'student')}
+							>
+								<MaterialIcons name="school" size={20} color={formData.userType === 'student' ? '#fff' : colors.textPrimary} />
+								<ThemedText style={[styles.userTypeText, { color: formData.userType === 'student' ? '#fff' : colors.textPrimary }]}>Öğrenci</ThemedText>
+							</TouchableOpacity>
+							<TouchableOpacity 
+								style={[
+									styles.userTypeBtn, 
+									{ backgroundColor: formData.userType === 'teacher' ? colors.primary : colors.surface, borderColor: colors.border }
+								]} 
+								onPress={() => updateFormData('userType', 'teacher')}
+							>
+								<MaterialIcons name="person" size={20} color={formData.userType === 'teacher' ? '#fff' : colors.textPrimary} />
+								<ThemedText style={[styles.userTypeText, { color: formData.userType === 'teacher' ? '#fff' : colors.textPrimary }]}>Öğretmen</ThemedText>
+							</TouchableOpacity>
+						</View>
+					</View>
+
+					{/* Ad Soyad */}
+					<View style={styles.nameRow}>
+						<View style={[styles.fieldGroup, { flex: 1, marginRight: 8 }]}>
+							<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Ad</ThemedText>
+							<TextInput
+								value={formData.firstName}
+								onChangeText={(value) => updateFormData('firstName', value)}
+								placeholder="Adınız"
+								placeholderTextColor={colors.textMuted}
+								style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]}
+							/>
+						</View>
+						<View style={[styles.fieldGroup, { flex: 1, marginLeft: 8 }]}>
+							<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Soyad</ThemedText>
+							<TextInput
+								value={formData.lastName}
+								onChangeText={(value) => updateFormData('lastName', value)}
+								placeholder="Soyadınız"
+								placeholderTextColor={colors.textMuted}
+								style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]}
+							/>
+						</View>
+					</View>
+
+					{/* E-posta */}
+					<View style={styles.fieldGroup}>
+						<ThemedText style={[styles.label, { color: colors.textPrimary }]}>E-posta</ThemedText>
+						<TextInput
+							value={formData.email}
+							onChangeText={(value) => updateFormData('email', value)}
+							placeholder="ornek@eposta.com"
+							placeholderTextColor={colors.textMuted}
+							keyboardType="email-address"
+							autoCapitalize="none"
+							style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]}
+						/>
+					</View>
+
+					{/* Telefon */}
+					<View style={styles.fieldGroup}>
+						<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Telefon</ThemedText>
+						<View style={styles.phoneContainer}>
+							{/* Ülke Seçici */}
+							<TouchableOpacity 
+								style={[styles.countrySelector, { borderColor: colors.border, backgroundColor: colors.surface }]}
+								onPress={() => setShowCountryPicker(true)}
+							>
+								<ThemedText style={styles.countryFlag}>{selectedCountry.flag}</ThemedText>
+								<ThemedText style={[styles.countryCode, { color: colors.textPrimary }]}>{selectedCountry.dialCode}</ThemedText>
+								<MaterialIcons name="keyboard-arrow-down" size={20} color={colors.textMuted} />
+							</TouchableOpacity>
+							
+							{/* Telefon Numarası */}
+							<TextInput
+								value={formData.phone}
+								onChangeText={(value) => updateFormData('phone', value)}
+								placeholder="5XX XXX XX XX"
+								placeholderTextColor={colors.textMuted}
+								keyboardType="phone-pad"
+								style={[styles.phoneInput, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]}
+							/>
+						</View>
+					</View>
+
+					{/* Şifre */}
+					<View style={styles.fieldGroup}>
+						<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Şifre</ThemedText>
+						<TextInput
+							value={formData.password}
+							onChangeText={(value) => updateFormData('password', value)}
+							placeholder="••••••••"
+							placeholderTextColor={colors.textMuted}
+							secureTextEntry
+							style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]}
+						/>
+						<ThemedText style={[styles.passwordRules, { color: colors.textMuted }]}>
+							• Büyük harf, küçük harf ve rakam içermeli{'\n'}
+							• En az 8, en fazla 32 karakter{'\n'}
+							• Özel karakterler kullanabilirsiniz (@$!%*?&)
+						</ThemedText>
+					</View>
+
+					{/* Şifre Tekrar */}
+					<View style={styles.fieldGroup}>
+						<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Şifre Tekrar</ThemedText>
+						<TextInput
+							value={formData.confirmPassword}
+							onChangeText={(value) => updateFormData('confirmPassword', value)}
+							placeholder="••••••••"
+							placeholderTextColor={colors.textMuted}
+							secureTextEntry
+							style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]}
+						/>
+					</View>
+
+					{/* KVKK Onay Kutusu */}
+					<View style={styles.kvkkContainer}>
+						<TouchableOpacity 
+							style={styles.kvkkCheckbox} 
+							onPress={() => setKvkkAccepted(!kvkkAccepted)}
+							activeOpacity={0.7}
+						>
+							<View style={[styles.checkbox, { backgroundColor: kvkkAccepted ? colors.primary : 'transparent', borderColor: colors.border }]}>
+								{kvkkAccepted && <MaterialIcons name="check" size={16} color="#fff" />}
+							</View>
+							<ThemedText style={[styles.kvkkText, { color: colors.textPrimary }]}>
+								<ThemedText style={styles.kvkkText}>Kişisel verilerimin işlenmesine, </ThemedText>
+								<TouchableOpacity onPress={() => Alert.alert('KVKK', 'KVKK metni açılacak')}>
+									<ThemedText style={[styles.kvkkLink, { color: colors.primary }]}>KVKK</ThemedText>
+								</TouchableOpacity>
+								<ThemedText style={styles.kvkkText}> ve </ThemedText>
+								<TouchableOpacity onPress={() => Alert.alert('Gizlilik', 'Gizlilik politikası açılacak')}>
+									<ThemedText style={[styles.kvkkLink, { color: colors.primary }]}>Gizlilik Politikası</ThemedText>
+								</TouchableOpacity>
+								<ThemedText style={styles.kvkkText}>'na uygun olarak rıza veriyorum.</ThemedText>
+							</ThemedText>
+						</TouchableOpacity>
+					</View>
+
+					{/* Kayıt Ol Butonu */}
+					<TouchableOpacity disabled={loading || !kvkkAccepted} onPress={onRegister} style={[styles.registerBtn, { backgroundColor: kvkkAccepted ? colors.primary : colors.border, opacity: kvkkAccepted ? 1 : 0.6 }]}>
+						<ThemedText style={styles.registerText}>{loading ? 'Kayıt oluşturuluyor...' : 'Kayıt Ol'}</ThemedText>
+					</TouchableOpacity>
+
+					<View style={styles.dividerRow}>
+						<View style={[styles.divider, { backgroundColor: colors.border }]} />
+						<ThemedText style={[styles.dividerText, { color: colors.textMuted }]}>veya</ThemedText>
+						<View style={[styles.divider, { backgroundColor: colors.border }]} />
+					</View>
+
+					{/* Google ile Kayıt */}
+					<TouchableOpacity style={[styles.socialBtn, { borderColor: colors.border, backgroundColor: colors.surface }]} onPress={handleGoogle}>
+						<MaterialIcons name="google" size={20} color={colors.textPrimary} />
+						<ThemedText style={[styles.socialText, { color: colors.textPrimary }]}>Google ile kayıt ol</ThemedText>
+					</TouchableOpacity>
+
+					{/* Giriş Yap Linki */}
+					<View style={styles.loginRow}>
+						<ThemedText style={{ color: colors.textSecondary }}>Zaten hesabın var mı? </ThemedText>
+						<TouchableOpacity onPress={() => router.push('/student')}>
+							<ThemedText style={{ color: colors.primary, fontWeight: '600' }}>Giriş yap</ThemedText>
+						</TouchableOpacity>
+					</View>
+					</ScrollView>
+					</ThemedView>
+				</View>
+			</View>
+		</Modal>
+
+		{/* Ülke Seçici Modal */}
+		<Modal visible={showCountryPicker} transparent animationType="slide" onRequestClose={() => setShowCountryPicker(false)}>
+			<View style={styles.countryModalOverlay}>
+				<Pressable style={styles.countryModalBackdrop} onPress={() => setShowCountryPicker(false)} />
+				<View style={[styles.countryModalCard, { backgroundColor: colors.surface }]}>
+					<View style={styles.countryModalHeader}>
+						<ThemedText style={[styles.countryModalTitle, { color: colors.textPrimary }]}>Ülke Seçin</ThemedText>
+						<TouchableOpacity onPress={() => setShowCountryPicker(false)}>
+							<MaterialIcons name="close" size={24} color={colors.textMuted} />
+						</TouchableOpacity>
+					</View>
+					<ScrollView style={styles.countryList}>
+						{COUNTRIES.map((country) => (
+							<TouchableOpacity
+								key={country.code}
+								style={[
+									styles.countryItem,
+									{ 
+										backgroundColor: selectedCountry.code === country.code ? colors.primary + '20' : 'transparent',
+										borderBottomColor: colors.border 
+									}
+								]}
+								onPress={() => {
+									setSelectedCountry(country);
+									setShowCountryPicker(false);
+								}}
+							>
+								<ThemedText style={styles.countryItemFlag}>{country.flag}</ThemedText>
+								<ThemedText style={[styles.countryItemName, { color: colors.textPrimary }]}>{country.name}</ThemedText>
+								<ThemedText style={[styles.countryItemCode, { color: colors.textMuted }]}>{country.dialCode}</ThemedText>
+							</TouchableOpacity>
+						))}
+					</ScrollView>
+				</View>
+			</View>
+		</Modal>
+	);
+}
+
+const styles = StyleSheet.create({
+	// Modal stilleri
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	modalBackdrop: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+	},
+	modalCard: {
+		width: Platform.OS === 'web' ? Math.max(320, Math.round(width * 0.7)) : '100%',
+		maxWidth: Platform.OS === 'web' ? Math.max(320, Math.round(width * 0.7)) : 420,
+		borderRadius: RADIUS.lg,
+		backgroundColor: '#ffffff',
+		padding: 16,
+		borderWidth: 1,
+		borderColor: BORDER,
+		...NEOMORPHIC_SHADOW,
+	},
+	modalHeaderTopRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginBottom: 16,
+		paddingBottom: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: BORDER,
+	},
+	modalBackRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+	},
+	modalBackText: {
+		color: TEXT,
+		fontSize: 14,
+	},
+	modalTitle: {
+		fontSize: 18,
+		fontWeight: '700',
+		color: TEXT,
+		textAlign: 'center',
+	},
+	card: {
+		borderRadius: RADIUS.md,
+		borderWidth: 1,
+		padding: 16,
+		gap: 12,
+		backgroundColor: 'transparent',
+		borderColor: 'transparent',
+	},
+	title: {
+		textAlign: 'center',
+		fontSize: 24,
+		fontWeight: '700',
+		marginBottom: 4,
+	},
+	subtitle: {
+		textAlign: 'center',
+		fontSize: 13,
+		marginBottom: 16,
+		opacity: 0.7,
+	},
+	userTypeContainer: {
+		gap: 8,
+		marginBottom: 8,
+	},
+	userTypeRow: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	userTypeBtn: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		paddingVertical: 10,
+		paddingHorizontal: 12,
+		borderRadius: RADIUS.sm,
+		borderWidth: 1,
+		...NEOMORPHIC_SHADOW,
+	},
+	userTypeText: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	nameRow: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	fieldGroup: {
+		gap: 4,
+		marginBottom: 8,
+	},
+	label: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	input: {
+		height: 40,
+		borderWidth: 1,
+		borderRadius: RADIUS.sm,
+		paddingHorizontal: 10,
+		fontSize: 14,
+	},
+	passwordRules: {
+		fontSize: 11,
+		lineHeight: 14,
+		marginTop: 4,
+		opacity: 0.8,
+	},
+	// Telefon container stilleri
+	phoneContainer: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	countrySelector: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 12,
+		paddingVertical: 10,
+		borderWidth: 1,
+		borderRadius: RADIUS.sm,
+		minWidth: 100,
+		gap: 6,
+	},
+	countryFlag: {
+		fontSize: 16,
+	},
+	countryCode: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	phoneInput: {
+		flex: 1,
+		height: 40,
+		borderWidth: 1,
+		borderRadius: RADIUS.sm,
+		paddingHorizontal: 10,
+		fontSize: 14,
+	},
+	// Ülke seçici modal stilleri
+	countryModalOverlay: {
+		flex: 1,
+		justifyContent: 'flex-end',
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	countryModalBackdrop: {
+		flex: 1,
+	},
+	countryModalCard: {
+		borderTopLeftRadius: RADIUS.lg,
+		borderTopRightRadius: RADIUS.lg,
+		maxHeight: '70%',
+		paddingBottom: 20,
+	},
+	countryModalHeader: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingHorizontal: 20,
+		paddingVertical: 16,
+		borderBottomWidth: 1,
+		borderBottomColor: '#E5E5E5',
+	},
+	countryModalTitle: {
+		fontSize: 18,
+		fontWeight: '700',
+	},
+	countryList: {
+		maxHeight: 400,
+	},
+	countryItem: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 20,
+		paddingVertical: 16,
+		borderBottomWidth: 1,
+		gap: 12,
+	},
+	countryItemFlag: {
+		fontSize: 20,
+		width: 24,
+		textAlign: 'center',
+	},
+	countryItemName: {
+		flex: 1,
+		fontSize: 16,
+		fontWeight: '500',
+	},
+	countryItemCode: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	registerBtn: {
+		borderRadius: RADIUS.md,
+		alignItems: 'center',
+		justifyContent: 'center',
+		height: 42,
+		marginTop: 8,
+		...NEOMORPHIC_SHADOW,
+	},
+	registerText: {
+		color: '#fff',
+		fontSize: 14,
+		fontWeight: '700',
+	},
+	dividerRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		marginVertical: 12,
+	},
+	divider: {
+		flex: 1,
+		height: 1,
+	},
+	dividerText: {
+		fontSize: 11,
+	},
+	socialBtn: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		borderWidth: 1,
+		borderRadius: RADIUS.sm,
+		height: 40,
+		...NEOMORPHIC_SHADOW,
+	},
+	socialText: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	loginRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		marginTop: 12,
+		gap: 4,
+	},
+	// KVKK stilleri
+	kvkkContainer: {
+		marginTop: 8,
+		marginBottom: 8,
+	},
+	kvkkCheckbox: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: 8,
+	},
+	checkbox: {
+		width: 20,
+		height: 20,
+		borderRadius: RADIUS.xs,
+		borderWidth: 2,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 2,
+	},
+	kvkkText: {
+		fontSize: 12,
+		lineHeight: 16,
+		flex: 1,
+	},
+	kvkkLink: {
+		fontSize: 12,
+		fontWeight: '600',
+		textDecorationLine: 'underline',
+	},
+});
