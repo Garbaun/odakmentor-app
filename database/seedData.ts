@@ -1,4 +1,80 @@
-import { User, StudentProfile, TeacherProfile, Course, COLLECTIONS } from './schema';
+// PostgreSQL için veri tipleri
+interface User {
+  id?: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  countryCode?: string;
+  dateOfBirth?: string;
+  gender?: 'male' | 'female' | 'other';
+  role: 'student' | 'teacher' | 'admin';
+  status: 'active' | 'inactive' | 'suspended';
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  preferences: any;
+  subscription: any;
+  createdAt?: string;
+  updatedAt?: string;
+  lastLoginAt?: string;
+  loginCount?: number;
+}
+
+interface StudentProfile {
+  userId: string | number;
+  grade: number;
+  school?: string;
+  city?: string;
+  district?: string;
+  academicInfo: any;
+  learningStyle: any;
+  goals: any;
+  parentInfo: any;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface TeacherProfile {
+  userId: string | number;
+  specialization: string[];
+  experience: number;
+  education: any[];
+  certifications: any[];
+  languages: any[];
+  availability: any;
+  rating: any;
+  bio: string;
+  hourlyRate: number;
+  isAvailable: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Course {
+  id?: number;
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  grade: number;
+  level: string;
+  duration: number;
+  totalSessions: number;
+  price: number;
+  currency: string;
+  teacherId: string | number;
+  thumbnail?: string;
+  tags: string[];
+  prerequisites: string[];
+  learningObjectives: string[];
+  materials: any[];
+  isActive: boolean;
+  isPublic: boolean;
+  enrollmentCount?: number;
+  rating: any;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 // Sample users for testing
 export const sampleUsers: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'loginCount'>[] = [
@@ -270,50 +346,50 @@ export const sampleCourses: Omit<Course, 'id' | 'createdAt' | 'updatedAt' | 'enr
 // Database initialization function
 export async function initializeDatabase() {
   try {
-    console.log('🚀 Veritabanı başlatılıyor...');
+    console.log('🚀 PostgreSQL veritabanı başlatılıyor...');
     
     // Import services
     const { UserService, StudentProfileService, TeacherProfileService, CourseService } = await import('../services/databaseService');
     
     // Create admin user
-    const adminUserId = await UserService.createUser(sampleUsers[0]);
-    console.log('✅ Admin kullanıcısı oluşturuldu:', adminUserId);
+    const adminUser = await UserService.createUser(sampleUsers[0]);
+    console.log('✅ Admin kullanıcısı oluşturuldu:', adminUser.id);
     
     // Create student user
-    const studentUserId = await UserService.createUser(sampleUsers[1]);
-    console.log('✅ Öğrenci kullanıcısı oluşturuldu:', studentUserId);
+    const studentUser = await UserService.createUser(sampleUsers[1]);
+    console.log('✅ Öğrenci kullanıcısı oluşturuldu:', studentUser.id);
     
     // Create teacher user
-    const teacherUserId = await UserService.createUser(sampleUsers[2]);
-    console.log('✅ Öğretmen kullanıcısı oluşturuldu:', teacherUserId);
+    const teacherUser = await UserService.createUser(sampleUsers[2]);
+    console.log('✅ Öğretmen kullanıcısı oluşturuldu:', teacherUser.id);
     
     // Create student profile
-    const studentProfile = { ...sampleStudentProfiles[0], userId: studentUserId };
+    const studentProfile = { ...sampleStudentProfiles[0], userId: studentUser.id };
     await StudentProfileService.createProfile(studentProfile);
     console.log('✅ Öğrenci profili oluşturuldu');
     
     // Create teacher profile
-    const teacherProfile = { ...sampleTeacherProfiles[0], userId: teacherUserId };
+    const teacherProfile = { ...sampleTeacherProfiles[0], userId: teacherUser.id };
     await TeacherProfileService.createProfile(teacherProfile);
     console.log('✅ Öğretmen profili oluşturuldu');
     
     // Create courses
-    const course1 = { ...sampleCourses[0], teacherId: teacherUserId };
-    const course1Id = await CourseService.createCourse(course1);
-    console.log('✅ Matematik kursu oluşturuldu:', course1Id);
+    const course1 = { ...sampleCourses[0], teacherId: teacherUser.id };
+    const course1Result = await CourseService.createCourse(course1);
+    console.log('✅ Matematik kursu oluşturuldu:', course1Result.id);
     
-    const course2 = { ...sampleCourses[1], teacherId: teacherUserId };
-    const course2Id = await CourseService.createCourse(course2);
-    console.log('✅ LGS hazırlık kursu oluşturuldu:', course2Id);
+    const course2 = { ...sampleCourses[1], teacherId: teacherUser.id };
+    const course2Result = await CourseService.createCourse(course2);
+    console.log('✅ LGS hazırlık kursu oluşturuldu:', course2Result.id);
     
-    console.log('🎉 Veritabanı başarıyla başlatıldı!');
+    console.log('🎉 PostgreSQL veritabanı başarıyla başlatıldı!');
     
     return {
-      adminUserId,
-      studentUserId,
-      teacherUserId,
-      course1Id,
-      course2Id,
+      adminUserId: adminUser.id,
+      studentUserId: studentUser.id,
+      teacherUserId: teacherUser.id,
+      course1Id: course1Result.id,
+      course2Id: course2Result.id,
     };
     
   } catch (error) {
@@ -328,19 +404,14 @@ export async function cleanupTestData() {
     console.log('🧹 Test verileri temizleniyor...');
     
     // Import services
-    const { UserService } = await import('../services/databaseService');
+    const { DatabaseService } = await import('../services/databaseService');
     
-    // Get all test users
-    const testEmails = ['admin@odakmentor.com', 'student@example.com', 'teacher@example.com'];
-    
-    for (const email of testEmails) {
-      const user = await UserService.getUserByEmail(email);
-      if (user) {
-        // Note: In a real implementation, you would need to delete related documents first
-        // This is a simplified version
-        console.log(`🗑️ Test kullanıcısı silinecek: ${email}`);
-      }
-    }
+    // Clear all data from PostgreSQL
+    await DatabaseService.query('DELETE FROM student_profiles');
+    await DatabaseService.query('DELETE FROM teacher_profiles');
+    await DatabaseService.query('DELETE FROM courses');
+    await DatabaseService.query('DELETE FROM passwords');
+    await DatabaseService.query('DELETE FROM users');
     
     console.log('✅ Test verileri temizlendi');
     

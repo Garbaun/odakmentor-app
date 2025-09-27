@@ -1,0 +1,4532 @@
+{
+  "users": [
+    {
+      "id": "perf_user_0",
+      "email": "perf_user_0@example.com",
+      "firstName": "Test0",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 53
+    },
+    {
+      "id": "perf_user_1",
+      "email": "perf_user_1@example.com",
+      "firstName": "Test1",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 5
+    },
+    {
+      "id": "perf_user_2",
+      "email": "perf_user_2@example.com",
+      "firstName": "Test2",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 94
+    },
+    {
+      "id": "perf_user_3",
+      "email": "perf_user_3@example.com",
+      "firstName": "Test3",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 78
+    },
+    {
+      "id": "perf_user_4",
+      "email": "perf_user_4@example.com",
+      "firstName": "Test4",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 94
+    },
+    {
+      "id": "perf_user_5",
+      "email": "perf_user_5@example.com",
+      "firstName": "Test5",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 68
+    },
+    {
+      "id": "perf_user_6",
+      "email": "perf_user_6@example.com",
+      "firstName": "Test6",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 83
+    },
+    {
+      "id": "perf_user_7",
+      "email": "perf_user_7@example.com",
+      "firstName": "Test7",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 1
+    },
+    {
+      "id": "perf_user_8",
+      "email": "perf_user_8@example.com",
+      "firstName": "Test8",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 6
+    },
+    {
+      "id": "perf_user_9",
+      "email": "perf_user_9@example.com",
+      "firstName": "Test9",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 99
+    },
+    {
+      "id": "perf_user_10",
+      "email": "perf_user_10@example.com",
+      "firstName": "Test10",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 99
+    },
+    {
+      "id": "perf_user_11",
+      "email": "perf_user_11@example.com",
+      "firstName": "Test11",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 33
+    },
+    {
+      "id": "perf_user_12",
+      "email": "perf_user_12@example.com",
+      "firstName": "Test12",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 64
+    },
+    {
+      "id": "perf_user_13",
+      "email": "perf_user_13@example.com",
+      "firstName": "Test13",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 6
+    },
+    {
+      "id": "perf_user_14",
+      "email": "perf_user_14@example.com",
+      "firstName": "Test14",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 40
+    },
+    {
+      "id": "perf_user_15",
+      "email": "perf_user_15@example.com",
+      "firstName": "Test15",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 58
+    },
+    {
+      "id": "perf_user_16",
+      "email": "perf_user_16@example.com",
+      "firstName": "Test16",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 63
+    },
+    {
+      "id": "perf_user_17",
+      "email": "perf_user_17@example.com",
+      "firstName": "Test17",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 90
+    },
+    {
+      "id": "perf_user_18",
+      "email": "perf_user_18@example.com",
+      "firstName": "Test18",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 6
+    },
+    {
+      "id": "perf_user_19",
+      "email": "perf_user_19@example.com",
+      "firstName": "Test19",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 43
+    },
+    {
+      "id": "perf_user_20",
+      "email": "perf_user_20@example.com",
+      "firstName": "Test20",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 66
+    },
+    {
+      "id": "perf_user_21",
+      "email": "perf_user_21@example.com",
+      "firstName": "Test21",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 98
+    },
+    {
+      "id": "perf_user_22",
+      "email": "perf_user_22@example.com",
+      "firstName": "Test22",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 61
+    },
+    {
+      "id": "perf_user_23",
+      "email": "perf_user_23@example.com",
+      "firstName": "Test23",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 59
+    },
+    {
+      "id": "perf_user_24",
+      "email": "perf_user_24@example.com",
+      "firstName": "Test24",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 77
+    },
+    {
+      "id": "perf_user_25",
+      "email": "perf_user_25@example.com",
+      "firstName": "Test25",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 49
+    },
+    {
+      "id": "perf_user_26",
+      "email": "perf_user_26@example.com",
+      "firstName": "Test26",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 32
+    },
+    {
+      "id": "perf_user_27",
+      "email": "perf_user_27@example.com",
+      "firstName": "Test27",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 23
+    },
+    {
+      "id": "perf_user_28",
+      "email": "perf_user_28@example.com",
+      "firstName": "Test28",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 26
+    },
+    {
+      "id": "perf_user_29",
+      "email": "perf_user_29@example.com",
+      "firstName": "Test29",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 66
+    },
+    {
+      "id": "perf_user_30",
+      "email": "perf_user_30@example.com",
+      "firstName": "Test30",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 44
+    },
+    {
+      "id": "perf_user_31",
+      "email": "perf_user_31@example.com",
+      "firstName": "Test31",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 10
+    },
+    {
+      "id": "perf_user_32",
+      "email": "perf_user_32@example.com",
+      "firstName": "Test32",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 20
+    },
+    {
+      "id": "perf_user_33",
+      "email": "perf_user_33@example.com",
+      "firstName": "Test33",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 17
+    },
+    {
+      "id": "perf_user_34",
+      "email": "perf_user_34@example.com",
+      "firstName": "Test34",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 67
+    },
+    {
+      "id": "perf_user_35",
+      "email": "perf_user_35@example.com",
+      "firstName": "Test35",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 95
+    },
+    {
+      "id": "perf_user_36",
+      "email": "perf_user_36@example.com",
+      "firstName": "Test36",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 34
+    },
+    {
+      "id": "perf_user_37",
+      "email": "perf_user_37@example.com",
+      "firstName": "Test37",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 55
+    },
+    {
+      "id": "perf_user_38",
+      "email": "perf_user_38@example.com",
+      "firstName": "Test38",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 22
+    },
+    {
+      "id": "perf_user_39",
+      "email": "perf_user_39@example.com",
+      "firstName": "Test39",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 39
+    },
+    {
+      "id": "perf_user_40",
+      "email": "perf_user_40@example.com",
+      "firstName": "Test40",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 27
+    },
+    {
+      "id": "perf_user_41",
+      "email": "perf_user_41@example.com",
+      "firstName": "Test41",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 34
+    },
+    {
+      "id": "perf_user_42",
+      "email": "perf_user_42@example.com",
+      "firstName": "Test42",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 79
+    },
+    {
+      "id": "perf_user_43",
+      "email": "perf_user_43@example.com",
+      "firstName": "Test43",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 83
+    },
+    {
+      "id": "perf_user_44",
+      "email": "perf_user_44@example.com",
+      "firstName": "Test44",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 31
+    },
+    {
+      "id": "perf_user_45",
+      "email": "perf_user_45@example.com",
+      "firstName": "Test45",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 2
+    },
+    {
+      "id": "perf_user_46",
+      "email": "perf_user_46@example.com",
+      "firstName": "Test46",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 74
+    },
+    {
+      "id": "perf_user_47",
+      "email": "perf_user_47@example.com",
+      "firstName": "Test47",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 3
+    },
+    {
+      "id": "perf_user_48",
+      "email": "perf_user_48@example.com",
+      "firstName": "Test48",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 50
+    },
+    {
+      "id": "perf_user_49",
+      "email": "perf_user_49@example.com",
+      "firstName": "Test49",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 32
+    },
+    {
+      "id": "perf_user_50",
+      "email": "perf_user_50@example.com",
+      "firstName": "Test50",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 63
+    },
+    {
+      "id": "perf_user_51",
+      "email": "perf_user_51@example.com",
+      "firstName": "Test51",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 0
+    },
+    {
+      "id": "perf_user_52",
+      "email": "perf_user_52@example.com",
+      "firstName": "Test52",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 8
+    },
+    {
+      "id": "perf_user_53",
+      "email": "perf_user_53@example.com",
+      "firstName": "Test53",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 82
+    },
+    {
+      "id": "perf_user_54",
+      "email": "perf_user_54@example.com",
+      "firstName": "Test54",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 99
+    },
+    {
+      "id": "perf_user_55",
+      "email": "perf_user_55@example.com",
+      "firstName": "Test55",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 21
+    },
+    {
+      "id": "perf_user_56",
+      "email": "perf_user_56@example.com",
+      "firstName": "Test56",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 7
+    },
+    {
+      "id": "perf_user_57",
+      "email": "perf_user_57@example.com",
+      "firstName": "Test57",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 18
+    },
+    {
+      "id": "perf_user_58",
+      "email": "perf_user_58@example.com",
+      "firstName": "Test58",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 47
+    },
+    {
+      "id": "perf_user_59",
+      "email": "perf_user_59@example.com",
+      "firstName": "Test59",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 58
+    },
+    {
+      "id": "perf_user_60",
+      "email": "perf_user_60@example.com",
+      "firstName": "Test60",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 24
+    },
+    {
+      "id": "perf_user_61",
+      "email": "perf_user_61@example.com",
+      "firstName": "Test61",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 51
+    },
+    {
+      "id": "perf_user_62",
+      "email": "perf_user_62@example.com",
+      "firstName": "Test62",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 11
+    },
+    {
+      "id": "perf_user_63",
+      "email": "perf_user_63@example.com",
+      "firstName": "Test63",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 85
+    },
+    {
+      "id": "perf_user_64",
+      "email": "perf_user_64@example.com",
+      "firstName": "Test64",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 50
+    },
+    {
+      "id": "perf_user_65",
+      "email": "perf_user_65@example.com",
+      "firstName": "Test65",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 56
+    },
+    {
+      "id": "perf_user_66",
+      "email": "perf_user_66@example.com",
+      "firstName": "Test66",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 45
+    },
+    {
+      "id": "perf_user_67",
+      "email": "perf_user_67@example.com",
+      "firstName": "Test67",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 21
+    },
+    {
+      "id": "perf_user_68",
+      "email": "perf_user_68@example.com",
+      "firstName": "Test68",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 55
+    },
+    {
+      "id": "perf_user_69",
+      "email": "perf_user_69@example.com",
+      "firstName": "Test69",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 72
+    },
+    {
+      "id": "perf_user_70",
+      "email": "perf_user_70@example.com",
+      "firstName": "Test70",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 64
+    },
+    {
+      "id": "perf_user_71",
+      "email": "perf_user_71@example.com",
+      "firstName": "Test71",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 55
+    },
+    {
+      "id": "perf_user_72",
+      "email": "perf_user_72@example.com",
+      "firstName": "Test72",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 52
+    },
+    {
+      "id": "perf_user_73",
+      "email": "perf_user_73@example.com",
+      "firstName": "Test73",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 91
+    },
+    {
+      "id": "perf_user_74",
+      "email": "perf_user_74@example.com",
+      "firstName": "Test74",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 31
+    },
+    {
+      "id": "perf_user_75",
+      "email": "perf_user_75@example.com",
+      "firstName": "Test75",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 30
+    },
+    {
+      "id": "perf_user_76",
+      "email": "perf_user_76@example.com",
+      "firstName": "Test76",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 28
+    },
+    {
+      "id": "perf_user_77",
+      "email": "perf_user_77@example.com",
+      "firstName": "Test77",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 8
+    },
+    {
+      "id": "perf_user_78",
+      "email": "perf_user_78@example.com",
+      "firstName": "Test78",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 45
+    },
+    {
+      "id": "perf_user_79",
+      "email": "perf_user_79@example.com",
+      "firstName": "Test79",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 86
+    },
+    {
+      "id": "perf_user_80",
+      "email": "perf_user_80@example.com",
+      "firstName": "Test80",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 10
+    },
+    {
+      "id": "perf_user_81",
+      "email": "perf_user_81@example.com",
+      "firstName": "Test81",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 43
+    },
+    {
+      "id": "perf_user_82",
+      "email": "perf_user_82@example.com",
+      "firstName": "Test82",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 74
+    },
+    {
+      "id": "perf_user_83",
+      "email": "perf_user_83@example.com",
+      "firstName": "Test83",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 72
+    },
+    {
+      "id": "perf_user_84",
+      "email": "perf_user_84@example.com",
+      "firstName": "Test84",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 72
+    },
+    {
+      "id": "perf_user_85",
+      "email": "perf_user_85@example.com",
+      "firstName": "Test85",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 92
+    },
+    {
+      "id": "perf_user_86",
+      "email": "perf_user_86@example.com",
+      "firstName": "Test86",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 23
+    },
+    {
+      "id": "perf_user_87",
+      "email": "perf_user_87@example.com",
+      "firstName": "Test87",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 79
+    },
+    {
+      "id": "perf_user_88",
+      "email": "perf_user_88@example.com",
+      "firstName": "Test88",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 3
+    },
+    {
+      "id": "perf_user_89",
+      "email": "perf_user_89@example.com",
+      "firstName": "Test89",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 50
+    },
+    {
+      "id": "perf_user_90",
+      "email": "perf_user_90@example.com",
+      "firstName": "Test90",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 52
+    },
+    {
+      "id": "perf_user_91",
+      "email": "perf_user_91@example.com",
+      "firstName": "Test91",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 20
+    },
+    {
+      "id": "perf_user_92",
+      "email": "perf_user_92@example.com",
+      "firstName": "Test92",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 52
+    },
+    {
+      "id": "perf_user_93",
+      "email": "perf_user_93@example.com",
+      "firstName": "Test93",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 14
+    },
+    {
+      "id": "perf_user_94",
+      "email": "perf_user_94@example.com",
+      "firstName": "Test94",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 90
+    },
+    {
+      "id": "perf_user_95",
+      "email": "perf_user_95@example.com",
+      "firstName": "Test95",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 11
+    },
+    {
+      "id": "perf_user_96",
+      "email": "perf_user_96@example.com",
+      "firstName": "Test96",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "enterprise",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 93
+    },
+    {
+      "id": "perf_user_97",
+      "email": "perf_user_97@example.com",
+      "firstName": "Test97",
+      "lastName": "User",
+      "role": "teacher",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 94
+    },
+    {
+      "id": "perf_user_98",
+      "email": "perf_user_98@example.com",
+      "firstName": "Test98",
+      "lastName": "User",
+      "role": "student",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "basic",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 6
+    },
+    {
+      "id": "perf_user_99",
+      "email": "perf_user_99@example.com",
+      "firstName": "Test99",
+      "lastName": "User",
+      "role": "admin",
+      "status": "active",
+      "isEmailVerified": true,
+      "isPhoneVerified": false,
+      "preferences": {
+        "language": "tr",
+        "notifications": {
+          "email": true,
+          "sms": false,
+          "push": true
+        },
+        "privacy": {
+          "profileVisible": true,
+          "progressVisible": true
+        }
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2025-09-27T16:04:42.216Z",
+        "isActive": true
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z",
+      "loginCount": 38
+    }
+  ],
+  "courses": [
+    {
+      "id": "perf_course_1",
+      "title": "Test Kursu 1",
+      "description": "Bu 1. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_1",
+      "grade": 9,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 639,
+      "currency": "TRY",
+      "teacherId": "perf_user_1",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.184978377030989,
+        "totalReviews": 46
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_4",
+      "title": "Test Kursu 4",
+      "description": "Bu 4. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_4",
+      "grade": 12,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 256,
+      "currency": "TRY",
+      "teacherId": "perf_user_4",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.974097032856179,
+        "totalReviews": 29
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_7",
+      "title": "Test Kursu 7",
+      "description": "Bu 7. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_7",
+      "grade": 10,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 658,
+      "currency": "TRY",
+      "teacherId": "perf_user_7",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.995151724612664,
+        "totalReviews": 22
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_10",
+      "title": "Test Kursu 10",
+      "description": "Bu 10. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_10",
+      "grade": 8,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 390,
+      "currency": "TRY",
+      "teacherId": "perf_user_10",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.3718474747050795,
+        "totalReviews": 44
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_13",
+      "title": "Test Kursu 13",
+      "description": "Bu 13. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_13",
+      "grade": 12,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 893,
+      "currency": "TRY",
+      "teacherId": "perf_user_13",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.922412974554067,
+        "totalReviews": 5
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_16",
+      "title": "Test Kursu 16",
+      "description": "Bu 16. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_16",
+      "grade": 7,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 555,
+      "currency": "TRY",
+      "teacherId": "perf_user_16",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.249488206940213,
+        "totalReviews": 13
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_19",
+      "title": "Test Kursu 19",
+      "description": "Bu 19. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_19",
+      "grade": 8,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 648,
+      "currency": "TRY",
+      "teacherId": "perf_user_19",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.166832931124941,
+        "totalReviews": 39
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_22",
+      "title": "Test Kursu 22",
+      "description": "Bu 22. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_22",
+      "grade": 11,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 381,
+      "currency": "TRY",
+      "teacherId": "perf_user_22",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.22431214709682,
+        "totalReviews": 5
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_25",
+      "title": "Test Kursu 25",
+      "description": "Bu 25. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_25",
+      "grade": 4,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 238,
+      "currency": "TRY",
+      "teacherId": "perf_user_25",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.430586106886587,
+        "totalReviews": 38
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_28",
+      "title": "Test Kursu 28",
+      "description": "Bu 28. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_28",
+      "grade": 9,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 371,
+      "currency": "TRY",
+      "teacherId": "perf_user_28",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.665172620355895,
+        "totalReviews": 9
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_31",
+      "title": "Test Kursu 31",
+      "description": "Bu 31. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_31",
+      "grade": 1,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 489,
+      "currency": "TRY",
+      "teacherId": "perf_user_31",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.342084196629193,
+        "totalReviews": 28
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_34",
+      "title": "Test Kursu 34",
+      "description": "Bu 34. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_34",
+      "grade": 9,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 596,
+      "currency": "TRY",
+      "teacherId": "perf_user_34",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.074286445560325,
+        "totalReviews": 44
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_37",
+      "title": "Test Kursu 37",
+      "description": "Bu 37. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_37",
+      "grade": 10,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 272,
+      "currency": "TRY",
+      "teacherId": "perf_user_37",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.098923322634983,
+        "totalReviews": 25
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_40",
+      "title": "Test Kursu 40",
+      "description": "Bu 40. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_40",
+      "grade": 2,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 316,
+      "currency": "TRY",
+      "teacherId": "perf_user_40",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.2388322488019305,
+        "totalReviews": 37
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_43",
+      "title": "Test Kursu 43",
+      "description": "Bu 43. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_43",
+      "grade": 3,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 238,
+      "currency": "TRY",
+      "teacherId": "perf_user_43",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.234158060874769,
+        "totalReviews": 27
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_46",
+      "title": "Test Kursu 46",
+      "description": "Bu 46. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_46",
+      "grade": 9,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 677,
+      "currency": "TRY",
+      "teacherId": "perf_user_46",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.181313401745289,
+        "totalReviews": 32
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_49",
+      "title": "Test Kursu 49",
+      "description": "Bu 49. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_49",
+      "grade": 5,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 1080,
+      "currency": "TRY",
+      "teacherId": "perf_user_49",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.160222592188426,
+        "totalReviews": 28
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_52",
+      "title": "Test Kursu 52",
+      "description": "Bu 52. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_52",
+      "grade": 1,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 432,
+      "currency": "TRY",
+      "teacherId": "perf_user_52",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.070604597934298,
+        "totalReviews": 31
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_55",
+      "title": "Test Kursu 55",
+      "description": "Bu 55. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_55",
+      "grade": 6,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 121,
+      "currency": "TRY",
+      "teacherId": "perf_user_55",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.897317834427124,
+        "totalReviews": 6
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_58",
+      "title": "Test Kursu 58",
+      "description": "Bu 58. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_58",
+      "grade": 10,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 325,
+      "currency": "TRY",
+      "teacherId": "perf_user_58",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.310816970076694,
+        "totalReviews": 5
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_61",
+      "title": "Test Kursu 61",
+      "description": "Bu 61. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_61",
+      "grade": 11,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 880,
+      "currency": "TRY",
+      "teacherId": "perf_user_61",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.18609691353023,
+        "totalReviews": 0
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_64",
+      "title": "Test Kursu 64",
+      "description": "Bu 64. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_64",
+      "grade": 3,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 976,
+      "currency": "TRY",
+      "teacherId": "perf_user_64",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.606242100800659,
+        "totalReviews": 29
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_67",
+      "title": "Test Kursu 67",
+      "description": "Bu 67. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_67",
+      "grade": 1,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 620,
+      "currency": "TRY",
+      "teacherId": "perf_user_67",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.303524000449311,
+        "totalReviews": 40
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_70",
+      "title": "Test Kursu 70",
+      "description": "Bu 70. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_70",
+      "grade": 11,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 232,
+      "currency": "TRY",
+      "teacherId": "perf_user_70",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.419153412759487,
+        "totalReviews": 42
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_73",
+      "title": "Test Kursu 73",
+      "description": "Bu 73. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_73",
+      "grade": 9,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 365,
+      "currency": "TRY",
+      "teacherId": "perf_user_73",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.208694194628446,
+        "totalReviews": 40
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_76",
+      "title": "Test Kursu 76",
+      "description": "Bu 76. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_76",
+      "grade": 9,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 479,
+      "currency": "TRY",
+      "teacherId": "perf_user_76",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.545777233382047,
+        "totalReviews": 7
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_79",
+      "title": "Test Kursu 79",
+      "description": "Bu 79. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_79",
+      "grade": 10,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 558,
+      "currency": "TRY",
+      "teacherId": "perf_user_79",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.345648635384292,
+        "totalReviews": 10
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_82",
+      "title": "Test Kursu 82",
+      "description": "Bu 82. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_82",
+      "grade": 7,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 992,
+      "currency": "TRY",
+      "teacherId": "perf_user_82",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.4704468526951775,
+        "totalReviews": 0
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_85",
+      "title": "Test Kursu 85",
+      "description": "Bu 85. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_85",
+      "grade": 6,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 337,
+      "currency": "TRY",
+      "teacherId": "perf_user_85",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.611716252519331,
+        "totalReviews": 38
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_88",
+      "title": "Test Kursu 88",
+      "description": "Bu 88. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_88",
+      "grade": 11,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 777,
+      "currency": "TRY",
+      "teacherId": "perf_user_88",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.03817480145176,
+        "totalReviews": 37
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_91",
+      "title": "Test Kursu 91",
+      "description": "Bu 91. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_91",
+      "grade": 7,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 615,
+      "currency": "TRY",
+      "teacherId": "perf_user_91",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.514089652512197,
+        "totalReviews": 17
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_94",
+      "title": "Test Kursu 94",
+      "description": "Bu 94. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_94",
+      "grade": 8,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 970,
+      "currency": "TRY",
+      "teacherId": "perf_user_94",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.8249606661528865,
+        "totalReviews": 7
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_course_97",
+      "title": "Test Kursu 97",
+      "description": "Bu 97. test kursudur",
+      "category": "science",
+      "subcategory": "test_subcategory_97",
+      "grade": 7,
+      "level": "intermediate",
+      "duration": 60,
+      "totalSessions": 20,
+      "price": 460,
+      "currency": "TRY",
+      "teacherId": "perf_user_97",
+      "isActive": true,
+      "isPublic": true,
+      "enrollmentCount": 0,
+      "rating": {
+        "average": 4.089286064156744,
+        "totalReviews": 24
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    }
+  ],
+  "enrollments": [
+    {
+      "id": "perf_enrollment_2",
+      "studentId": "perf_user_2",
+      "courseId": "perf_course_61",
+      "teacherId": "perf_user_61",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 0,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 8
+      },
+      "payment": {
+        "amount": 880,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_5",
+      "studentId": "perf_user_5",
+      "courseId": "perf_course_25",
+      "teacherId": "perf_user_25",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 5,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 20
+      },
+      "payment": {
+        "amount": 238,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_8",
+      "studentId": "perf_user_8",
+      "courseId": "perf_course_19",
+      "teacherId": "perf_user_19",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 13,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 6
+      },
+      "payment": {
+        "amount": 648,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_11",
+      "studentId": "perf_user_11",
+      "courseId": "perf_course_58",
+      "teacherId": "perf_user_58",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 5,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 1
+      },
+      "payment": {
+        "amount": 325,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_14",
+      "studentId": "perf_user_14",
+      "courseId": "perf_course_22",
+      "teacherId": "perf_user_22",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 2,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 1
+      },
+      "payment": {
+        "amount": 381,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_17",
+      "studentId": "perf_user_17",
+      "courseId": "perf_course_67",
+      "teacherId": "perf_user_67",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 19,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 12
+      },
+      "payment": {
+        "amount": 620,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_20",
+      "studentId": "perf_user_20",
+      "courseId": "perf_course_16",
+      "teacherId": "perf_user_16",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 16,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 8
+      },
+      "payment": {
+        "amount": 555,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_23",
+      "studentId": "perf_user_23",
+      "courseId": "perf_course_10",
+      "teacherId": "perf_user_10",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 3,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 12
+      },
+      "payment": {
+        "amount": 390,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_26",
+      "studentId": "perf_user_26",
+      "courseId": "perf_course_10",
+      "teacherId": "perf_user_10",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 16,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 20
+      },
+      "payment": {
+        "amount": 390,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_29",
+      "studentId": "perf_user_29",
+      "courseId": "perf_course_67",
+      "teacherId": "perf_user_67",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 11,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 16
+      },
+      "payment": {
+        "amount": 620,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_32",
+      "studentId": "perf_user_32",
+      "courseId": "perf_course_88",
+      "teacherId": "perf_user_88",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 18,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 3
+      },
+      "payment": {
+        "amount": 777,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_35",
+      "studentId": "perf_user_35",
+      "courseId": "perf_course_1",
+      "teacherId": "perf_user_1",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 14,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 13
+      },
+      "payment": {
+        "amount": 639,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_38",
+      "studentId": "perf_user_38",
+      "courseId": "perf_course_28",
+      "teacherId": "perf_user_28",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 5,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 13
+      },
+      "payment": {
+        "amount": 371,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_41",
+      "studentId": "perf_user_41",
+      "courseId": "perf_course_64",
+      "teacherId": "perf_user_64",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 13,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 8
+      },
+      "payment": {
+        "amount": 976,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_44",
+      "studentId": "perf_user_44",
+      "courseId": "perf_course_25",
+      "teacherId": "perf_user_25",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 10,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 15
+      },
+      "payment": {
+        "amount": 238,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_47",
+      "studentId": "perf_user_47",
+      "courseId": "perf_course_31",
+      "teacherId": "perf_user_31",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 3,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 1
+      },
+      "payment": {
+        "amount": 489,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_50",
+      "studentId": "perf_user_50",
+      "courseId": "perf_course_16",
+      "teacherId": "perf_user_16",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 12,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 10
+      },
+      "payment": {
+        "amount": 555,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_53",
+      "studentId": "perf_user_53",
+      "courseId": "perf_course_37",
+      "teacherId": "perf_user_37",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 18,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 5
+      },
+      "payment": {
+        "amount": 272,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_56",
+      "studentId": "perf_user_56",
+      "courseId": "perf_course_88",
+      "teacherId": "perf_user_88",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 6,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 10
+      },
+      "payment": {
+        "amount": 777,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_59",
+      "studentId": "perf_user_59",
+      "courseId": "perf_course_52",
+      "teacherId": "perf_user_52",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 2,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 6
+      },
+      "payment": {
+        "amount": 432,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_62",
+      "studentId": "perf_user_62",
+      "courseId": "perf_course_1",
+      "teacherId": "perf_user_1",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 3,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 9
+      },
+      "payment": {
+        "amount": 639,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_65",
+      "studentId": "perf_user_65",
+      "courseId": "perf_course_34",
+      "teacherId": "perf_user_34",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 3,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 16
+      },
+      "payment": {
+        "amount": 596,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_68",
+      "studentId": "perf_user_68",
+      "courseId": "perf_course_31",
+      "teacherId": "perf_user_31",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 10,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 13
+      },
+      "payment": {
+        "amount": 489,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_71",
+      "studentId": "perf_user_71",
+      "courseId": "perf_course_13",
+      "teacherId": "perf_user_13",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 19,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 16
+      },
+      "payment": {
+        "amount": 893,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_74",
+      "studentId": "perf_user_74",
+      "courseId": "perf_course_67",
+      "teacherId": "perf_user_67",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 4,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 20
+      },
+      "payment": {
+        "amount": 620,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_77",
+      "studentId": "perf_user_77",
+      "courseId": "perf_course_43",
+      "teacherId": "perf_user_43",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 4,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 6
+      },
+      "payment": {
+        "amount": 238,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_80",
+      "studentId": "perf_user_80",
+      "courseId": "perf_course_16",
+      "teacherId": "perf_user_16",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 14,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 11
+      },
+      "payment": {
+        "amount": 555,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_83",
+      "studentId": "perf_user_83",
+      "courseId": "perf_course_70",
+      "teacherId": "perf_user_70",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 3,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 14
+      },
+      "payment": {
+        "amount": 232,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_86",
+      "studentId": "perf_user_86",
+      "courseId": "perf_course_82",
+      "teacherId": "perf_user_82",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 1,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 20
+      },
+      "payment": {
+        "amount": 992,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_89",
+      "studentId": "perf_user_89",
+      "courseId": "perf_course_64",
+      "teacherId": "perf_user_64",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 6,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 8
+      },
+      "payment": {
+        "amount": 976,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_92",
+      "studentId": "perf_user_92",
+      "courseId": "perf_course_55",
+      "teacherId": "perf_user_55",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 18,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 16
+      },
+      "payment": {
+        "amount": 121,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_95",
+      "studentId": "perf_user_95",
+      "courseId": "perf_course_85",
+      "teacherId": "perf_user_85",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 13,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 18
+      },
+      "payment": {
+        "amount": 337,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    },
+    {
+      "id": "perf_enrollment_98",
+      "studentId": "perf_user_98",
+      "courseId": "perf_course_88",
+      "teacherId": "perf_user_88",
+      "status": "active",
+      "startDate": "2025-09-27T16:04:42.216Z",
+      "progress": {
+        "completedSessions": 4,
+        "totalSessions": 20,
+        "lastAccessedAt": "2025-09-27T16:04:42.216Z",
+        "currentSession": 17
+      },
+      "payment": {
+        "amount": 777,
+        "currency": "TRY",
+        "status": "paid",
+        "paymentMethod": "credit_card",
+        "paidAt": "2025-09-27T16:04:42.216Z"
+      },
+      "createdAt": "2025-09-27T16:04:42.216Z",
+      "updatedAt": "2025-09-27T16:04:42.216Z"
+    }
+  ],
+  "generatedAt": "2025-09-27T16:04:42.216Z",
+  "count": {
+    "users": 100,
+    "courses": 33,
+    "enrollments": 33
+  }
+}

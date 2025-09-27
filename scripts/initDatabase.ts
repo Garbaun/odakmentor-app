@@ -1,9 +1,9 @@
 #!/usr/bin/env ts-node
 
 /**
- * Veritabanı Başlatma Scripti
+ * Veritabanı Başlatma Scripti (TypeScript)
  * 
- * Bu script Firebase Firestore veritabanını başlatır ve örnek veriler ekler.
+ * Bu script Mock veritabanını başlatır ve örnek veriler ekler.
  * 
  * Kullanım:
  * npm run init-db
@@ -11,44 +11,17 @@
  * npx ts-node scripts/initDatabase.ts
  */
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { initializeDatabase, cleanupTestData } from '../database/seedData';
-
-// Firebase konfigürasyonu
-const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || "your-api-key",
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || "mentor-ai-platform.firebaseapp.com",
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || "mentor-ai-platform",
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || "mentor-ai-platform.appspot.com",
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || "your-app-id"
-};
-
-// Firebase'i başlat
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Development modunda emulator kullan
-if (process.env.NODE_ENV === 'development') {
-  try {
-    connectFirestoreEmulator(db, 'localhost', 8080);
-    console.log('🔧 Firestore emulator bağlandı');
-  } catch (error) {
-    console.log('⚠️ Emulator zaten bağlı veya çalışmıyor');
-  }
-}
+import { cleanupTestData, initializeDatabase } from '../database/seedData';
 
 async function main() {
-  const args = process.argv.slice(2);
-  const command = args[0];
-
+  const command = process.argv[2];
+  
   try {
     switch (command) {
       case 'init':
-        console.log('🚀 Veritabanı başlatılıyor...');
+        console.log('🚀 Mock veritabanı başlatılıyor...');
         await initializeDatabase();
-        console.log('✅ Veritabanı başarıyla başlatıldı!');
+        console.log('✅ Mock veritabanı başarıyla başlatıldı!');
         break;
         
       case 'cleanup':
@@ -65,20 +38,17 @@ async function main() {
         break;
         
       default:
-        console.log(`
-📚 Odak Mentor Veritabanı Yönetimi
-
-Kullanım:
-  npm run init-db init      - Veritabanını başlat ve örnek veriler ekle
-  npm run init-db cleanup   - Test verilerini temizle
-  npm run init-db reset     - Veritabanını sıfırla
-
-Örnekler:
-  npm run init-db init
-  npm run init-db cleanup
-  npm run init-db reset
-        `);
-        break;
+        console.log('🔧 Mock Veritabanı Yöneticisi');
+        console.log('');
+        console.log('Kullanım:');
+        console.log('  npx ts-node scripts/initDatabase.ts init     - Veritabanını başlat');
+        console.log('  npx ts-node scripts/initDatabase.ts cleanup  - Test verilerini temizle');
+        console.log('  npx ts-node scripts/initDatabase.ts reset    - Veritabanını sıfırla');
+        console.log('');
+        console.log('Örnek:');
+        console.log('  npm run db:init');
+        console.log('  npm run db:cleanup');
+        console.log('  npm run db:reset');
     }
   } catch (error) {
     console.error('❌ Hata:', error);
@@ -86,9 +56,9 @@ Kullanım:
   }
 }
 
-// Script'i çalıştır
+// Script doğrudan çalıştırılıyorsa main fonksiyonunu çalıştır
 if (require.main === module) {
   main();
 }
 
-export { main as initDatabase };
+export { main };

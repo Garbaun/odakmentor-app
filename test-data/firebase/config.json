@@ -1,0 +1,8 @@
+{
+  "apiKey": "test-api-key",
+  "authDomain": "odakmentor-test.firebaseapp.com",
+  "projectId": "odakmentor-test",
+  "storageBucket": "odakmentor-test.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "test-app-id"
+}

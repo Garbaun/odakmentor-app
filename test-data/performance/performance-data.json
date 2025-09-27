@@ -1,0 +1,9 @@
+{
+  "testRuns": [],
+  "metrics": {
+    "averageResponseTime": 0,
+    "totalTests": 0,
+    "passedTests": 0,
+    "failedTests": 0
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "test@example.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "role": "student",
+      "status": "active"
+    }
+  ],
+  "courses": [
+    {
+      "id": 1,
+      "title": "Test Course",
+      "description": "Test course description",
+      "teacherId": 1
+    }
+  ]
+}
