@@ -1,9 +1,8 @@
 import { ThemedText } from '@/components/ThemedText';
-import { db } from '@/config/firebase';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { UserService, BlogService } from '@/services/databaseService';
 
 type Statistics = {
   users: {
@@ -33,7 +32,7 @@ type RecentActivity = {
   type: 'user_registration' | 'blog_created' | 'user_approved';
   title: string;
   description: string;
-  date: any;
+  date: string;
   userRole?: 'student' | 'teacher';
 };
 
@@ -74,64 +73,70 @@ export default function StatisticsPage() {
       const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
       // Kullanıcı istatistikleri
-      const [studentsSnap, teachersSnap, pendingStudentsSnap, pendingTeachersSnap] = await Promise.all([
-        getDocs(query(collection(db, 'students'))),
-        getDocs(query(collection(db, 'teachers'))),
-        getDocs(query(collection(db, 'students'), where('approved', '==', false))),
-        getDocs(query(collection(db, 'teachers'), where('approved', '==', false)))
-      ]);
-
-      const totalStudents = studentsSnap.size;
-      const totalTeachers = teachersSnap.size;
-      const pendingStudents = pendingStudentsSnap.size;
-      const pendingTeachers = pendingTeachersSnap.size;
+      const allUsers = await UserService.getAllUsers();
+      const students = allUsers.filter(user => user.role === 'student');
+      const teachers = allUsers.filter(user => user.role === 'teacher');
+      const pendingStudents = students.filter(user => user.status === 'pending');
+      const pendingTeachers = teachers.filter(user => user.status === 'pending');
+      const approvedStudents = students.filter(user => user.status === 'active');
+      const approvedTeachers = teachers.filter(user => user.status === 'active');
 
       // Blog istatistikleri
-      const [blogsSnap, publishedBlogsSnap, recentBlogsSnap] = await Promise.all([
-        getDocs(query(collection(db, 'blog'))),
-        getDocs(query(collection(db, 'blog'), where('published', '==', true))),
-        getDocs(query(collection(db, 'blog'), where('createdAt', '>=', oneWeekAgo)))
-      ]);
-
-      const totalBlogs = blogsSnap.size;
-      const publishedBlogs = publishedBlogsSnap.size;
-      const recentBlogs = recentBlogsSnap.size;
+      const allBlogs = await BlogService.getAllBlogPosts();
+      const publishedBlogs = allBlogs.filter(blog => blog.status === 'published');
+      const draftBlogs = allBlogs.filter(blog => blog.status === 'draft');
 
       // Haftalık ve aylık aktivite
-      const [newStudentsWeek, newTeachersWeek, newStudentsMonth, newTeachersMonth, newBlogsWeek, newBlogsMonth] = await Promise.all([
-        getDocs(query(collection(db, 'students'), where('createdAt', '>=', oneWeekAgo))),
-        getDocs(query(collection(db, 'teachers'), where('createdAt', '>=', oneWeekAgo))),
-        getDocs(query(collection(db, 'students'), where('createdAt', '>=', oneMonthAgo))),
-        getDocs(query(collection(db, 'teachers'), where('createdAt', '>=', oneMonthAgo))),
-        getDocs(query(collection(db, 'blog'), where('createdAt', '>=', oneWeekAgo))),
-        getDocs(query(collection(db, 'blog'), where('createdAt', '>=', oneMonthAgo)))
-      ]);
+      const newUsersThisWeek = allUsers.filter(user => 
+        user.createdAt && new Date(user.createdAt) > oneWeekAgo
+      ).length;
+      const newUsersThisMonth = allUsers.filter(user => 
+        user.createdAt && new Date(user.createdAt) > oneMonthAgo
+      ).length;
+      const newBlogsThisWeek = allBlogs.filter(blog => 
+        blog.created_at && new Date(blog.created_at) > oneWeekAgo
+      ).length;
+      const newBlogsThisMonth = allBlogs.filter(blog => 
+        blog.created_at && new Date(blog.created_at) > oneMonthAgo
+      ).length;
 
       setStats({
         users: {
-          totalStudents,
-          totalTeachers,
-          pendingStudents,
-          pendingTeachers,
-          approvedStudents: totalStudents - pendingStudents,
-          approvedTeachers: totalTeachers - pendingTeachers,
+          totalStudents: students.length,
+          totalTeachers: teachers.length,
+          pendingStudents: pendingStudents.length,
+          pendingTeachers: pendingTeachers.length,
+          approvedStudents: approvedStudents.length,
+          approvedTeachers: approvedTeachers.length,
         },
         blogs: {
-          total: totalBlogs,
-          published: publishedBlogs,
-          drafts: totalBlogs - publishedBlogs,
-          recent: recentBlogs,
+          total: allBlogs.length,
+          published: publishedBlogs.length,
+          drafts: draftBlogs.length,
+          recent: newBlogsThisWeek,
         },
         activity: {
-          newUsersThisWeek: newStudentsWeek.size + newTeachersWeek.size,
-          newUsersThisMonth: newStudentsMonth.size + newTeachersMonth.size,
-          newBlogsThisWeek: newBlogsWeek.size,
-          newBlogsThisMonth: newBlogsMonth.size,
+          newUsersThisWeek,
+          newUsersThisMonth,
+          newBlogsThisWeek,
+          newBlogsThisMonth,
         },
       });
 
-      // Son aktiviteler
-      await loadRecentActivity();
+      // Son aktiviteler (basit versiyon)
+      const recentUsers = allUsers
+        .filter(user => user.createdAt && new Date(user.createdAt) > oneWeekAgo)
+        .slice(0, 5)
+        .map(user => ({
+          id: user.id.toString(),
+          type: 'user_registration' as const,
+          title: `${user.firstName} ${user.lastName}`,
+          description: `${user.role === 'student' ? 'Öğrenci' : 'Öğretmen'} kaydı`,
+          date: user.createdAt,
+          userRole: user.role,
+        }));
+
+      setRecentActivity(recentUsers);
     } catch (error) {
       console.error('İstatistikler yüklenemedi:', error);
     } finally {
@@ -139,257 +144,151 @@ export default function StatisticsPage() {
     }
   };
 
-  const loadRecentActivity = async () => {
-    try {
-      // Son 10 blog yazısı
-      const recentBlogsQuery = query(collection(db, 'blog'), orderBy('createdAt', 'desc'), limit(5));
-      const recentBlogsSnap = await getDocs(recentBlogsQuery);
-      
-      // Son 10 kullanıcı kaydı
-      const recentStudentsQuery = query(collection(db, 'students'), orderBy('createdAt', 'desc'), limit(3));
-      const recentTeachersQuery = query(collection(db, 'teachers'), orderBy('createdAt', 'desc'), limit(3));
-      const [recentStudentsSnap, recentTeachersSnap] = await Promise.all([
-        getDocs(recentStudentsQuery),
-        getDocs(recentTeachersQuery)
-      ]);
-
-      const activities: RecentActivity[] = [];
-
-      // Blog aktiviteleri
-      recentBlogsSnap.docs.forEach(doc => {
-        const data = doc.data();
-        activities.push({
-          id: doc.id,
-          type: 'blog_created',
-          title: data.title || 'Başlıksız Blog',
-          description: `Yeni blog yazısı oluşturuldu`,
-          date: data.createdAt,
-        });
-      });
-
-      // Öğrenci aktiviteleri
-      recentStudentsSnap.docs.forEach(doc => {
-        const data = doc.data();
-        activities.push({
-          id: doc.id,
-          type: 'user_registration',
-          title: data.name || 'İsimsiz Öğrenci',
-          description: `Yeni öğrenci kaydı`,
-          date: data.createdAt,
-          userRole: 'student',
-        });
-      });
-
-      // Öğretmen aktiviteleri
-      recentTeachersSnap.docs.forEach(doc => {
-        const data = doc.data();
-        activities.push({
-          id: doc.id,
-          type: 'user_registration',
-          title: data.name || 'İsimsiz Öğretmen',
-          description: `Yeni öğretmen kaydı`,
-          date: data.createdAt,
-          userRole: 'teacher',
-        });
-      });
-
-      // Tarihe göre sırala
-      activities.sort((a, b) => {
-        const dateA = a.date?.toDate ? a.date.toDate() : new Date(a.date);
-        const dateB = b.date?.toDate ? b.date.toDate() : new Date(b.date);
-        return dateB.getTime() - dateA.getTime();
-      });
-
-      setRecentActivity(activities.slice(0, 10));
-    } catch (error) {
-      console.error('Son aktiviteler yüklenemedi:', error);
-    }
-  };
-
-  const formatDate = (date: any) => {
-    if (!date) return 'Bilinmiyor';
-    const d = date.toDate ? date.toDate() : new Date(date);
-    return d.toLocaleDateString('tr-TR', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getActivityIcon = (type: string, userRole?: string) => {
-    switch (type) {
-      case 'blog_created':
-        return 'article';
-      case 'user_registration':
-        return userRole === 'student' ? 'school' : 'person';
-      case 'user_approved':
-        return 'check-circle';
-      default:
-        return 'info';
-    }
-  };
-
-  const getActivityColor = (type: string) => {
-    switch (type) {
-      case 'blog_created':
-        return '#8b5cf6';
-      case 'user_registration':
-        return '#3b82f6';
-      case 'user_approved':
-        return '#10b981';
-      default:
-        return '#6b7280';
-    }
-  };
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ThemedText>Yükleniyor...</ThemedText>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>İstatistikler ve Raporlar</ThemedText>
+      <ThemedText type="title" style={styles.title}>İstatistikler</ThemedText>
 
-      {/* Genel İstatistikler */}
+      {/* Kullanıcı İstatistikleri */}
       <View style={styles.section}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>Genel İstatistikler</ThemedText>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          <MaterialIcons name="people" size={20} color="#3b82f6" /> Kullanıcılar
+        </ThemedText>
+        
         <View style={styles.statsGrid}>
-          <StatCard
-            title="Toplam Kullanıcı"
-            value={stats.users.totalStudents + stats.users.totalTeachers}
-            icon="people"
-            color="#3b82f6"
-            subtitle={`${stats.users.totalStudents} öğrenci, ${stats.users.totalTeachers} öğretmen`}
-          />
-          <StatCard
-            title="Onaylı Kullanıcı"
-            value={stats.users.approvedStudents + stats.users.approvedTeachers}
-            icon="check-circle"
-            color="#10b981"
-            subtitle={`${stats.users.approvedStudents} öğrenci, ${stats.users.approvedTeachers} öğretmen`}
-          />
-          <StatCard
-            title="Onay Bekleyen"
-            value={stats.users.pendingStudents + stats.users.pendingTeachers}
-            icon="pending"
-            color="#f59e0b"
-            subtitle={`${stats.users.pendingStudents} öğrenci, ${stats.users.pendingTeachers} öğretmen`}
-          />
-          <StatCard
-            title="Toplam Blog"
-            value={stats.blogs.total}
-            icon="article"
-            color="#8b5cf6"
-            subtitle={`${stats.blogs.published} yayınlanan, ${stats.blogs.drafts} taslak`}
-          />
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.users.totalStudents}</ThemedText>
+            <ThemedText style={styles.statLabel}>Toplam Öğrenci</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.users.totalTeachers}</ThemedText>
+            <ThemedText style={styles.statLabel}>Toplam Öğretmen</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.users.pendingStudents}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bekleyen Öğrenci</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.users.pendingTeachers}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bekleyen Öğretmen</ThemedText>
+          </View>
         </View>
       </View>
 
-      {/* Haftalık/Aylık Aktivite */}
+      {/* Blog İstatistikleri */}
       <View style={styles.section}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>Aktivite Raporları</ThemedText>
-        <View style={styles.activityGrid}>
-          <ActivityCard
-            title="Bu Hafta"
-            icon="schedule"
-            color="#3b82f6"
-            stats={[
-              { label: 'Yeni Kullanıcı', value: stats.activity.newUsersThisWeek },
-              { label: 'Yeni Blog', value: stats.activity.newBlogsThisWeek },
-            ]}
-          />
-          <ActivityCard
-            title="Bu Ay"
-            icon="calendar-month"
-            color="#10b981"
-            stats={[
-              { label: 'Yeni Kullanıcı', value: stats.activity.newUsersThisMonth },
-              { label: 'Yeni Blog', value: stats.activity.newBlogsThisMonth },
-            ]}
-          />
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          <MaterialIcons name="article" size={20} color="#10b981" /> Blog Yazıları
+        </ThemedText>
+        
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.blogs.total}</ThemedText>
+            <ThemedText style={styles.statLabel}>Toplam Blog</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.blogs.published}</ThemedText>
+            <ThemedText style={styles.statLabel}>Yayınlanan</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.blogs.drafts}</ThemedText>
+            <ThemedText style={styles.statLabel}>Taslak</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.blogs.recent}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bu Hafta</ThemedText>
+          </View>
+        </View>
+      </View>
+
+      {/* Aktivite İstatistikleri */}
+      <View style={styles.section}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          <MaterialIcons name="trending-up" size={20} color="#f59e0b" /> Aktivite
+        </ThemedText>
+        
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.activity.newUsersThisWeek}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bu Hafta Kullanıcı</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.activity.newUsersThisMonth}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bu Ay Kullanıcı</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.activity.newBlogsThisWeek}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bu Hafta Blog</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>{stats.activity.newBlogsThisMonth}</ThemedText>
+            <ThemedText style={styles.statLabel}>Bu Ay Blog</ThemedText>
+          </View>
         </View>
       </View>
 
       {/* Son Aktiviteler */}
       <View style={styles.section}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>Son Aktiviteler</ThemedText>
-        <View style={styles.activityList}>
-          {recentActivity.map((activity, index) => (
-            <View key={`${activity.id}-${index}`} style={styles.activityItem}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          <MaterialIcons name="history" size={20} color="#8b5cf6" /> Son Aktiviteler
+        </ThemedText>
+        
+        {recentActivity.length > 0 ? (
+          recentActivity.map((activity) => (
+            <View key={activity.id} style={styles.activityItem}>
               <View style={styles.activityIcon}>
                 <MaterialIcons 
-                  name={getActivityIcon(activity.type, activity.userRole) as any} 
-                  size={20} 
-                  color={getActivityColor(activity.type)} 
+                  name={activity.type === 'user_registration' ? 'person-add' : 'article'} 
+                  size={16} 
+                  color="#6b7280" 
                 />
               </View>
               <View style={styles.activityContent}>
                 <ThemedText style={styles.activityTitle}>{activity.title}</ThemedText>
                 <ThemedText style={styles.activityDescription}>{activity.description}</ThemedText>
-                <ThemedText style={styles.activityDate}>{formatDate(activity.date)}</ThemedText>
+                <ThemedText style={styles.activityDate}>
+                  {new Date(activity.date).toLocaleDateString('tr-TR')}
+                </ThemedText>
               </View>
             </View>
-          ))}
-        </View>
+          ))
+        ) : (
+          <ThemedText style={styles.emptyText}>Henüz aktivite yok</ThemedText>
+        )}
       </View>
     </ScrollView>
-  );
-}
-
-function StatCard({ title, value, icon, color, subtitle }: {
-  title: string;
-  value: number;
-  icon: string;
-  color: string;
-  subtitle?: string;
-}) {
-  return (
-    <View style={[styles.statCard, { borderLeftColor: color }]}>
-      <View style={styles.statHeader}>
-        <MaterialIcons name={icon as any} size={24} color={color} />
-        <ThemedText style={styles.statValue}>{value}</ThemedText>
-      </View>
-      <ThemedText style={styles.statTitle}>{title}</ThemedText>
-      {subtitle && <ThemedText style={styles.statSubtitle}>{subtitle}</ThemedText>}
-    </View>
-  );
-}
-
-function ActivityCard({ title, icon, color, stats }: {
-  title: string;
-  icon: string;
-  color: string;
-  stats: { label: string; value: number }[];
-}) {
-  return (
-    <View style={[styles.activityCard, { borderLeftColor: color }]}>
-      <View style={styles.activityCardHeader}>
-        <MaterialIcons name={icon as any} size={20} color={color} />
-        <ThemedText style={styles.activityCardTitle}>{title}</ThemedText>
-      </View>
-      <View style={styles.activityCardStats}>
-        {stats.map((stat, index) => (
-          <View key={index} style={styles.activityStatItem}>
-            <ThemedText style={styles.activityStatValue}>{stat.value}</ThemedText>
-            <ThemedText style={styles.activityStatLabel}>{stat.label}</ThemedText>
-          </View>
-        ))}
-      </View>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f9fafb',
     padding: 16,
   },
   title: {
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 24,
+    color: '#1f2937',
   },
   section: {
-    marginBottom: 32,
+    marginBottom: 24,
   },
   sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 16,
+    color: '#374151',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statsGrid: {
     flexDirection: 'row',
@@ -397,97 +296,49 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   statCard: {
-    width: '48%',
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: '#ffffff',
     padding: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderLeftWidth: 4,
-  },
-  statHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 8,
+    minWidth: '45%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  statValue: {
+  statNumber: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
-  },
-  statTitle: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#1f2937',
     marginBottom: 4,
   },
-  statSubtitle: {
+  statLabel: {
     fontSize: 12,
     color: '#6b7280',
-  },
-  activityGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  activityCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderLeftWidth: 4,
-  },
-  activityCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  activityCardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  activityCardStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  activityStatItem: {
-    alignItems: 'center',
-  },
-  activityStatValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f2937',
-  },
-  activityStatLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 2,
-  },
-  activityList: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    textAlign: 'center',
   },
   activityItem: {
-    flexDirection: 'row',
+    backgroundColor: '#ffffff',
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-    alignItems: 'flex-start',
-    gap: 12,
+    borderRadius: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   activityIcon: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f3f4f6',
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 12,
   },
   activityContent: {
     flex: 1,
@@ -506,5 +357,11 @@ const styles = StyleSheet.create({
   activityDate: {
     fontSize: 11,
     color: '#9ca3af',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#6b7280',
+    fontStyle: 'italic',
+    padding: 20,
   },
 });

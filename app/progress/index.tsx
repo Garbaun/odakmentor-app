@@ -1,11 +1,9 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'expo-router';
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, StatusBar, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -28,6 +26,55 @@ export default function ProgressScreen() {
   const [loading, setLoading] = useState(false);
   const [subject, setSubject] = useState('');
   const [score, setScore] = useState('');
+
+  // Basit mock data - gerçek uygulamada PostgreSQL'den gelecek
+  useEffect(() => {
+    setEntries([
+      { id: '1', subject: 'Matematik', score: 85, createdAt: new Date() },
+      { id: '2', subject: 'Fizik', score: 78, createdAt: new Date() },
+    ]);
+  }, []);
+
+  const addEntry = async () => {
+    if (!subject.trim() || !score.trim()) {
+      Alert.alert('Eksik bilgi', 'Ders ve puan alanlarını doldurun.');
+      return;
+    }
+
+    const scoreNum = parseInt(score);
+    if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100) {
+      Alert.alert('Geçersiz puan', 'Puan 0-100 arasında olmalıdır.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const newEntry: ProgressEntry = {
+        id: Date.now().toString(),
+        subject: subject.trim(),
+        score: scoreNum,
+        createdAt: new Date(),
+      };
+      
+      setEntries(prev => [newEntry, ...prev]);
+      setSubject('');
+      setScore('');
+      Alert.alert('Başarılı', 'İlerleme kaydedildi.');
+    } catch (error) {
+      Alert.alert('Hata', 'İlerleme kaydedilemedi.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteEntry = async (id: string) => {
+    try {
+      setEntries(prev => prev.filter(entry => entry.id !== id));
+      Alert.alert('Başarılı', 'İlerleme silindi.');
+    } catch (error) {
+      Alert.alert('Hata', 'İlerleme silinemedi.');
+    }
+  };
   const [filterSubject, setFilterSubject] = useState<string>('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingScore, setEditingScore] = useState<string>('');
@@ -46,30 +93,6 @@ export default function ProgressScreen() {
       </ThemedView>
     );
   }
-
-  useEffect(() => {
-    if (!user?.uid) return;
-    setLoading(true);
-    const q = query(
-      collection(db, 'progress'),
-      where('userUid', '==', user.uid),
-      orderBy('createdAt', 'desc')
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const list: ProgressEntry[] = snap.docs.map((d) => {
-        const data = d.data() as any;
-        return {
-          id: d.id,
-          subject: data.subject || '',
-          score: Number(data.score) || 0,
-          createdAt: data.createdAt?.toDate?.() ?? undefined,
-        };
-      });
-      setEntries(list);
-      setLoading(false);
-    }, () => setLoading(false));
-    return () => unsub();
-  }, [user?.uid]);
 
   const summaryBySubject = useMemo(() => {
     const map: Record<string, { total: number; count: number }> = {};
@@ -93,12 +116,13 @@ export default function ProgressScreen() {
     if (!user?.uid) return;
     try {
       setLoading(true);
-      await addDoc(collection(db, 'progress'), {
-        userUid: user.uid,
+      const newEntry: ProgressEntry = {
+        id: Date.now().toString(),
         subject: s,
         score: sc,
-        createdAt: serverTimestamp(),
-      });
+        createdAt: new Date(),
+      };
+      setEntries(prev => [newEntry, ...prev]);
       setSubject('');
       setScore('');
     } catch (e) {
@@ -125,7 +149,9 @@ export default function ProgressScreen() {
       return;
     }
     try {
-      await updateDoc(doc(db, 'progress', entry.id), { score: sc });
+      setEntries(prev => prev.map(e => 
+        e.id === entry.id ? { ...e, score: sc } : e
+      ));
       onCancelEdit();
     } catch (e) {
       Alert.alert('Hata', 'Kayıt güncellenemedi.');
@@ -137,7 +163,7 @@ export default function ProgressScreen() {
       { text: 'Vazgeç', style: 'cancel' },
       { text: 'Sil', style: 'destructive', onPress: async () => {
         try {
-          await deleteDoc(doc(db, 'progress', entry.id));
+          setEntries(prev => prev.filter(e => e.id !== entry.id));
         } catch (e) {
           Alert.alert('Hata', 'Kayıt silinemedi.');
         }

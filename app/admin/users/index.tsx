@@ -1,20 +1,20 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import { collection, getDocs, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { UserService } from '@/services/databaseService';
 
 type User = {
-  id: string;
-  name?: string;
+  id: number;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   role: 'student' | 'teacher';
-  approved?: boolean;
-  createdAt?: any;
-  lastLoginAt?: any;
+  status?: string;
+  createdAt?: string;
+  lastLoginAt?: string;
 };
 
 export default function UserManagement() {
@@ -36,23 +36,8 @@ export default function UserManagement() {
 
   const loadUsers = async () => {
     try {
-      const [studentsSnap, teachersSnap] = await Promise.all([
-        getDocs(query(collection(db, 'students'))),
-        getDocs(query(collection(db, 'teachers')))
-      ]);
-
-      const students = studentsSnap.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data(), 
-        role: 'student' as const 
-      }));
-      const teachers = teachersSnap.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data(), 
-        role: 'teacher' as const 
-      }));
-
-      setUsers([...students, ...teachers]);
+      const allUsers = await UserService.getAllUsers();
+      setUsers(allUsers);
     } catch (error) {
       console.error('Kullanıcılar yüklenemedi:', error);
     } finally {
@@ -71,16 +56,17 @@ export default function UserManagement() {
     // Durum filtresi
     if (filterStatus !== 'all') {
       if (filterStatus === 'approved') {
-        filtered = filtered.filter(user => user.approved === true);
+        filtered = filtered.filter(user => user.status === 'active');
       } else if (filterStatus === 'pending') {
-        filtered = filtered.filter(user => user.approved === false);
+        filtered = filtered.filter(user => user.status === 'pending');
       }
     }
 
     // Arama filtresi
     if (searchQuery.trim()) {
       filtered = filtered.filter(user => 
-        user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -238,7 +224,7 @@ export default function UserManagement() {
                 />
                 <View style={styles.userDetails}>
                   <ThemedText style={styles.userName}>
-                    {user.name || 'İsimsiz Kullanıcı'}
+                    {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : 'İsimsiz Kullanıcı'}
                   </ThemedText>
                   <ThemedText style={styles.userEmail}>
                     {user.email || 'E-posta yok'}
@@ -248,13 +234,13 @@ export default function UserManagement() {
               <View style={styles.userStatus}>
                 <View style={[
                   styles.statusBadge, 
-                  user.approved ? styles.statusApproved : styles.statusPending
+                  user.status === 'active' ? styles.statusApproved : styles.statusPending
                 ]}>
                   <ThemedText style={[
                     styles.statusText,
-                    user.approved ? styles.statusTextApproved : styles.statusTextPending
+                    user.status === 'active' ? styles.statusTextApproved : styles.statusTextPending
                   ]}>
-                    {user.approved ? 'Onaylı' : 'Bekliyor'}
+                    {user.status === 'active' ? 'Onaylı' : 'Bekliyor'}
                   </ThemedText>
                 </View>
               </View>

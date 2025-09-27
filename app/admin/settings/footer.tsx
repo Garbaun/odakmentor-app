@@ -1,10 +1,9 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
+import { SettingsService } from '@/services/databaseService';
 
 type FooterSettings = {
   copyright?: string;
@@ -14,16 +13,19 @@ type FooterSettings = {
 export default function FooterSettingsPage() {
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
-  const ref = doc(db, 'settings', 'footer');
 
   useEffect(() => {
     (async () => {
       try {
-        const snap = await getDoc(ref);
-        const data = (snap.exists() ? (snap.data() as FooterSettings) : {}) || {};
-        setText(data.copyright || '© Odak Mentor');
+        const setting = await SettingsService.getSetting('footer');
+        if (setting) {
+          const data = JSON.parse(setting.value);
+          setText(data.copyright || '© Odak Mentor');
+        } else {
+          setText('© Odak Mentor');
+        }
       } catch (e) {
-        // ignore
+        setText('© Odak Mentor');
       }
     })();
   }, []);
@@ -31,7 +33,7 @@ export default function FooterSettingsPage() {
   const onSave = async () => {
     setSaving(true);
     try {
-      await setDoc(ref, { copyright: text }, { merge: true });
+      await SettingsService.setSetting('footer', { copyright: text });
       Alert.alert('Başarılı', 'Kayıt edildi');
     } catch (e) {
       Alert.alert('Hata', 'Kaydedilemedi');

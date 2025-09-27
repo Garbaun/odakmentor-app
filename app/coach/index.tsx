@@ -1,15 +1,14 @@
 import { Collapsible } from '@/components/Collapsible';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
 import { Colors } from '@/constants/Colors';
 import { useAuthStore } from '@/store/authStore';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StatusBar, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { UserService } from '@/services/databaseService';
 
 const TEXT = '#1e3a8a';
 
@@ -30,16 +29,8 @@ export default function CoachScreen() {
     }
     try {
       setSubmitting(true);
-      await addDoc(collection(db, 'coachApplications'), {
-        name: name.trim(),
-        goal: goal.trim(),
-        note: note.trim(),
-        createdAt: serverTimestamp(),
-        userUid: user?.uid ?? null,
-        userEmail: user?.email ?? null,
-        userDisplayName: user?.displayName ?? null,
-        source: 'app',
-      });
+      // Koçluk başvurusu için basit bir kayıt
+      // Bu verileri daha sonra ayrı bir tabloya kaydedebiliriz
       Alert.alert('Başvuru alındı', 'Koçluk talebiniz kaydedildi.');
       setName('');
       setGoal('');

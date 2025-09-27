@@ -605,4 +605,31 @@ export class BlogService {
   }
 }
 
+// Settings Service
+export class SettingsService {
+  static async getSetting(key: string): Promise<any> {
+    const query = 'SELECT * FROM settings WHERE key = $1';
+    const result = await DatabaseService.query(query, [key]);
+    return result.rows[0];
+  }
+
+  static async setSetting(key: string, value: any): Promise<any> {
+    const query = `
+      INSERT INTO settings (key, value, updated_at) 
+      VALUES ($1, $2, NOW()) 
+      ON CONFLICT (key) 
+      DO UPDATE SET value = $2, updated_at = NOW() 
+      RETURNING *
+    `;
+    const result = await DatabaseService.query(query, [key, JSON.stringify(value)]);
+    return result.rows[0];
+  }
+
+  static async getAllSettings(): Promise<any[]> {
+    const query = 'SELECT * FROM settings ORDER BY key';
+    const result = await DatabaseService.query(query);
+    return result.rows;
+  }
+}
+
 export default DatabaseService;
