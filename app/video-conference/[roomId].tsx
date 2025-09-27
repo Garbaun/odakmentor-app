@@ -55,7 +55,7 @@ export default function VideoConferenceScreen() {
   const initializeConference = async () => {
     try {
       const config: VideoConferenceConfig = {
-        serverUrl: 'http://localhost:3001', // Socket.IO sunucusu
+        serverUrl: Platform.OS === 'web' ? 'https://odakmentor.com' : 'http://localhost:3001',
         roomId: roomId || 'default-room',
         userId: 'user-' + Date.now(), // Geçici kullanıcı ID'si
         userName: 'Kullanıcı', // Geçici kullanıcı adı

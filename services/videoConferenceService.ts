@@ -117,7 +117,7 @@ export class VideoConferenceService {
     });
 
     this.socket.on('answer', async (data: { from: string; answer: RTCSessionDescriptionInit }) => {
-      await this.handleAnswer(data.from, data.offer);
+      await this.handleAnswer(data.from, data.answer);
     });
 
     this.socket.on('ice-candidate', async (data: { from: string; candidate: RTCIceCandidateInit }) => {

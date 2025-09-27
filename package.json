@@ -17,7 +17,9 @@
     "db:cleanup": "npm run init-db cleanup",
     "db:reset": "npm run init-db reset",
     "video-server": "cd server && npm install && npm start",
-    "video-server:dev": "cd server && npm install && npm run dev"
+    "video-server:dev": "cd server && npm install && npm run dev",
+    "start:all": "concurrently \"npm run dev\" \"npm run video-server:dev\"",
+    "build:all": "npm run web:build && npm run video-server"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -69,6 +71,7 @@
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
     "babel-plugin-module-resolver": "^5.0.2",
+    "concurrently": "^8.2.2",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "gh-pages": "^6.3.0",

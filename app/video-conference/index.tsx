@@ -19,6 +19,16 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// WebRTC polyfill for web
+if (Platform.OS === 'web') {
+  // @ts-ignore
+  global.RTCPeerConnection = global.RTCPeerConnection || global.webkitRTCPeerConnection || global.mozRTCPeerConnection;
+  // @ts-ignore
+  global.RTCSessionDescription = global.RTCSessionDescription || global.webkitRTCSessionDescription || global.mozRTCSessionDescription;
+  // @ts-ignore
+  global.RTCIceCandidate = global.RTCIceCandidate || global.webkitRTCIceCandidate || global.mozRTCIceCandidate;
+}
+
 export default function VideoConferenceJoinScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
