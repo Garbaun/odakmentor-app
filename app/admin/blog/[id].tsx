@@ -1,11 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
+import { BlogService } from '@/services/databaseService';
 
 export default function BlogEdit() {
   const router = useRouter();
@@ -18,12 +17,10 @@ export default function BlogEdit() {
   useEffect(() => {
     (async () => {
       try {
-        const ref = doc(db, 'blog', String(id));
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const d = snap.data() as any;
-          setTitle(d.title || '');
-          setContent(d.content || '');
+        const blogPost = await BlogService.getBlogPost(parseInt(id));
+        if (blogPost) {
+          setTitle(blogPost.title || '');
+          setContent(blogPost.content || '');
         }
       } catch (e) {
         Alert.alert('Hata', 'Yazı yüklenemedi');
@@ -37,8 +34,10 @@ export default function BlogEdit() {
     if (!title.trim()) return Alert.alert('Uyarı', 'Başlık gerekli');
     setSaving(true);
     try {
-      const ref = doc(db, 'blog', String(id));
-      await updateDoc(ref, { title: title.trim(), content, updatedAt: serverTimestamp() });
+      await BlogService.updateBlogPost(parseInt(id), { 
+        title: title.trim(), 
+        content 
+      });
       router.back();
     } catch (e) {
       Alert.alert('Hata', 'Kaydedilemedi');

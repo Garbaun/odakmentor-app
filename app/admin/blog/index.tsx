@@ -1,21 +1,20 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
+import { BlogService } from '@/services/databaseService';
 
 type Blog = { 
-  id: string; 
+  id: number; 
   title: string; 
-  excerpt?: string;
-  author?: string;
-  published?: boolean;
-  createdAt?: any;
-  updatedAt?: any;
+  content?: string;
+  author_id?: number;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export default function BlogList() {
@@ -35,9 +34,8 @@ export default function BlogList() {
 
   const loadBlogs = async () => {
     try {
-      const q = query(collection(db, 'blog'), orderBy('createdAt', 'desc'));
-      const snap = await getDocs(q);
-      setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })));
+      const blogs = await BlogService.getAllBlogPosts();
+      setItems(blogs);
     } catch (e) {
       Alert.alert('Hata', 'Blog yazıları yüklenemedi');
     } finally {
@@ -53,18 +51,14 @@ export default function BlogList() {
     
     const filtered = items.filter(item => 
       item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.author?.toLowerCase().includes(searchQuery.toLowerCase())
+      item.content?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredItems(filtered);
   };
 
-  const togglePublish = async (id: string, currentStatus: boolean) => {
+  const togglePublish = async (id: number, currentStatus: boolean) => {
     try {
-      await updateDoc(doc(db, 'blog', id), { 
-        published: !currentStatus,
-        updatedAt: new Date()
-      });
+      await BlogService.togglePublishStatus(id, !currentStatus);
       await loadBlogs();
       Alert.alert('Başarılı', `Yazı ${!currentStatus ? 'yayınlandı' : 'yayından kaldırıldı'}`);
     } catch (e) {
@@ -72,7 +66,7 @@ export default function BlogList() {
     }
   };
 
-  const deleteBlog = async (id: string, title: string) => {
+  const deleteBlog = async (id: number, title: string) => {
     Alert.alert(
       'Yazıyı Sil',
       `"${title}" yazısını silmek istediğinizden emin misiniz?`,
@@ -83,7 +77,7 @@ export default function BlogList() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteDoc(doc(db, 'blog', id));
+              await BlogService.deleteBlogPost(id);
               await loadBlogs();
               Alert.alert('Başarılı', 'Yazı silindi');
             } catch (e) {
@@ -95,10 +89,9 @@ export default function BlogList() {
     );
   };
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: string) => {
     if (!date) return 'Tarih yok';
-    const d = date.toDate ? date.toDate() : new Date(date);
-    return d.toLocaleDateString('tr-TR');
+    return new Date(date).toLocaleDateString('tr-TR');
   };
 
   return (
@@ -131,13 +124,13 @@ export default function BlogList() {
         </View>
         <View style={styles.statItem}>
           <ThemedText style={[styles.statNumber, { color: '#10b981' }]}>
-            {items.filter(item => item.published).length}
+            {items.filter(item => item.status === 'published').length}
           </ThemedText>
           <ThemedText style={styles.statLabel}>Yayınlanan</ThemedText>
         </View>
         <View style={styles.statItem}>
           <ThemedText style={[styles.statNumber, { color: '#f59e0b' }]}>
-            {items.filter(item => !item.published).length}
+            {items.filter(item => item.status === 'draft').length}
           </ThemedText>
           <ThemedText style={styles.statLabel}>Taslak</ThemedText>
         </View>
@@ -146,7 +139,7 @@ export default function BlogList() {
       <FlatList
         data={filteredItems}
         refreshing={loading}
-        keyExtractor={(it) => it.id}
+        keyExtractor={(it) => it.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.row}>
             <TouchableOpacity 
@@ -157,16 +150,16 @@ export default function BlogList() {
                 <ThemedText style={styles.title}>{item.title || '(Başlıksız)'}</ThemedText>
                 <View style={styles.rowActions}>
                   <TouchableOpacity 
-                    style={[styles.actionBtn, item.published ? styles.publishBtn : styles.draftBtn]}
-                    onPress={() => togglePublish(item.id, item.published || false)}
+                    style={[styles.actionBtn, item.status === 'published' ? styles.publishBtn : styles.draftBtn]}
+                    onPress={() => togglePublish(item.id, item.status === 'published')}
                   >
                     <MaterialIcons 
-                      name={item.published ? 'visibility' : 'visibility-off'} 
+                      name={item.status === 'published' ? 'visibility' : 'visibility-off'} 
                       size={16} 
                       color="#fff" 
                     />
                     <ThemedText style={styles.actionBtnText}>
-                      {item.published ? 'Yayında' : 'Taslak'}
+                      {item.status === 'published' ? 'Yayında' : 'Taslak'}
                     </ThemedText>
                   </TouchableOpacity>
                   
@@ -186,16 +179,15 @@ export default function BlogList() {
                 </View>
               </View>
               
-              {item.excerpt && (
+              {item.content && (
                 <ThemedText style={styles.excerpt} numberOfLines={2}>
-                  {item.excerpt}
+                  {item.content.substring(0, 100)}...
                 </ThemedText>
               )}
               
               <View style={styles.rowFooter}>
                 <ThemedText style={styles.meta}>
-                  {item.author && `Yazar: ${item.author} • `}
-                  {formatDate(item.createdAt)}
+                  {formatDate(item.created_at)}
                 </ThemedText>
               </View>
             </TouchableOpacity>

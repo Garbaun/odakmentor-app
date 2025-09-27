@@ -1,11 +1,10 @@
 import { useRouter } from 'expo-router';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useState } from 'react';
 import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
+import { BlogService } from '@/services/databaseService';
 
 export default function BlogNew() {
   const router = useRouter();
@@ -17,10 +16,10 @@ export default function BlogNew() {
     if (!title.trim()) return Alert.alert('Uyarı', 'Başlık gerekli');
     setSaving(true);
     try {
-      await addDoc(collection(db, 'blog'), {
+      await BlogService.createBlogPost({
         title: title.trim(),
         content,
-        createdAt: serverTimestamp(),
+        status: 'published'
       });
       router.back();
     } catch (e) {

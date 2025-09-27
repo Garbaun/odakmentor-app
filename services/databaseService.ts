@@ -542,4 +542,67 @@ export class CourseService {
   }
 }
 
+// Blog Service
+export class BlogService {
+  static async getBlogPost(id: number): Promise<any> {
+    const query = 'SELECT * FROM blog_posts WHERE id = $1';
+    const result = await DatabaseService.query(query, [id]);
+    return result.rows[0];
+  }
+
+  static async updateBlogPost(id: number, data: any): Promise<any> {
+    const fields = [];
+    const values = [];
+    let paramCount = 1;
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && key !== 'id') {
+        const dbKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        fields.push(`${dbKey} = $${paramCount}`);
+        values.push(value);
+        paramCount++;
+      }
+    });
+
+    if (fields.length === 0) return null;
+
+    fields.push(`updated_at = NOW()`);
+    values.push(id);
+
+    const query = `UPDATE blog_posts SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+    const result = await DatabaseService.query(query, values);
+    return result.rows[0];
+  }
+
+  static async createBlogPost(data: any): Promise<any> {
+    const query = `
+      INSERT INTO blog_posts (title, content, author_id, status, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, NOW(), NOW())
+      RETURNING *
+    `;
+    const values = [data.title, data.content, data.authorId || 1, data.status || 'draft'];
+    const result = await DatabaseService.query(query, values);
+    return result.rows[0];
+  }
+
+  static async getAllBlogPosts(): Promise<any[]> {
+    const query = 'SELECT * FROM blog_posts ORDER BY created_at DESC';
+    const result = await DatabaseService.query(query);
+    return result.rows;
+  }
+
+  static async deleteBlogPost(id: number): Promise<boolean> {
+    const query = 'DELETE FROM blog_posts WHERE id = $1';
+    const result = await DatabaseService.query(query, [id]);
+    return result.rowCount > 0;
+  }
+
+  static async togglePublishStatus(id: number, published: boolean): Promise<any> {
+    const query = 'UPDATE blog_posts SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *';
+    const status = published ? 'published' : 'draft';
+    const result = await DatabaseService.query(query, [status, id]);
+    return result.rows[0];
+  }
+}
+
 export default DatabaseService;
