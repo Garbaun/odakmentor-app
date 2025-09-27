@@ -74,6 +74,9 @@ export default function RegisterScreen() {
 	const [rememberMe, setRememberMe] = useState(false);
 	const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]); // Türkiye varsayılan
 	const [showCountryPicker, setShowCountryPicker] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [showSuccessModal, setShowSuccessModal] = useState(false);
 
 	// Google Auth
 	const [, response, promptAsync] = Google.useAuthRequest(GOOGLE_AUTH_CONFIG);
@@ -116,7 +119,7 @@ export default function RegisterScreen() {
 
 	const onRegister = async () => {
 		// Form validasyonu
-		if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.password.trim() || !formData.phone.trim()) {
+		if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.password.trim()) {
 			Alert.alert('Bilgilerinizi Kontrol Edin', 'Lütfen tüm alanları doldurun ve tekrar deneyin.');
 			return;
 		}
@@ -132,35 +135,29 @@ export default function RegisterScreen() {
 		}
 
 		// Şifre güvenlik kontrolü
-		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,32}$/;
-		if (!passwordRegex.test(formData.password)) {
-			Alert.alert('Uyarı', 'Şifre büyük harf, küçük harf ve rakam içermeli, 8-32 karakter arası olmalıdır.');
-			return;
-		}
-
-		if (!kvkkAccepted) {
-			Alert.alert('Uyarı', 'KVKK metnini kabul etmelisiniz.');
+		if (passwordStrength.score < 3) {
+			Alert.alert('Şifre Güvenliği', 'Lütfen daha güçlü bir şifre seçin. Şifreniz büyük harf, küçük harf ve rakam içermelidir.');
 			return;
 		}
 
 		setLoading(true);
 		try {
-			const result = await AuthService.registerWithEmail(
-				formData.email,
-				formData.password,
-				formData.firstName,
-				formData.lastName,
-				'student' // Varsayılan olarak öğrenci
-			);
+			const result = await AuthService.register({
+				email: formData.email,
+				password: formData.password,
+				firstName: formData.firstName,
+				lastName: formData.lastName,
+				role: formData.userType
+			});
 			
 			if (result.success) {
-				Alert.alert('Başarılı', 'Hesabınız oluşturuldu! E-posta adresinizi kontrol edin.');
-				router.back();
+				setShowSuccessModal(true);
 			} else {
-				Alert.alert('Hata', result.error || 'Kayıt işlemi sırasında bir hata oluştu');
+				Alert.alert('Hata', result.error || 'Kayıt işlemi başarısız oldu.');
 			}
 		} catch (error: any) {
-			Alert.alert('Hata', error.message || 'Beklenmeyen bir hata oluştu');
+			console.error('Kayıt hatası:', error);
+			Alert.alert('Hata', error.message || 'Kayıt işlemi sırasında bir hata oluştu');
 		} finally {
 			setLoading(false);
 		}
@@ -171,17 +168,48 @@ export default function RegisterScreen() {
 		formData.firstName.trim().length > 0 &&
 		formData.lastName.trim().length > 0 &&
 		formData.email.trim().length > 0 &&
-		formData.phone.trim().length > 0 &&
+		// formData.phone.trim().length > 0 && // Geçici olarak telefon zorunlu değil
 		formData.password.trim().length > 0 &&
 		formData.confirmPassword.trim().length > 0
 	);
+	// Şifre güvenlik kontrolü
+	const getPasswordStrength = (password: string) => {
+		let score = 0;
+		let feedback = [];
+
+		if (password.length >= 8) score += 1;
+		else feedback.push('En az 8 karakter');
+
+		if (/[a-z]/.test(password)) score += 1;
+		else feedback.push('Küçük harf');
+
+		if (/[A-Z]/.test(password)) score += 1;
+		else feedback.push('Büyük harf');
+
+		if (/[0-9]/.test(password)) score += 1;
+		else feedback.push('Rakam');
+
+		if (/[^A-Za-z0-9]/.test(password)) score += 1;
+		else feedback.push('Özel karakter');
+
+		if (score <= 2) return { strength: 'Zayıf', color: '#ef4444', score };
+		if (score <= 3) return { strength: 'Orta', color: '#f59e0b', score };
+		return { strength: 'Güçlü', color: '#10b981', score };
+	};
+
+	const passwordStrength = getPasswordStrength(formData.password);
 	const passwordsMatch = formData.password === formData.confirmPassword;
 	const canSubmit = kvkkAccepted && isFilled && passwordsMatch && !loading;
+	
+	const handleClose = () => {
+		setShowSuccessModal(false);
+		router.back();
+	};
 
 	return (
 		<>
 			<View style={[styles.modalOverlay, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 }]}>
-				<Pressable style={styles.modalBackdrop} onPress={() => router.back()} />
+				<Pressable style={styles.modalBackdrop} onPress={handleClose} />
 				<View style={[
 					styles.modalCard,
 					{ maxHeight: '95%' },
@@ -194,7 +222,7 @@ export default function RegisterScreen() {
 								<View style={{ position: 'absolute', left: 0, right: 0, alignItems: 'center' }} pointerEvents="none">
 									<ThemedText style={[styles.title, { color: colors.textPrimary }]}>Ücretsiz Hesap Oluştur</ThemedText>
 								</View>
-								<TouchableOpacity onPress={() => router.back()}>
+								<TouchableOpacity onPress={handleClose}>
 									<MaterialIcons name="close" size={22} color={TEXT} />
 								</TouchableOpacity>
 							</View>
@@ -235,12 +263,81 @@ export default function RegisterScreen() {
 									</View>
 									<View style={styles.fieldGroup}>
 										<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Şifre</ThemedText>
-										<TextInput value={formData.password} onChangeText={(v) => updateFormData('password', v)} placeholder="••••••••" placeholderTextColor={colors.textMuted} secureTextEntry style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]} />
+										<View style={styles.passwordContainer}>
+											<TextInput 
+												value={formData.password} 
+												onChangeText={(v) => updateFormData('password', v)} 
+												placeholder="••••••••" 
+												placeholderTextColor={colors.textMuted} 
+												secureTextEntry={!showPassword}
+												style={[styles.passwordInput, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]} 
+											/>
+											<TouchableOpacity 
+												style={styles.passwordToggle}
+												onPress={() => setShowPassword(!showPassword)}
+											>
+												<MaterialIcons 
+													name={showPassword ? "visibility-off" : "visibility"} 
+													size={20} 
+													color={colors.textMuted} 
+												/>
+											</TouchableOpacity>
+										</View>
+										
+										{/* Şifre Güvenlik Göstergesi */}
+										{formData.password.length > 0 && (
+											<View style={styles.passwordStrengthContainer}>
+												<View style={styles.passwordStrengthBar}>
+													<View 
+														style={[
+															styles.passwordStrengthFill, 
+															{ 
+																width: `${(passwordStrength.score / 5) * 100}%`,
+																backgroundColor: passwordStrength.color 
+															}
+														]} 
+													/>
+												</View>
+												<ThemedText style={[styles.passwordStrengthText, { color: passwordStrength.color }]}>
+													Şifre Güvenliği: {passwordStrength.strength}
+												</ThemedText>
+											</View>
+										)}
+										
 										<ThemedText style={[styles.passwordRules, { color: colors.textPrimary }]}>• Büyük harf, küçük harf ve rakam içermeli{'\n'}• En az 8, en fazla 32 karakter{'\n'}• Özel karakterler kullanabilirsiniz (@$!%*?&)</ThemedText>
 									</View>
 									<View style={styles.fieldGroup}>
 										<ThemedText style={[styles.label, { color: colors.textPrimary }]}>Şifre Tekrar</ThemedText>
-										<TextInput value={formData.confirmPassword} onChangeText={(v) => updateFormData('confirmPassword', v)} placeholder="••••••••" placeholderTextColor={colors.textMuted} secureTextEntry style={[styles.input, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]} />
+										<View style={styles.passwordContainer}>
+											<TextInput 
+												value={formData.confirmPassword} 
+												onChangeText={(v) => updateFormData('confirmPassword', v)} 
+												placeholder="••••••••" 
+												placeholderTextColor={colors.textMuted} 
+												secureTextEntry={!showConfirmPassword}
+												style={[styles.passwordInput, { borderColor: colors.border, color: colors.textPrimary, backgroundColor: colors.surface }]} 
+											/>
+											<TouchableOpacity 
+												style={styles.passwordToggle}
+												onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+											>
+												<MaterialIcons 
+													name={showConfirmPassword ? "visibility-off" : "visibility"} 
+													size={20} 
+													color={colors.textMuted} 
+												/>
+											</TouchableOpacity>
+										</View>
+										
+										{/* Şifre Eşleşme Kontrolü */}
+										{formData.confirmPassword.length > 0 && (
+											<ThemedText style={[
+												styles.passwordMatchText, 
+												{ color: passwordsMatch ? '#10b981' : '#ef4444' }
+											]}>
+												{passwordsMatch ? '✓ Şifreler eşleşiyor' : '✗ Şifreler eşleşmiyor'}
+											</ThemedText>
+										)}
 									</View>
 
 									{/* Beni hatırla / Şifremi unuttum */}
@@ -328,6 +425,35 @@ export default function RegisterScreen() {
 
 			{/* AI Asistan Maskot */}
 			<AIAssistant />
+
+			{/* Başarı Modal'ı */}
+			{showSuccessModal && (
+				<Modal
+					visible={showSuccessModal}
+					transparent={true}
+					animationType="fade"
+					onRequestClose={handleClose}
+				>
+					<View style={styles.successModalOverlay}>
+						<View style={styles.successModalCard}>
+							<View style={styles.successModalHeader}>
+								<MaterialIcons name="check-circle" size={48} color="#10b981" />
+								<ThemedText style={styles.successModalTitle}>
+									Kayıt olduğunuz için teşekkür ederiz!
+								</ThemedText>
+							</View>
+							
+							<ThemedText style={styles.successModalMessage}>
+								Hesabınız başarıyla oluşturuldu. E-posta adresinize gönderilen onay linkine tıklayarak hesabınızı aktifleştirebilirsiniz.
+							</ThemedText>
+							
+							<TouchableOpacity style={styles.successModalButton} onPress={handleClose}>
+								<ThemedText style={styles.successModalButtonText}>Tamam</ThemedText>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</Modal>
+			)}
 		</>
 	);
 }
@@ -459,6 +585,48 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		lineHeight: 20,
 		marginTop: 6,
+	},
+	passwordContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		position: 'relative',
+	},
+	passwordInput: {
+		flex: 1,
+		height: 40,
+		borderWidth: 1,
+		borderRadius: RADIUS.sm,
+		paddingHorizontal: 10,
+		paddingRight: 45,
+		fontSize: 15,
+	},
+	passwordToggle: {
+		position: 'absolute',
+		right: 12,
+		padding: 4,
+	},
+	passwordStrengthContainer: {
+		marginTop: 8,
+	},
+	passwordStrengthBar: {
+		height: 4,
+		backgroundColor: '#e5e7eb',
+		borderRadius: 2,
+		overflow: 'hidden',
+		marginBottom: 4,
+	},
+	passwordStrengthFill: {
+		height: '100%',
+		borderRadius: 2,
+	},
+	passwordStrengthText: {
+		fontSize: 12,
+		fontWeight: '600',
+	},
+	passwordMatchText: {
+		fontSize: 12,
+		fontWeight: '600',
+		marginTop: 4,
 	},
 	phoneContainer: {
 		flexDirection: 'row',
@@ -652,5 +820,57 @@ const styles = StyleSheet.create({
 		width: '104%', // %30 büyüttüm (80% * 1.3 = 104%)
 		height: '78%', // %30 büyüttüm (60% * 1.3 = 78%)
 		opacity: 0.08, // Çok silik arkada duracak
+	},
+	// Başarı Modal'ı stilleri
+	successModalOverlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingHorizontal: 20,
+	},
+	successModalCard: {
+		backgroundColor: '#ffffff',
+		borderRadius: 16,
+		padding: 24,
+		width: '100%',
+		maxWidth: 400,
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.1,
+		shadowRadius: 8,
+		elevation: 8,
+	},
+	successModalHeader: {
+		alignItems: 'center',
+		marginBottom: 16,
+	},
+	successModalTitle: {
+		fontSize: 20,
+		fontWeight: '700',
+		color: '#1a1a1a',
+		textAlign: 'center',
+		marginTop: 12,
+	},
+	successModalMessage: {
+		fontSize: 16,
+		color: '#666666',
+		textAlign: 'center',
+		lineHeight: 24,
+		marginBottom: 24,
+	},
+	successModalButton: {
+		backgroundColor: '#0053f5',
+		paddingHorizontal: 32,
+		paddingVertical: 12,
+		borderRadius: 8,
+		width: '100%',
+		alignItems: 'center',
+	},
+	successModalButtonText: {
+		color: '#ffffff',
+		fontSize: 16,
+		fontWeight: '600',
 	},
 });

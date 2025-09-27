@@ -43,6 +43,8 @@ export default function RootLayout() {
           <Stack.Screen name="blog/[slug]" options={{ headerShown: false }} />
           <Stack.Screen name="about/index" options={{ headerShown: false }} />
           <Stack.Screen name="corporate/index" options={{ headerShown: false }} />
+          <Stack.Screen name="video-conference/index" options={{ headerShown: false }} />
+          <Stack.Screen name="video-conference/[roomId]" options={{ headerShown: false }} />
           <Stack.Screen 
             name="register/index" 
             options={{ 

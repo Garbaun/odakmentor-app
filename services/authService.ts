@@ -113,4 +113,15 @@ export class AuthService {
       return { success: false, error: 'Şifre sıfırlama sırasında bir hata oluştu' };
     }
   }
+
+  // Google OAuth (geçici mock)
+  static async signInWithGoogle(idToken: string): Promise<AuthResult> {
+    try {
+      console.log('Mock Google OAuth:', idToken);
+      return { success: true, user: {} as any, token: 'mock-google-token' };
+    } catch (error) {
+      console.error('Mock Google OAuth error:', error);
+      return { success: false, error: 'Google girişi sırasında bir hata oluştu' };
+    }
+  }
 }

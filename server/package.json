@@ -1,0 +1,30 @@
+{
+  "name": "odakmentor-video-conference-server",
+  "version": "1.0.0",
+  "description": "Video Conference Server for Odak Mentor",
+  "main": "video-conference-server.js",
+  "scripts": {
+    "start": "node video-conference-server.js",
+    "dev": "nodemon video-conference-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "video-conference",
+    "webrtc",
+    "socket.io",
+    "education"
+  ],
+  "author": "Odak Mentor",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.5",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

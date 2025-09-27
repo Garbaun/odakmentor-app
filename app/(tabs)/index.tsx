@@ -50,8 +50,8 @@ const STRINGS = {
 		tips: 'İpuçları',
 		progress: 'İlerleme',
 		start: 'Hemen Başlayın',
-		statsStudent: 'Kayıtlı Öğrenci',
-		statsTeacher: 'Kayıtlı Öğretmen',
+		statsStudent: 'Öğrenci',
+		statsTeacher: 'Öğretmen',
 		statsClass: 'Sanal Sınıf',
 		settings: 'Ayarlar',
 		notifications: 'Bildirimler',
@@ -69,9 +69,9 @@ const STRINGS = {
 		tips: 'Tips',
 		progress: 'Progress',
 		start: 'Get Started',
-		statsStudent: 'registered students',
-		statsTeacher: 'registered teachers',
-		statsClass: 'virtual classes',
+		statsStudent: 'Students',
+		statsTeacher: 'Teachers',
+		statsClass: 'Virtual Classes',
 		settings: 'Settings',
 		notifications: 'Notifications',
 		darkTheme: 'Dark Theme',
@@ -284,8 +284,8 @@ export default function HomeScreen() {
 
 	useEffect(() => {
 		const ease = Easing.out(Easing.quad);
-		Animated.timing(studentsVal, { toValue: 634, duration: 1200, easing: ease, useNativeDriver: false }).start();
-		Animated.timing(teachersVal, { toValue: 144, duration: 1200, easing: ease, useNativeDriver: false }).start();
+		Animated.timing(studentsVal, { toValue: 2000, duration: 1200, easing: ease, useNativeDriver: false }).start();
+		Animated.timing(teachersVal, { toValue: 247, duration: 1200, easing: ease, useNativeDriver: false }).start();
 		Animated.timing(classesVal, { toValue: 20, duration: 1200, easing: ease, useNativeDriver: false }).start();
 		Animated.timing(hoursVal, { toValue: 10000, duration: 1200, easing: ease, useNativeDriver: false }).start();
 
@@ -552,7 +552,7 @@ export default function HomeScreen() {
 				{/* Stats Section */}
 				<ThemedView id="i1" style={[styles.statsContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
 					<View style={styles.statCard}>
-						<ThemedText style={styles.statNumber}>{studentsCnt}</ThemedText>
+						<ThemedText style={styles.statNumber}>{studentsCnt.toLocaleString()}+</ThemedText>
 						<ThemedText style={styles.statLabel}>{t('statsStudent')}</ThemedText>
 					</View>
 					<View style={styles.statDivider} />
@@ -746,6 +746,14 @@ export default function HomeScreen() {
 							<ThemedText style={styles.teacherExploreText}>Güvenli & Özel</ThemedText>
 						</View>
 						<MaterialIcons name="filter-alt" size={18} color={TEXT} />
+					</TouchableOpacity>
+
+					<TouchableOpacity style={[styles.teacherExploreBtn, { backgroundColor: colors.surface, borderColor: colors.border }]} activeOpacity={0.85} onPress={() => router.push('/video-conference')}>
+						<View style={styles.teacherExploreLeft}>
+							<MaterialIcons name="videocam" size={20} color={colors.textPrimary} />
+							<ThemedText style={styles.teacherExploreText}>Video Konferans</ThemedText>
+						</View>
+						<MaterialIcons name="arrow-forward" size={18} color={TEXT} />
 					</TouchableOpacity>
 				</ThemedView>
 
