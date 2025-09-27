@@ -1,6 +1,6 @@
+import { PermissionModal } from '@/components/PermissionModal';
 import { ThemedText } from '@/components/ThemedText';
 import { TopBar } from '@/components/TopBar';
-import { PermissionModal } from '@/components/PermissionModal';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { globalStyles } from '@/styles/globalStyles';

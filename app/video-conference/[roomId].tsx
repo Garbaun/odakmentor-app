@@ -1,6 +1,6 @@
+import { PermissionModal } from '@/components/PermissionModal';
 import { ThemedText } from '@/components/ThemedText';
 import { TopBar } from '@/components/TopBar';
-import { PermissionModal } from '@/components/PermissionModal';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Participant, VideoConferenceConfig, videoConferenceService } from '@/services/videoConferenceService';
@@ -26,26 +26,21 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function VideoConferenceScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
 
   // State
-  const [isConnected, setIsConnected] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [localStream, setLocalStream] = useState<any>(null);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Array<{ from: string; text: string; timestamp: number }>>([]);
+  const [messages, setMessages] = useState<{ from: string; text: string; timestamp: number }[]>([]);
   const [connectionState, setConnectionState] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
-  const [catsOpen, setCatsOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const [permissionType, setPermissionType] = useState<'camera' | 'microphone' | 'both'>('both');
-  const [hasPermissions, setHasPermissions] = useState(false);
 
   // Refs
   const scrollViewRef = useRef<ScrollView>(null);
@@ -83,7 +78,7 @@ export default function VideoConferenceScreen() {
     return () => {
       videoConferenceService.disconnect();
     };
-  }, []);
+  }, [roomId]);
 
   const initializeConference = async () => {
     try {
@@ -213,8 +208,8 @@ export default function VideoConferenceScreen() {
       {/* Ortak Top Bar */}
       <TopBar 
         currentPage="video-conference"
-        onCategoriesPress={() => setCatsOpen(true)}
-        onCartPress={() => setCartOpen(true)}
+        onCategoriesPress={() => {}}
+        onCartPress={() => {}}
       />
 
       {/* Conference Header */}
