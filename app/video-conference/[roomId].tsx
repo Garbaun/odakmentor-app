@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
 import { TopBar } from '@/components/TopBar';
+import { PermissionModal } from '@/components/PermissionModal';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Participant, VideoConferenceConfig, videoConferenceService } from '@/services/videoConferenceService';
@@ -10,6 +11,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Dimensions,
+    Platform,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -41,12 +43,43 @@ export default function VideoConferenceScreen() {
   const [connectionState, setConnectionState] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   const [catsOpen, setCatsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+  const [permissionType, setPermissionType] = useState<'camera' | 'microphone' | 'both'>('both');
+  const [hasPermissions, setHasPermissions] = useState(false);
 
   // Refs
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const checkPermissions = async () => {
+    if (Platform.OS !== 'web') {
+      setHasPermissions(true);
+      return true;
+    }
+
+    try {
+      // Kamera ve mikrofon izinlerini kontrol et
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      stream.getTracks().forEach(track => track.stop());
+      setHasPermissions(true);
+      return true;
+    } catch (error) {
+      console.log('Permission check failed:', error);
+      setPermissionType('both');
+      setPermissionModalVisible(true);
+      return false;
+    }
+  };
+
   useEffect(() => {
-    initializeConference();
+    const init = async () => {
+      const permissionsGranted = await checkPermissions();
+      if (permissionsGranted) {
+        initializeConference();
+      }
+    };
+    
+    init();
+    
     return () => {
       videoConferenceService.disconnect();
     };
@@ -127,6 +160,30 @@ export default function VideoConferenceScreen() {
   const leaveConference = async () => {
     await videoConferenceService.disconnect();
     router.back();
+  };
+
+  const handlePermissionGranted = async () => {
+    setPermissionModalVisible(false);
+    setHasPermissions(true);
+    await initializeConference();
+  };
+
+  const handlePermissionDenied = () => {
+    setPermissionModalVisible(false);
+    Alert.alert(
+      'İzin Gerekli',
+      'Video konferansa katılmak için kamera ve mikrofon izinleri gereklidir. İzin vermek istemiyorsanız, sadece dinleyici olarak katılabilirsiniz.',
+      [
+        { text: 'Çıkış', onPress: () => router.back() },
+        { 
+          text: 'Dinleyici Olarak Katıl', 
+          onPress: async () => {
+            setHasPermissions(true);
+            await initializeConference();
+          }
+        }
+      ]
+    );
   };
 
   const getConnectionStatusColor = () => {
@@ -335,6 +392,15 @@ export default function VideoConferenceScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* İzin Modalı */}
+      <PermissionModal
+        visible={permissionModalVisible}
+        onClose={() => setPermissionModalVisible(false)}
+        onGranted={handlePermissionGranted}
+        onDenied={handlePermissionDenied}
+        type={permissionType}
+      />
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
 import { TopBar } from '@/components/TopBar';
+import { PermissionModal } from '@/components/PermissionModal';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { globalStyles } from '@/styles/globalStyles';
@@ -40,8 +41,39 @@ export default function VideoConferenceJoinScreen() {
   const [userRole, setUserRole] = useState<'teacher' | 'student'>('student');
   const [catsOpen, setCatsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+  const [permissionType, setPermissionType] = useState<'camera' | 'microphone' | 'both'>('both');
 
-  const joinConference = () => {
+  const checkPermissions = async () => {
+    if (Platform.OS !== 'web') {
+      // React Native için farklı bir yaklaşım gerekebilir
+      return true;
+    }
+
+    try {
+      // Kamera izni kontrolü
+      const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
+      const microphonePermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+      if (cameraPermission.state === 'denied' || microphonePermission.state === 'denied') {
+        setPermissionType('both');
+        setPermissionModalVisible(true);
+        return false;
+      }
+
+      // Eğer izin durumu 'prompt' ise, getUserMedia ile test et
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      stream.getTracks().forEach(track => track.stop());
+      return true;
+    } catch (error) {
+      console.log('Permission check failed, showing modal:', error);
+      setPermissionType('both');
+      setPermissionModalVisible(true);
+      return false;
+    }
+  };
+
+  const joinConference = async () => {
     if (!roomId.trim()) {
       Alert.alert('Hata', 'Lütfen oda ID\'sini girin');
       return;
@@ -52,6 +84,12 @@ export default function VideoConferenceJoinScreen() {
       return;
     }
 
+    // İzinleri kontrol et
+    const hasPermissions = await checkPermissions();
+    if (!hasPermissions) {
+      return; // Modal açıldı, kullanıcı izin verene kadar bekle
+    }
+
     // Video konferans sayfasına git
     router.push(`/video-conference/${roomId.trim()}?userName=${encodeURIComponent(userName.trim())}&userRole=${userRole}`);
   };
@@ -59,6 +97,29 @@ export default function VideoConferenceJoinScreen() {
   const createRoom = () => {
     const newRoomId = 'room-' + Date.now();
     setRoomId(newRoomId);
+  };
+
+  const handlePermissionGranted = () => {
+    setPermissionModalVisible(false);
+    // İzin verildikten sonra konferansa katıl
+    router.push(`/video-conference/${roomId.trim()}?userName=${encodeURIComponent(userName.trim())}&userRole=${userRole}`);
+  };
+
+  const handlePermissionDenied = () => {
+    setPermissionModalVisible(false);
+    Alert.alert(
+      'İzin Gerekli',
+      'Video konferansa katılmak için kamera ve mikrofon izinleri gereklidir. İzin vermek istemiyorsanız, sadece dinleyici olarak katılabilirsiniz.',
+      [
+        { text: 'Tamam' },
+        { 
+          text: 'Dinleyici Olarak Katıl', 
+          onPress: () => {
+            router.push(`/video-conference/${roomId.trim()}?userName=${encodeURIComponent(userName.trim())}&userRole=${userRole}&audioOnly=true`);
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -251,6 +312,15 @@ export default function VideoConferenceJoinScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* İzin Modalı */}
+      <PermissionModal
+        visible={permissionModalVisible}
+        onClose={() => setPermissionModalVisible(false)}
+        onGranted={handlePermissionGranted}
+        onDenied={handlePermissionDenied}
+        type={permissionType}
+      />
     </View>
   );
 }
