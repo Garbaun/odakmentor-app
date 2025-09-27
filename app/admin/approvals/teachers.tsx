@@ -1,12 +1,11 @@
-import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { db } from '@/config/firebase';
+import { UserService } from '@/services/databaseService';
 
-type Teacher = { id: string; name?: string; approved?: boolean };
+type Teacher = { id: number; firstName?: string; lastName?: string; approved?: boolean };
 
 export default function TeacherApprovals() {
   const [items, setItems] = useState<Teacher[]>([]);
@@ -15,9 +14,9 @@ export default function TeacherApprovals() {
   const load = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, 'teachers'), where('approved', '==', false));
-      const snap = await getDocs(q);
-      setItems(snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })));
+      // PostgreSQL'den onay bekleyen öğretmenleri al
+      const teachers = await UserService.getUsersByRole('teacher');
+      setItems(teachers.filter(teacher => !teacher.isEmailVerified));
     } catch (e) {
       Alert.alert('Hata', 'Öğretmen listesi yüklenemedi');
     } finally {
@@ -27,9 +26,12 @@ export default function TeacherApprovals() {
 
   useEffect(() => { load(); }, []);
 
-  const setApproval = async (id: string, approved: boolean) => {
+  const setApproval = async (id: number, approved: boolean) => {
     try {
-      await updateDoc(doc(db, 'teachers', id), { approved });
+      await UserService.updateUser(id, { 
+        isEmailVerified: approved,
+        status: approved ? 'active' : 'pending'
+      });
       await load();
     } catch (e) {
       Alert.alert('Hata', 'Güncellenemedi');
@@ -42,10 +44,12 @@ export default function TeacherApprovals() {
       <FlatList
         data={items}
         refreshing={loading}
-        keyExtractor={(it) => it.id}
+        keyExtractor={(it) => it.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <ThemedText style={{ fontWeight: '700' }}>{item.name || item.id}</ThemedText>
+            <ThemedText style={{ fontWeight: '700' }}>
+              {item.firstName} {item.lastName}
+            </ThemedText>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <TouchableOpacity style={styles.btnApprove} onPress={() => setApproval(item.id, true)}>
                 <ThemedText style={styles.btnText}>Onayla</ThemedText>
