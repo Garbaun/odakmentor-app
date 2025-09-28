@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,11 +9,24 @@ import CategoryModal from '@/components/CategoryModal';
 import { TopBar } from '@/components/TopBar';
 import { AuthService } from '@/services/authService';
 import { borderRadius, colors, globalStyles, spacing, typography } from '@/styles/globalStyles';
+import { useAuthStore } from '@/store/authStore';
+
+async function fetchWithAuth<T>(path: string): Promise<T> {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  const res = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!res.ok) throw new Error('İstek başarısız');
+  return res.json() as Promise<T>;
+}
 
 export default function TeacherScreen() {
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
+  const user = useAuthStore((s) => s.user);
+  const userProfile = useAuthStore((s) => s.userProfile);
+  const role = (userProfile as any)?.role as ('teacher'|'student'|'admin'|undefined);
+  const isTeacher = role === 'teacher' || role === 'admin';
+  const [tStats, setTStats] = useState<{ totalCourses: number; activeCourses: number; totalEnrollments: number; activeEnrollments: number } | null>(null);
   
   // Responsive değerler
   const isNarrow = windowWidth < 768;
@@ -46,6 +59,27 @@ export default function TeacherScreen() {
     }
   };
 
+  useEffect(() => {
+    const load = async () => {
+      try {
+        if (isTeacher) {
+          const data = await fetchWithAuth<{ success: boolean; totalCourses: number; activeCourses: number; totalEnrollments: number; activeEnrollments: number }>("/api/teacher/stats");
+          if ((data as any)?.success !== false) {
+            setTStats({
+              totalCourses: (data as any).totalCourses || 0,
+              activeCourses: (data as any).activeCourses || 0,
+              totalEnrollments: (data as any).totalEnrollments || 0,
+              activeEnrollments: (data as any).activeEnrollments || 0,
+            });
+          }
+        }
+      } catch {
+        setTStats(null);
+      }
+    };
+    load();
+  }, [isTeacher]);
+
   return (
     <View style={globalStyles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
@@ -58,6 +92,17 @@ export default function TeacherScreen() {
       />
       
       <ScrollView contentContainerStyle={globalStyles.scrollContent} showsVerticalScrollIndicator={false}>
+        {isTeacher && (
+          <View style={styles.teacherStatsCard}>
+            <Text style={styles.teacherStatsTitle}>Öğretmen İstatistikleri</Text>
+            <View style={styles.teacherStatsRow}>
+              <View style={styles.teacherStat}><Text style={styles.teacherStatNum}>{tStats?.totalCourses ?? 0}</Text><Text style={styles.teacherStatLabel}>Toplam Kurs</Text></View>
+              <View style={styles.teacherStat}><Text style={styles.teacherStatNum}>{tStats?.activeCourses ?? 0}</Text><Text style={styles.teacherStatLabel}>Aktif Kurs</Text></View>
+              <View style={styles.teacherStat}><Text style={styles.teacherStatNum}>{tStats?.totalEnrollments ?? 0}</Text><Text style={styles.teacherStatLabel}>Toplam Kayıt</Text></View>
+              <View style={styles.teacherStat}><Text style={styles.teacherStatNum}>{tStats?.activeEnrollments ?? 0}</Text><Text style={styles.teacherStatLabel}>Aktif Kayıt</Text></View>
+            </View>
+          </View>
+        )}
         {/* Ana İçerik */}
         <View style={[globalStyles.mainContent, { width: mainContentWidth, alignSelf: 'center' }]}>
           {/* Başlık */}
@@ -179,6 +224,48 @@ export default function TeacherScreen() {
 
 // Sadece sayfa özel stilleri
 const styles = StyleSheet.create({
+  teacherStatsCard: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  teacherStatsTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+  teacherStatsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  teacherStat: {
+    width: '48%',
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  teacherStatNum: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.textPrimary,
+  },
+  teacherStatLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
+  },
   // Eğitmen bölümleri
   section: {
 		flexDirection: 'row',
