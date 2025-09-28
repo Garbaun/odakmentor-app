@@ -595,3 +595,45 @@ process.on('SIGINT', () => {
     process.exit(0);
   });
 });
+
+// ---- OPTIONAL: ADMIN BOOTSTRAP ON START ----
+(async function ensureAdminUser() {
+  try {
+    if (process.env.ADMIN_BOOTSTRAP !== '1') return;
+    const email = process.env.ADMIN_EMAIL || 'admin@odakmentor.com';
+    const password = process.env.ADMIN_PASSWORD || 'admin123';
+    const firstName = process.env.ADMIN_FIRST || 'Admin';
+    const lastName = process.env.ADMIN_LAST || 'User';
+
+    const existing = await findUserByEmail(email);
+    if (existing) {
+      console.log(`Admin bootstrap: kullanıcı zaten var (${email})`);
+      return;
+    }
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const ures = await client.query(
+        `INSERT INTO users (email, first_name, last_name, role, status, is_email_verified, is_phone_verified, preferences, subscription)
+         VALUES ($1,$2,$3,'admin','active',true,false,'{}','{}') RETURNING *`,
+        [email, firstName, lastName]
+      );
+      const user = ures.rows[0];
+      const hash = await bcrypt.hash(password, 10);
+      await client.query(
+        `INSERT INTO passwords (user_id, password_hash) VALUES ($1,$2)
+         ON CONFLICT (user_id) DO UPDATE SET password_hash=$2, updated_at=NOW()`,
+        [user.id, hash]
+      );
+      await client.query('COMMIT');
+      console.log(`Admin bootstrap: oluşturuldu (${email})`);
+    } catch (e) {
+      await client.query('ROLLBACK');
+      console.error('Admin bootstrap hatası', e);
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error('Admin bootstrap başlatılamadı', e);
+  }
+})();
