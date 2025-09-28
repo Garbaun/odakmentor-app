@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Image, ScrollView, StatusBar, StyleSheet, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AIAssistant } from '@/components/AIAssistant';
@@ -19,6 +19,124 @@ export default function AboutScreen() {
   const [catsOpen, setCatsOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const isSmall = width < 768;
+  
+  // Banner animasyonu için
+  const bannerImageRotation = useRef(new Animated.Value(0)).current;
+  const bannerImageOpacity = useRef(new Animated.Value(0)).current;
+  const banner2ImageRotation = useRef(new Animated.Value(0)).current;
+  const banner2ImageOpacity = useRef(new Animated.Value(0)).current;
+  const banner3ImageRotation = useRef(new Animated.Value(0)).current;
+  const banner3ImageOpacity = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [bannerVisible, setBannerVisible] = useState(false);
+  const [banner2Visible, setBanner2Visible] = useState(false);
+  const [banner3Visible, setBanner3Visible] = useState(false);
+
+  // Banner animasyonunu başlat
+  useEffect(() => {
+    if (bannerVisible) {
+      const startAnimation = () => {
+        // Başlangıçta 10 derece sağa yatık ve görünmez
+        bannerImageRotation.setValue(10);
+        bannerImageOpacity.setValue(0);
+        
+        // Animasyonu başlat
+        Animated.parallel([
+          Animated.timing(bannerImageRotation, {
+            toValue: 0,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(bannerImageOpacity, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      };
+
+      // Banner görünür olduğunda animasyonu başlat
+      startAnimation();
+    }
+  }, [bannerVisible]);
+
+  // Banner2 animasyonunu başlat
+  useEffect(() => {
+    if (banner2Visible) {
+      const startAnimation2 = () => {
+        // Başlangıçta 10 derece sağa yatık ve görünmez (saat ters istikametinde)
+        banner2ImageRotation.setValue(10);
+        banner2ImageOpacity.setValue(0);
+        
+        // Animasyonu başlat
+        Animated.parallel([
+          Animated.timing(banner2ImageRotation, {
+            toValue: 0,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(banner2ImageOpacity, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      };
+
+      // Banner görünür olduğunda animasyonu başlat
+      startAnimation2();
+    }
+  }, [banner2Visible]);
+
+  // Banner3 animasyonunu başlat
+  useEffect(() => {
+    if (banner3Visible) {
+      const startAnimation3 = () => {
+        // Başlangıçta 20 derece sola yatık ve görünmez (soldan sağa dönüş)
+        banner3ImageRotation.setValue(-20);
+        banner3ImageOpacity.setValue(0);
+        
+        // Animasyonu başlat
+        Animated.parallel([
+          Animated.timing(banner3ImageRotation, {
+            toValue: 0,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(banner3ImageOpacity, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      };
+
+      // Banner görünür olduğunda animasyonu başlat
+      startAnimation3();
+    }
+  }, [banner3Visible]);
+
+  // Scroll pozisyonunu takip et ve banner görünür olduğunda animasyonu başlat
+  useEffect(() => {
+    const listener = scrollY.addListener(({ value }) => {
+      // Banner yaklaşık 400px scroll sonrası görünür olur
+      if (value > 400 && !bannerVisible) {
+        setBannerVisible(true);
+      }
+      // Banner2 yaklaşık 800px scroll sonrası görünür olur
+      if (value > 800 && !banner2Visible) {
+        setBanner2Visible(true);
+      }
+      // Banner3 yaklaşık 1000px scroll sonrası görünür olur
+      if (value > 1000 && !banner3Visible) {
+        setBanner3Visible(true);
+      }
+    });
+
+    return () => {
+      scrollY.removeListener(listener);
+    };
+  }, [bannerVisible, banner2Visible, banner3Visible]);
 
   return (
     <View style={globalStyles.container}>
@@ -31,47 +149,82 @@ export default function AboutScreen() {
         onCartPress={() => setCartOpen(true)}
       />
       
-      {/* Sabit Filigran */}
-      <View style={styles.watermarkContainer}>
-        <Image 
-          source={require('@/assets/images/logo1.png')} 
-          style={[
-            styles.watermarkImage,
-            {
-              width: isSmall ? width * 0.3 : width * 0.4,
-              height: isSmall ? width * 0.3 : width * 0.4,
-            }
-          ]}
-          resizeMode="contain"
-        />
-      </View>
+      {/* Sabit Logo Arka Plan */}
+      <Image 
+        source={require('@/assets/images/logo1.png')} 
+        style={styles.fixedBackgroundLogo}
+        resizeMode="contain"
+        pointerEvents="none"
+      />
       
       <ScrollView 
+        style={styles.scrollView}
         contentContainerStyle={[globalStyles.scrollContent, { paddingTop: 20 }]} 
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
       >
         {/* Hero Section */}
         <ThemedView style={styles.heroSection}>
           <View style={[styles.heroContent, isSmall && styles.heroContentSmall]}>
-            <Image 
-              source={require('@/assets/images/logo3.png')} 
-              style={styles.heroLogo}
-              resizeMode="contain"
-            />
-            <ThemedText style={[styles.heroTitle, { color: colors.textPrimary }]}>
-              Potansiyelini Keşfet, Hedefine Odaklan
-            </ThemedText>
+            <Text style={[styles.heroTitle, { color: '#383838' }]}>
+              Potansiyelini Keşfet
+            </Text>
             <ThemedText style={[styles.heroDescription, { color: colors.textMuted }]}>
               Eğitim, her bireyin kendine özgü potansiyelini ortaya çıkaran kişisel bir yolculuk olmalıdır. 
               Ancak günümüzün standartlaşmış eğitim modelleri, çoğu zaman her öğrencinin farklı parmak izi gibi olan eşsiz yeteneklerini ve öğrenme stillerini göz ardı eder. 
               Biz, bu tek tip yaklaşıma bir alternatif sunmak için yola çıktık.
             </ThemedText>
             <ThemedText style={[styles.heroDescription, { color: colors.textMuted }]}>
-              <ThemedText style={{ fontWeight: '600', color: colors.primary }}>Odak Mentor</ThemedText>, her öğrencinin benzersiz olduğuna olan inancımızla kurulmuş, yapay zeka destekli yeni nesil bir eğitim platformudur. 
+              <ThemedText style={{ fontWeight: '600', color: '#3b82f6', fontSize: 28, lineHeight: 43 }}>"Odak Mentor"</ThemedText>, her öğrencinin benzersiz olduğuna olan inancımızla kurulmuş, yapay zeka destekli yeni nesil bir eğitim platformudur. 
               Biz bir online dershaneden çok daha fazlasıyız; biz, her öğrencinin hedeflerine giden yolda ona özel bir harita çizen, teknoloji ile insan dokunuşunu birleştiren birer yol arkadaşıyız.
             </ThemedText>
+            
           </View>
         </ThemedView>
+
+        {/* Banner Section */}
+        <View style={styles.bannerSection}>
+          <View style={styles.bannerContent}>
+            {/* Banner Image */}
+            <View style={styles.bannerImageContainer}>
+              <Animated.Image 
+                source={require('@/assets/images/about/about1.png')} 
+                style={[
+                  styles.bannerImage,
+                  {
+                    transform: [
+                      {
+                        rotate: bannerImageRotation.interpolate({
+                          inputRange: [0, 10],
+                          outputRange: ['0deg', '-10deg'], // Saat istikametinde dönüş için negatif
+                        }),
+                      },
+                    ],
+                    opacity: bannerImageOpacity,
+                  },
+                ]}
+                resizeMode="contain"
+              />
+            </View>
+            
+            {/* Banner Text */}
+            <View style={styles.bannerTextContainer}>
+              <ThemedText style={styles.bannerMainTitle}>
+                Doğru Yola
+              </ThemedText>
+              <ThemedText style={styles.bannerSubTitle}>
+                Odaklan
+              </ThemedText>
+              <ThemedText style={styles.bannerDescription}>
+                Geniş bir müfredatta kaybolmak yerine, yapay zeka destekli yetenek analizimizle sana en uygun alanı keşfediyor ve o yolda derinleşmeni sağlıyoruz.
+              </ThemedText>
+            </View>
+          </View>
+        </View>
 
         {/* Vizyonumuz */}
         <ThemedView style={styles.section}>
@@ -86,8 +239,48 @@ export default function AboutScreen() {
               Eğitimin coğrafi ve ekonomik sınırları aştığı, her öğrencinin en iyi eğitmene ve en doğru öğrenme metoduna ulaşabildiği bir gelecek hayal ediyoruz. 
               Vizyonumuz, teknolojiyi eğitimin merkezine yerleştirerek, öğrenmeyi bir zorunluluktan çıkarıp kişisel bir keşif ve başarı serüvenine dönüştürmektir.
             </ThemedText>
+            
           </View>
         </ThemedView>
+
+        {/* Banner Section 2 */}
+        <View style={styles.bannerSection2}>
+          <View style={styles.bannerContent2}>
+            {/* Banner Text */}
+            <View style={styles.bannerTextContainer2}>
+              <ThemedText style={styles.bannerMainTitle2}>
+                Potansiyelini
+              </ThemedText>
+              <ThemedText style={styles.bannerSubTitle2}>
+                Keşfet
+              </ThemedText>
+              <ThemedText style={styles.bannerDescription2}>
+                Gerçek gelişim, paylaştıkça büyür. Sanal sınıflarımızda, senin gibi aynı alana tutku duyan yetenekleri buluşturuyoruz. Bu dinamik ortamlarda takım olarak çalışarak fikirlerinizi projelere dönüştürmenizi ve birbirinizin gelişimine ivme kazandırmanızı sağlıyoruz.
+              </ThemedText>
+            </View>
+            {/* Banner Image */}
+            <View style={styles.bannerImageContainer2}>
+              <Animated.Image 
+                source={require('@/assets/images/about/about2.png')} 
+                style={[
+                  styles.bannerImage2,
+                  {
+                    transform: [
+                      {
+                        rotate: banner2ImageRotation.interpolate({
+                          inputRange: [10, 0],
+                          outputRange: ['10deg', '0deg'], // Saat ters istikametinde dönüş (sağdan sola)
+                        }),
+                      },
+                    ],
+                    opacity: banner2ImageOpacity,
+                  },
+                ]}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+        </View>
 
         {/* Misyonumuz */}
         <ThemedView style={styles.section}>
@@ -103,6 +296,50 @@ export default function AboutScreen() {
               Bu doğrultuda:
             </ThemedText>
             
+          </View>
+        </ThemedView>
+
+        {/* Banner Section 3 */}
+        <View style={styles.bannerSection3}>
+          <View style={styles.bannerContent3}>
+            {/* Banner Image */}
+            <View style={styles.bannerImageContainer3}>
+              <Animated.Image 
+                source={require('@/assets/images/about/about3.png')} 
+                style={[
+                  styles.bannerImage3,
+                  {
+                    transform: [
+                      {
+                        rotate: banner3ImageRotation.interpolate({
+                          inputRange: [-20, 0],
+                          outputRange: ['-20deg', '0deg'], // Soldan sağa dönüş
+                        }),
+                      },
+                    ],
+                    opacity: banner3ImageOpacity,
+                  },
+                ]}
+                resizeMode="contain"
+              />
+            </View>
+            {/* Banner Text */}
+            <View style={styles.bannerTextContainer3}>
+              <ThemedText style={styles.bannerMainTitle3}>
+                Zamandan
+              </ThemedText>
+              <ThemedText style={styles.bannerSubTitle3}>
+                Tasarruf
+              </ThemedText>
+              <ThemedText style={styles.bannerDescription3}>
+                Boşa geçen saatlere ve gereksiz tekrarlara son! Akıllı eğitim planlamamız sayesinde, derslerine en verimli şekilde çalışırken sosyalleşmek, spor yapmak veya yeni bir hobi edinmek için de bolca vaktin kalır.
+              </ThemedText>
+            </View>
+          </View>
+        </View>
+        
+        <ThemedView style={styles.section}>
+          <View style={[styles.sectionContent, isSmall && styles.sectionContentSmall]}>
             <View style={styles.missionSteps}>
               <View style={styles.missionStep}>
                 <View style={styles.stepIcon}>
@@ -226,7 +463,7 @@ export default function AboutScreen() {
               Eğer siz de eğitimin kişiye özel olması gerektiğine inanıyor, potansiyelinizi veya çocuğunuzun potansiyelini en üst seviyeye çıkarmak istiyorsanız, doğru yerdesiniz.
             </ThemedText>
             <ThemedText style={[styles.joinCallToAction, { color: colors.primary }]}>
-              Geleceği beklemeyin, onu Odak Mentor ile birlikte şekillendirelim.
+              "Geleceği beklemeyin, onu Odak Mentor ile birlikte şekillendirelim."
             </ThemedText>
           </View>
         </ThemedView>
@@ -325,20 +562,183 @@ export default function AboutScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Sabit Filigran
-  watermarkContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-    pointerEvents: 'none',
+  // ScrollView
+  scrollView: {
+    flex: 1,
   },
-  watermarkImage: {
-    opacity: 0.08,
+  
+  // Banner Section
+  bannerSection: {
+    backgroundColor: '#e2a9f1',
+    height: 500,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 60, // Bannerlar arası mesafe %20 artırıldı
+  },
+  bannerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    maxWidth: 1200,
+    width: '100%',
+  },
+  bannerImageContainer: {
+    flex: 0.4, // Sağ %40
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 20,
+    height: '100%', // Banner yüksekliğinin tamamını kullan
+  },
+  bannerImage: {
+    width: 600, // Sabit genişlik
+    height: 400, // Sabit yükseklik
+    maxWidth: 1600,
+    maxHeight: 1600,
+  },
+  bannerTextContainer: {
+    flex: 0.6, // Sol %60
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingLeft: 20,
+  },
+  bannerMainTitle: {
+    fontSize: 77, // 48 * 1.6 = 77px (%60 büyütüldü)
+    fontWeight: '800',
+    color: '#2d2d2d',
+    marginBottom: 47, // 36px * 1.3 = 47px (%30 daha artırıldı)
+    textAlign: 'left',
+  },
+  bannerSubTitle: {
+    fontSize: 77, // 48 * 1.6 = 77px (%60 büyütüldü)
+    fontWeight: '800',
+    color: '#2d2d2d',
+    marginBottom: 20,
+    textAlign: 'left',
+  },
+  bannerDescription: {
+    fontSize: 27, // 18 * 1.5 = 27px (%50 büyütüldü)
+    lineHeight: 42, // 28 * 1.5 = 42px (%50 büyütüldü)
+    color: '#2d2d2d',
+    textAlign: 'left',
+    opacity: 0.95,
+  },
+
+  // Banner Section 2
+  bannerSection2: {
+    backgroundColor: '#c0ffa2',
+    height: 500,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 60, // Bannerlar arası mesafe %20 artırıldı
+  },
+  bannerContent2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    maxWidth: 1200,
+    width: '100%',
+  },
+  bannerImageContainer2: {
+    flex: 0.4, // Sağ %40
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 20,
+    height: '100%', // Banner yüksekliğinin tamamını kullan
+  },
+  bannerImage2: {
+    width: 600, // Sabit genişlik
+    height: 400, // Sabit yükseklik
+    maxWidth: 1600,
+    maxHeight: 1600,
+  },
+  bannerTextContainer2: {
+    flex: 0.6, // Sol %60
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingLeft: 20,
+  },
+  bannerMainTitle2: {
+    fontSize: 77, // 48 * 1.6 = 77px (%60 büyütüldü)
+    fontWeight: '800',
+    color: '#2d2d2d',
+    marginBottom: 47, // 36px * 1.3 = 47px (%30 daha artırıldı)
+    textAlign: 'left',
+  },
+  bannerSubTitle2: {
+    fontSize: 77, // 48 * 1.6 = 77px (%60 büyütüldü)
+    fontWeight: '800',
+    color: '#2d2d2d',
+    marginBottom: 24, // 20'den 24'e çıkarıldı (%20 artırıldı)
+    textAlign: 'left',
+  },
+  bannerDescription2: {
+    fontSize: 27, // 18 * 1.5 = 27px (%50 büyütüldü)
+    lineHeight: 42, // 28 * 1.5 = 42px (%50 büyütüldü)
+    color: '#2d2d2d',
+    textAlign: 'left',
+    opacity: 0.95,
+  },
+
+  // Banner Section 3
+  bannerSection3: {
+    backgroundColor: '#d9d9d9',
+    height: 500,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 60, // Bannerlar arası mesafe %20 artırıldı
+  },
+  bannerContent3: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    maxWidth: 1200,
+    width: '100%',
+  },
+  bannerImageContainer3: {
+    flex: 0.4, // Sol %40
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 20,
+    height: '100%', // Banner yüksekliğinin tamamını kullan
+  },
+  bannerImage3: {
+    width: 600, // Sabit genişlik
+    height: 400, // Sabit yükseklik
+    maxWidth: 1600,
+    maxHeight: 1600,
+  },
+  bannerTextContainer3: {
+    flex: 0.6, // Sağ %60
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingRight: 20,
+  },
+  bannerMainTitle3: {
+    fontSize: 77, // 48 * 1.6 = 77px (%60 büyütüldü)
+    fontWeight: '800',
+    color: '#2d2d2d',
+    marginBottom: 47, // 36px * 1.3 = 47px (%30 daha artırıldı)
+    textAlign: 'left',
+  },
+  bannerSubTitle3: {
+    fontSize: 77, // 48 * 1.6 = 77px (%60 büyütüldü)
+    fontWeight: '800',
+    color: '#2d2d2d',
+    marginBottom: 24, // 20'den 24'e çıkarıldı (%20 artırıldı)
+    textAlign: 'left',
+  },
+  bannerDescription3: {
+    fontSize: 27, // 18 * 1.5 = 27px (%50 büyütüldü)
+    lineHeight: 42, // 28 * 1.5 = 42px (%50 büyütüldü)
+    color: '#2d2d2d',
+    textAlign: 'left',
+    opacity: 0.95,
   },
 
   // Hero Section
@@ -348,22 +748,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
   },
+  fixedBackgroundLogo: {
+    position: 'absolute',
+    top: 150, // %10 aşağı (100 + 50)
+    left: '50%',
+    marginLeft: -200, // Logo genişliğinin yarısı kadar sola kaydır
+    width: 400,
+    height: 500, // Sadece hero section yüksekliği
+    opacity: 0.08,
+    zIndex: 1,
+  },
   heroContent: {
     alignItems: 'center',
-    maxWidth: 800,
+    maxWidth: 1200, // 800'den 1200'e çıkarıldı (%50 artırıldı)
   },
   heroContentSmall: {
     paddingHorizontal: 10,
   },
-  heroLogo: {
-    width: 160,
-    height: 160,
-    marginBottom: 20,
-  },
   heroTitle: {
-    fontSize: 36,
+    fontSize: 61, // 47 * 1.3 = 61px (%30 büyütüldü)
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: 24, // 8'den 24'e çıkarıldı (1 satır boşluk için)
     textAlign: 'center',
   },
   heroSubtitle: {
@@ -373,10 +778,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   heroDescription: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 28, // 23 * 1.2 = 28px (%20 büyütüldü)
+    lineHeight: 43, // 36 * 1.2 = 43px (%20 büyütüldü)
     textAlign: 'center',
-    maxWidth: 600,
+    maxWidth: 900, // 600'den 900'e çıkarıldı (%50 artırıldı)
   },
 
   // Sections
@@ -397,13 +802,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 31, // 24 * 1.3 = 31px (%30 büyütüldü)
     fontWeight: '700',
     marginLeft: 12,
   },
   sectionText: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 23, // 18 * 1.3 = 23px (%30 büyütüldü)
+    lineHeight: 36, // 28 * 1.3 = 36px (%30 büyütüldü)
   },
 
   // Mission Steps
@@ -428,13 +833,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stepTitle: {
-    fontSize: 18,
+    fontSize: 35, // 23 * 1.5 = 35px (%50 büyütüldü)
     fontWeight: '600',
     marginBottom: 8,
   },
   stepText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 33, // 22 * 1.5 = 33px (%50 büyütüldü)
+    lineHeight: 51, // 34 * 1.5 = 51px (%50 büyütüldü)
   },
 
   // Difference Grid
@@ -459,13 +864,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   differenceTitle: {
-    fontSize: 20,
+    fontSize: 32, // 20 * 1.6 = 32px (%60 büyütüldü)
     fontWeight: '600',
     marginBottom: 12,
   },
   differenceText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 27, // 17 * 1.6 = 27px (%60 büyütüldü)
+    lineHeight: 42, // 26 * 1.6 = 42px (%60 büyütüldü)
   },
 
   // Join Section
@@ -483,19 +888,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   joinTitle: {
-    fontSize: 32,
+    fontSize: 48, // 32 * 1.5 = 48px (%50 büyütüldü)
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 20,
   },
   joinText: {
-    fontSize: 18,
+    fontSize: 27, // 18 * 1.5 = 27px (%50 büyütüldü)
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: 42, // 28 * 1.5 = 42px (%50 büyütüldü)
     marginBottom: 24,
   },
   joinCallToAction: {
-    fontSize: 20,
+    fontSize: 30, // 20 * 1.5 = 30px (%50 büyütüldü)
     fontWeight: '600',
     textAlign: 'center',
     fontStyle: 'italic',
@@ -522,13 +927,13 @@ const styles = StyleSheet.create({
   },
   statsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   statItem: {
-    width: '48%',
+    flex: 1,
     alignItems: 'center',
-    marginBottom: 30,
+    paddingHorizontal: 10,
   },
   statNumber: {
     fontSize: 32,
