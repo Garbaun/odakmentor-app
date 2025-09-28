@@ -14,6 +14,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'expo-router';
 
+async function fetchWithAuth<T>(path: string): Promise<T> {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  const res = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!res.ok) throw new Error('İstek başarısız');
+  return res.json() as Promise<T>;
+}
+
 const { width } = Dimensions.get('window');
 
 const APP_BG = '#ffffff';
@@ -109,25 +116,49 @@ export default function DashboardScreen() {
 	const studyTimeVal = useRef(new Animated.Value(0)).current;
 	const completedLessonsVal = useRef(new Animated.Value(0)).current;
 	const streakVal = useRef(new Animated.Value(0)).current;
-	const [studyTimeCnt, setStudyTimeCnt] = useState(0);
-	const [completedLessonsCnt, setCompletedLessonsCnt] = useState(0);
-	const [streakCnt, setStreakCnt] = useState(0);
+    const [studyTimeCnt, setStudyTimeCnt] = useState(0);
+    const [completedLessonsCnt, setCompletedLessonsCnt] = useState(0);
+    const [streakCnt, setStreakCnt] = useState(0);
+    const [activity, setActivity] = useState<{ id: number; title: string; createdAt: string }[]>([]);
 
-	useEffect(() => {
-		const ease = Easing.out(Easing.quad);
-		Animated.timing(studyTimeVal, { toValue: 45, duration: 1200, easing: ease, useNativeDriver: false }).start();
-		Animated.timing(completedLessonsVal, { toValue: 23, duration: 1200, easing: ease, useNativeDriver: false }).start();
-		Animated.timing(streakVal, { toValue: 7, duration: 1200, easing: ease, useNativeDriver: false }).start();
+    useEffect(() => {
+        const ease = Easing.out(Easing.quad);
+        // İlk değerleri 0'dan animasyonlayacağız; gerçek değerler geldikçe hedefi güncelliyoruz
+        Animated.timing(studyTimeVal, { toValue: 0, duration: 1, easing: ease, useNativeDriver: false }).start();
+        Animated.timing(completedLessonsVal, { toValue: 0, duration: 1, easing: ease, useNativeDriver: false }).start();
+        Animated.timing(streakVal, { toValue: 0, duration: 1, easing: ease, useNativeDriver: false }).start();
 
-		const sSub = studyTimeVal.addListener(({ value }) => setStudyTimeCnt(Math.round(value)));
-		const cSub = completedLessonsVal.addListener(({ value }) => setCompletedLessonsCnt(Math.round(value)));
-		const stSub = streakVal.addListener(({ value }) => setStreakCnt(Math.round(value)));
-		return () => {
-			studyTimeVal.removeListener(sSub);
-			completedLessonsVal.removeListener(cSub);
-			streakVal.removeListener(stSub);
-		};
-	}, [studyTimeVal, completedLessonsVal, streakVal]);
+        const sSub = studyTimeVal.addListener(({ value }) => setStudyTimeCnt(Math.round(value)));
+        const cSub = completedLessonsVal.addListener(({ value }) => setCompletedLessonsCnt(Math.round(value)));
+        const stSub = streakVal.addListener(({ value }) => setStreakCnt(Math.round(value)));
+        return () => {
+            studyTimeVal.removeListener(sSub);
+            completedLessonsVal.removeListener(cSub);
+            streakVal.removeListener(stSub);
+        };
+    }, [studyTimeVal, completedLessonsVal, streakVal]);
+
+    useEffect(() => {
+        // Gerçek verileri çek
+        const load = async () => {
+            try {
+                const stats = await fetchWithAuth<{ success: boolean; totalMinutes: number; completedLessons: number; currentStreak: number }>("/api/user/stats");
+                if (stats && (stats as any).success !== false) {
+                    const ease = Easing.out(Easing.quad);
+                    Animated.timing(studyTimeVal, { toValue: Math.round((stats.totalMinutes || 0) / 60), duration: 1200, easing: ease, useNativeDriver: false }).start();
+                    Animated.timing(completedLessonsVal, { toValue: stats.completedLessons || 0, duration: 1200, easing: ease, useNativeDriver: false }).start();
+                    Animated.timing(streakVal, { toValue: stats.currentStreak || 0, duration: 1200, easing: ease, useNativeDriver: false }).start();
+                }
+            } catch {}
+            try {
+                const act = await fetchWithAuth<{ success: boolean; items: { id: number; title: string; createdAt: string }[] }>("/api/user/activity");
+                setActivity(act.items || []);
+            } catch {
+                setActivity([]);
+            }
+        };
+        if (isAuthenticated) load();
+    }, [isAuthenticated, studyTimeVal, completedLessonsVal, streakVal]);
 
 	const handleLogout = () => {
 		useAuthStore.getState().logout();
@@ -172,10 +203,10 @@ export default function DashboardScreen() {
 
 					{/* Stats Section */}
 					<ThemedView style={[styles.statsContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-						<View style={styles.statCard}>
-							<ThemedText style={styles.statNumber}>{studyTimeCnt}</ThemedText>
-							<ThemedText style={styles.statLabel}>{t('studyTime')}</ThemedText>
-						</View>
+                    <View style={styles.statCard}>
+                        <ThemedText style={styles.statNumber}>{studyTimeCnt}</ThemedText>
+                        <ThemedText style={styles.statLabel}>{t('studyTime')}</ThemedText>
+                    </View>
 						<View style={styles.statDivider} />
 						<View style={styles.statCard}>
 							<ThemedText style={styles.statNumber}>{completedLessonsCnt}</ThemedText>
@@ -228,40 +259,23 @@ export default function DashboardScreen() {
 					</ThemedView>
 
 					{/* Recent Activity Section */}
-					<ThemedView style={styles.recentActivityContainer}>
+                    <ThemedView style={styles.recentActivityContainer}>
 						<ThemedText type="subtitle" style={[styles.sectionTitle]}>
 							{t('recentActivity')}
 						</ThemedText>
-
-						<View style={styles.activityItem}>
-							<View style={styles.activityIcon}>
-								<MaterialIcons name="check-circle" size={20} color="#4CAF50" />
-							</View>
-							<View style={styles.activityContent}>
-								<ThemedText style={styles.activityTitle}>Matematik dersi tamamlandı</ThemedText>
-								<ThemedText style={styles.activityTime}>2 saat önce</ThemedText>
-							</View>
-						</View>
-
-						<View style={styles.activityItem}>
-							<View style={styles.activityIcon}>
-								<MaterialIcons name="assignment" size={20} color="#FF9800" />
-							</View>
-							<View style={styles.activityContent}>
-								<ThemedText style={styles.activityTitle}>Yeni ödev atandı</ThemedText>
-								<ThemedText style={styles.activityTime}>1 gün önce</ThemedText>
-							</View>
-						</View>
-
-						<View style={styles.activityItem}>
-							<View style={styles.activityIcon}>
-								<MaterialIcons name="star" size={20} color="#FFC107" />
-							</View>
-							<View style={styles.activityContent}>
-								<ThemedText style={styles.activityTitle}>Başarı rozeti kazandınız</ThemedText>
-								<ThemedText style={styles.activityTime}>3 gün önce</ThemedText>
-							</View>
-						</View>
+                        {activity.length > 0 ? activity.map(item => (
+                            <View key={item.id} style={styles.activityItem}>
+                                <View style={styles.activityIcon}>
+                                    <MaterialIcons name="history" size={20} color="#6b7280" />
+                                </View>
+                                <View style={styles.activityContent}>
+                                    <ThemedText style={styles.activityTitle}>{item.title}</ThemedText>
+                                    <ThemedText style={styles.activityTime}>{new Date(item.createdAt).toLocaleString('tr-TR')}</ThemedText>
+                                </View>
+                            </View>
+                        )) : (
+                            <ThemedText style={{ color: '#6b7280' }}>Henüz aktivite yok</ThemedText>
+                        )}
 					</ThemedView>
 
 					{/* Logout Button */}

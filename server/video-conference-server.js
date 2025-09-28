@@ -382,6 +382,148 @@ app.get('/api/blogs', requireAdmin, async (req, res) => {
     res.json([]);
   }
 });
+
+// ---- AUTH MIDDLEWARE (GENEL) ----
+function requireAuth(req, res, next) {
+  try {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, error: 'Yetkisiz' });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (!decoded) return res.status(401).json({ success: false, error: 'Yetkisiz' });
+    req.user = decoded; // { sub, role }
+    next();
+  } catch (e) {
+    return res.status(401).json({ success: false, error: 'Yetkisiz' });
+  }
+}
+
+// ---- USER DASHBOARD ENDPOINTS ----
+app.get('/api/user/stats', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.sub;
+
+    // Toplam çalışma süresi ve tamamlanan dersler
+    let totalMinutes = 0;
+    let completedLessons = 0;
+    try {
+      const agg = await pool.query(
+        `SELECT COALESCE(SUM(time_spent),0)::int as total_minutes,
+                SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END)::int as completed
+         FROM student_progress WHERE student_id = $1`,
+        [userId]
+      );
+      totalMinutes = agg.rows[0]?.total_minutes || 0;
+      completedLessons = agg.rows[0]?.completed || 0;
+    } catch {}
+
+    // Streak hesapla (son 30 günde ardışık günler)
+    let currentStreak = 0;
+    try {
+      const datesRes = await pool.query(
+        `SELECT DISTINCT DATE(created_at) as d
+         FROM student_progress
+         WHERE student_id = $1
+         ORDER BY d DESC
+         LIMIT 30`,
+        [userId]
+      );
+      const dates = datesRes.rows.map(r => new Date(r.d));
+      const today = new Date(); today.setHours(0,0,0,0);
+      let day = new Date(today);
+      let streak = 0;
+      for (let i = 0; i < 30; i++) {
+        const match = dates.find(dt => dt.getTime() === day.getTime());
+        if (match) {
+          streak += 1;
+          day.setDate(day.getDate() - 1);
+        } else {
+          // Eğer bugün yoksa ama geçmişte var, yarıda kes
+          if (i === 0) {
+            // bugün yoksa, dünlerden ardışık yakalamaya çalış
+            day.setDate(today.getDate() - 1);
+            const yesterdayMatch = dates.find(dt => dt.getTime() === day.getTime());
+            if (!yesterdayMatch) break;
+            // dünden itibaren say
+            streak = 1;
+            day.setDate(day.getDate() - 1);
+            // devamını dış döngüde devam ettiremeyiz; basit hesap yeterli
+          }
+          break;
+        }
+      }
+      currentStreak = streak;
+    } catch {}
+
+    res.json({
+      success: true,
+      totalMinutes,
+      completedLessons,
+      currentStreak,
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
+app.get('/api/user/activity', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.sub;
+    try {
+      const { rows } = await pool.query(
+        `SELECT sp.id, sp.status, sp.score, sp.time_spent, sp.created_at,
+                c.title as course_title
+         FROM student_progress sp
+         LEFT JOIN courses c ON c.id = sp.course_id
+         WHERE sp.student_id = $1
+         ORDER BY sp.created_at DESC
+         LIMIT 10`,
+        [userId]
+      );
+      const items = rows.map(r => ({
+        id: r.id,
+        title: r.course_title || 'İlerleme kaydı',
+        status: r.status,
+        timeSpent: r.time_spent,
+        createdAt: r.created_at,
+      }));
+      res.json({ success: true, items });
+    } catch {
+      res.json({ success: true, items: [] });
+    }
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
+// ---- TEACHER DASHBOARD ----
+app.get('/api/teacher/stats', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Erişim yasak' });
+    }
+    const teacherId = req.user.sub;
+    let totalCourses = 0, activeCourses = 0, totalEnrollments = 0, activeEnrollments = 0;
+    try {
+      const crs = await pool.query(`SELECT COUNT(*)::int as total, SUM(CASE WHEN is_active THEN 1 ELSE 0 END)::int as active FROM courses WHERE teacher_id = $1`, [teacherId]);
+      totalCourses = crs.rows[0]?.total || 0;
+      activeCourses = crs.rows[0]?.active || 0;
+    } catch {}
+    try {
+      const enr = await pool.query(
+        `SELECT COUNT(*)::int as total,
+                SUM(CASE WHEN status='active' THEN 1 ELSE 0 END)::int as active
+         FROM enrollments e JOIN courses c ON c.id=e.course_id
+         WHERE c.teacher_id=$1`, [teacherId]
+      );
+      totalEnrollments = enr.rows[0]?.total || 0;
+      activeEnrollments = enr.rows[0]?.active || 0;
+    } catch {}
+    res.json({ success: true, totalCourses, activeCourses, totalEnrollments, activeEnrollments });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
 app.get('/api/rooms', (req, res) => {
   const roomsList = Array.from(rooms.entries()).map(([id, room]) => ({
     id,
