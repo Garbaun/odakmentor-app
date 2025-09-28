@@ -293,6 +293,95 @@ app.post('/api/auth/reset-password', async (req, res) => {
   // Gelecekte email ile reset akışı
   res.json({ success: true });
 });
+
+// ---- ADMIN GUARD & ADMIN ENDPOINTS ----
+function requireAdmin(req, res, next) {
+  try {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, error: 'Yetkisiz' });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (!decoded || decoded.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Erişim yasak' });
+    }
+    req.user = decoded;
+    next();
+  } catch (e) {
+    return res.status(401).json({ success: false, error: 'Yetkisiz' });
+  }
+}
+
+function mapUserRow(row) {
+  return {
+    id: row.id,
+    email: row.email,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    role: row.role,
+    status: row.status,
+    createdAt: row.created_at,
+    lastLoginAt: row.last_login_at,
+  };
+}
+
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id,email,first_name,last_name,role,status,created_at,last_login_at FROM users ORDER BY created_at DESC`
+    );
+    res.json(rows.map(mapUserRow));
+  } catch (e) {
+    console.error('admin/users error', e);
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
+app.get('/api/admin/stats', requireAdmin, async (req, res) => {
+  try {
+    const totals = await pool.query(
+      `SELECT 
+         SUM(CASE WHEN role='student' THEN 1 ELSE 0 END)::int as total_students,
+         SUM(CASE WHEN role='teacher' THEN 1 ELSE 0 END)::int as total_teachers,
+         SUM(CASE WHEN role='student' AND status<>'active' THEN 1 ELSE 0 END)::int as pending_students,
+         SUM(CASE WHEN role='teacher' AND status<>'active' THEN 1 ELSE 0 END)::int as pending_teachers
+       FROM users`
+    );
+
+    // Kurs ve kayıtlar opsiyonel; tablo yoksa 0 kabul ediyoruz
+    let totalCourses = 0, activeCourses = 0;
+    try {
+      const crs = await pool.query(`SELECT COUNT(*)::int as c, SUM(CASE WHEN is_active THEN 1 ELSE 0 END)::int as a FROM courses`);
+      totalCourses = crs.rows[0]?.c || 0;
+      activeCourses = crs.rows[0]?.a || 0;
+    } catch {}
+
+    res.json({
+      users: {
+        totalStudents: totals.rows[0]?.total_students || 0,
+        totalTeachers: totals.rows[0]?.total_teachers || 0,
+        pendingStudents: totals.rows[0]?.pending_students || 0,
+        pendingTeachers: totals.rows[0]?.pending_teachers || 0,
+      },
+      courses: { total: totalCourses, active: activeCourses },
+    });
+  } catch (e) {
+    console.error('admin/stats error', e);
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
+app.get('/api/blogs', requireAdmin, async (req, res) => {
+  try {
+    try {
+      const { rows } = await pool.query(`SELECT * FROM blog_posts ORDER BY created_at DESC`);
+      res.json(rows);
+    } catch {
+      res.json([]);
+    }
+  } catch (e) {
+    res.json([]);
+  }
+});
 app.get('/api/rooms', (req, res) => {
   const roomsList = Array.from(rooms.entries()).map(([id, room]) => ({
     id,

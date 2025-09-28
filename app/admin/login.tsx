@@ -1,58 +1,37 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useAuthStore } from '@/store/authStore';
+import { AuthService } from '@/services/authService';
 
 export default function AdminLogin() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Basit admin kullanıcıları (gerçek projede Firebase'den gelecek)
-  const adminUsers = [
-    { username: 'admin', password: 'admin123', email: 'admin@odakmentor.com' },
-    { username: 'yönetici', password: 'yönetici123', email: 'yonetici@odakmentor.com' },
-  ];
-
   const handleLogin = async () => {
-    if (!username.trim() || !password.trim()) {
-      Alert.alert('Hata', 'Kullanıcı adı ve şifre gerekli');
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Hata', 'E-posta ve şifre gerekli');
       return;
     }
 
     setLoading(true);
 
     try {
-      // Basit authentication kontrolü
-      const adminUser = adminUsers.find(
-        user => user.username.toLowerCase() === username.toLowerCase() && user.password === password
-      );
-
-      if (adminUser) {
-        // AuthStore'u güncelle
-        useAuthStore.getState().setUser({
-          uid: 'admin-' + Date.now(),
-          email: adminUser.email,
-          displayName: username,
-        } as any);
-        
-        useAuthStore.getState().setUserProfile({
-          uid: 'admin-' + Date.now(),
-          email: adminUser.email,
-          displayName: username,
-          role: 'admin',
-          createdAt: new Date(),
-        } as any);
-
-        Alert.alert('Başarılı', 'Admin paneline hoş geldiniz!', [
-          { text: 'Tamam', onPress: () => router.push('/admin') }
-        ]);
+      const result = await AuthService.login(email.trim(), password);
+      if (result.success && result.user) {
+        if (result.user.role !== 'admin') {
+          Alert.alert('Yetkisiz', 'Bu alana erişmek için admin hesabı gerekir.');
+        } else {
+          Alert.alert('Başarılı', 'Admin paneline hoş geldiniz!', [
+            { text: 'Tamam', onPress: () => router.push('/admin') }
+          ]);
+        }
       } else {
-        Alert.alert('Hata', 'Geçersiz kullanıcı adı veya şifre');
+        Alert.alert('Hata', result.error || 'Geçersiz e-posta veya şifre');
       }
     } catch (error) {
       Alert.alert('Hata', 'Giriş yapılırken bir hata oluştu');
@@ -69,14 +48,15 @@ export default function AdminLogin() {
 
         <View style={styles.form}>
           <View style={styles.inputGroup}>
-            <ThemedText style={styles.label}>Kullanıcı Adı</ThemedText>
+            <ThemedText style={styles.label}>E-posta</ThemedText>
             <TextInput
               style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Kullanıcı adınızı girin"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="ornek@eposta.com"
               autoCapitalize="none"
               autoCorrect={false}
+              keyboardType="email-address"
             />
           </View>
 

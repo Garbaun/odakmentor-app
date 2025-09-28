@@ -225,6 +225,15 @@ export class DatabaseService {
 
 // Kullanıcı Servisi
 export class UserService {
+  static async getAllUsers(): Promise<User[]> {
+    const result = await DatabaseService.query('SELECT * FROM users ORDER BY created_at DESC');
+    return result.rows.map((row: any) => this.mapUserFromDb(row));
+  }
+
+  static async getUsersByRole(role: 'student' | 'teacher' | 'admin'): Promise<User[]> {
+    const result = await DatabaseService.query('SELECT * FROM users WHERE role = $1 ORDER BY created_at DESC', [role]);
+    return result.rows.map((row: any) => this.mapUserFromDb(row));
+  }
   static async createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'loginCount'>): Promise<User> {
     const query = `
       INSERT INTO users (email, first_name, last_name, phone, country_code, date_of_birth, gender, role, status, is_email_verified, is_phone_verified, preferences, subscription)
