@@ -5,8 +5,9 @@ import { Image, Platform, Text, TouchableOpacity, View, useWindowDimensions } fr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/store/authStore';
-import { colors, globalStyles } from '@/styles/globalStyles';
 import { useLangStore } from '@/store/langStore';
+import { colors, globalStyles } from '@/styles/globalStyles';
+import { useTranslator } from '@/i18n/translations';
 
 interface TopBarProps {
   currentPage?: string;
@@ -25,6 +26,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
   const lang = useLangStore((s) => s.lang);
   const setLang = useLangStore((s) => s.setLang);
   const initLang = useLangStore((s) => s.init);
+  const t = useTranslator();
 
   useEffect(() => { initLang(); }, [initLang]);
 
@@ -60,7 +62,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
             onPress={() => router.push('/blog')}
           >
             <Text style={[globalStyles.topStripButtonText, currentPage === 'blog' && { fontWeight: '700' }]}>
-              Blog
+              {t('nav.blog')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -68,7 +70,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
             onPress={() => router.push('/corporate')}
           >
             <Text style={[globalStyles.topStripButtonText, currentPage === 'corporate' && { fontWeight: '700' }]}>
-              Kurumsal
+              {t('nav.corporate')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -76,7 +78,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
             onPress={() => router.push('/teacher')}
           >
             <Text style={[globalStyles.topStripButtonText, currentPage === 'teacher' && { fontWeight: '700' }]}>
-              Eğitmenler
+              {t('nav.teachers')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -84,7 +86,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
             onPress={() => router.push('/about')}
           >
             <Text style={[globalStyles.topStripButtonText, currentPage === 'about' && { fontWeight: '700' }]}>
-              Hakkımızda
+              {t('nav.about')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -112,7 +114,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
 
             {/* Özel Ders Al */}
             <TouchableOpacity style={globalStyles.actionLink} onPress={handleCategoriesPress}>
-              <Text style={globalStyles.actionLinkText}>Özel Ders Al</Text>
+              <Text style={globalStyles.actionLinkText}>{t('nav.bookLesson')}</Text>
             </TouchableOpacity>
             
             {/* Separator */}
@@ -128,29 +130,29 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
               <>
                 {/* Kullanıcı Adı */}
                 <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/dashboard')}>
-                  <Text style={globalStyles.actionLinkText}>Merhaba, {firstName}</Text>
+                  <Text style={globalStyles.actionLinkText}>{t('greet.hello')}, {firstName}</Text>
                 </TouchableOpacity>
                 
                 {/* Dashboard */}
                 <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/dashboard')}>
-                  <Text style={globalStyles.actionLinkText}>Dashboard</Text>
+                  <Text style={globalStyles.actionLinkText}>{t('auth.dashboard')}</Text>
                 </TouchableOpacity>
                 
                 {/* Çıkış Yap */}
                 <TouchableOpacity style={globalStyles.registerButton} onPress={handleLogout}>
-                  <Text style={globalStyles.registerButtonText}>Çıkış Yap</Text>
+                  <Text style={globalStyles.registerButtonText}>{t('auth.logout')}</Text>
                 </TouchableOpacity>
               </>
             ) : (
               <>
                 {/* Oturum Aç */}
                 <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/student')}>
-                  <Text style={globalStyles.actionLinkText}>Oturum Aç</Text>
+                  <Text style={globalStyles.actionLinkText}>{t('auth.signIn')}</Text>
                 </TouchableOpacity>
                 
                 {/* Kayıt Ol */}
                 <TouchableOpacity style={globalStyles.registerButton} onPress={() => router.push('/register')}>
-                  <Text style={globalStyles.registerButtonText}>Kayıt Ol</Text>
+                  <Text style={globalStyles.registerButtonText}>{t('auth.signUp')}</Text>
                 </TouchableOpacity>
               </>
             )}
