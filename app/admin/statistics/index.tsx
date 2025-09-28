@@ -2,7 +2,6 @@ import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { UserService, BlogService } from '@/services/databaseService';
 
 type Statistics = {
   users: {
@@ -68,75 +67,49 @@ export default function StatisticsPage() {
 
   const loadStatistics = async () => {
     try {
+      const token = typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const [adminStatsRes, blogsRes] = await Promise.all([
+        fetch('/api/admin/stats', { headers }),
+        fetch('/api/blogs', { headers }),
+      ]);
+      const adminStats = await adminStatsRes.json();
+      const allBlogs = await blogsRes.json();
+
       const now = new Date();
       const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-      // Kullanıcı istatistikleri
-      const allUsers = await UserService.getAllUsers();
-      const students = allUsers.filter(user => user.role === 'student');
-      const teachers = allUsers.filter(user => user.role === 'teacher');
-      const pendingStudents = students.filter(user => user.status === 'pending');
-      const pendingTeachers = teachers.filter(user => user.status === 'pending');
-      const approvedStudents = students.filter(user => user.status === 'active');
-      const approvedTeachers = teachers.filter(user => user.status === 'active');
-
-      // Blog istatistikleri
-      const allBlogs = await BlogService.getAllBlogPosts();
-      const publishedBlogs = allBlogs.filter(blog => blog.status === 'published');
-      const draftBlogs = allBlogs.filter(blog => blog.status === 'draft');
-
-      // Haftalık ve aylık aktivite
-      const newUsersThisWeek = allUsers.filter(user => 
-        user.createdAt && new Date(user.createdAt) > oneWeekAgo
-      ).length;
-      const newUsersThisMonth = allUsers.filter(user => 
-        user.createdAt && new Date(user.createdAt) > oneMonthAgo
-      ).length;
-      const newBlogsThisWeek = allBlogs.filter(blog => 
-        blog.created_at && new Date(blog.created_at) > oneWeekAgo
-      ).length;
-      const newBlogsThisMonth = allBlogs.filter(blog => 
-        blog.created_at && new Date(blog.created_at) > oneMonthAgo
-      ).length;
+      const publishedBlogs = (allBlogs || []).filter((b: any) => b.status === 'published');
+      const draftBlogs = (allBlogs || []).filter((b: any) => b.status === 'draft');
+      const newBlogsThisWeek = (allBlogs || []).filter((b: any) => b.created_at && new Date(b.created_at) > oneWeekAgo).length;
+      const newBlogsThisMonth = (allBlogs || []).filter((b: any) => b.created_at && new Date(b.created_at) > oneMonthAgo).length;
 
       setStats({
         users: {
-          totalStudents: students.length,
-          totalTeachers: teachers.length,
-          pendingStudents: pendingStudents.length,
-          pendingTeachers: pendingTeachers.length,
-          approvedStudents: approvedStudents.length,
-          approvedTeachers: approvedTeachers.length,
+          totalStudents: adminStats?.users?.totalStudents || 0,
+          totalTeachers: adminStats?.users?.totalTeachers || 0,
+          pendingStudents: adminStats?.users?.pendingStudents || 0,
+          pendingTeachers: adminStats?.users?.pendingTeachers || 0,
+          approvedStudents: (adminStats?.users?.totalStudents || 0) - (adminStats?.users?.pendingStudents || 0),
+          approvedTeachers: (adminStats?.users?.totalTeachers || 0) - (adminStats?.users?.pendingTeachers || 0),
         },
         blogs: {
-          total: allBlogs.length,
+          total: (allBlogs || []).length,
           published: publishedBlogs.length,
           drafts: draftBlogs.length,
           recent: newBlogsThisWeek,
         },
         activity: {
-          newUsersThisWeek,
-          newUsersThisMonth,
+          newUsersThisWeek: 0,
+          newUsersThisMonth: 0,
           newBlogsThisWeek,
           newBlogsThisMonth,
         },
       });
 
-      // Son aktiviteler (basit versiyon)
-      const recentUsers = allUsers
-        .filter(user => user.createdAt && new Date(user.createdAt) > oneWeekAgo)
-        .slice(0, 5)
-        .map(user => ({
-          id: user.id.toString(),
-          type: 'user_registration' as const,
-          title: `${user.firstName} ${user.lastName}`,
-          description: `${user.role === 'student' ? 'Öğrenci' : 'Öğretmen'} kaydı`,
-          date: user.createdAt,
-          userRole: user.role,
-        }));
-
-      setRecentActivity(recentUsers);
+      setRecentActivity([]);
     } catch (error) {
       console.error('İstatistikler yüklenemedi:', error);
     } finally {

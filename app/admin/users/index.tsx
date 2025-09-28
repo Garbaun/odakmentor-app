@@ -4,18 +4,21 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { UserService } from '@/services/databaseService';
 
 type User = {
   id: number;
   firstName?: string;
   lastName?: string;
   email?: string;
-  role: 'student' | 'teacher';
+  role: 'student' | 'teacher' | 'admin';
   status?: string;
   createdAt?: string;
   lastLoginAt?: string;
 };
+
+function getToken() {
+  return typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
+}
 
 export default function UserManagement() {
   const router = useRouter();
@@ -36,8 +39,12 @@ export default function UserManagement() {
 
   const loadUsers = async () => {
     try {
-      const allUsers = await UserService.getAllUsers();
-      setUsers(allUsers);
+      const token = getToken();
+      const res = await fetch('/api/admin/users', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const data = await res.json();
+      setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Kullanıcılar yüklenemedi:', error);
     } finally {
