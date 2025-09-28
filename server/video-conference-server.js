@@ -383,6 +383,28 @@ app.get('/api/blogs', requireAdmin, async (req, res) => {
   }
 });
 
+app.patch('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).json({ success: false, error: 'Geçersiz id' });
+    const { status, role } = req.body || {};
+    const fields = [];
+    const values = [];
+    let p = 1;
+    if (status) { fields.push(`status = $${p++}`); values.push(status); }
+    if (role) { fields.push(`role = $${p++}`); values.push(role); }
+    if (fields.length === 0) return res.status(400).json({ success: false, error: 'Güncellenecek alan yok' });
+    values.push(id);
+    const q = `UPDATE users SET ${fields.join(', ')}, updated_at = NOW() WHERE id = $${p} RETURNING id,email,first_name,last_name,role,status,created_at,last_login_at`;
+    const { rows } = await pool.query(q, values);
+    if (!rows[0]) return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı' });
+    res.json({ success: true, user: mapUserRow(rows[0]) });
+  } catch (e) {
+    console.error('admin/users PATCH error', e);
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
 // ---- AUTH MIDDLEWARE (GENEL) ----
 function requireAuth(req, res, next) {
   try {

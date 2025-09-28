@@ -28,6 +28,7 @@ export default function UserManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<'all' | 'student' | 'teacher'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'approved' | 'pending'>('all');
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -49,6 +50,29 @@ export default function UserManagement() {
       console.error('Kullanıcılar yüklenemedi:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateUser = async (id: number, payload: Partial<User>) => {
+    try {
+      setUpdatingId(id);
+      const token = getToken();
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setUsers(prev => prev.map(u => (u.id === id ? { ...u, ...data.user } : u)));
+      }
+    } catch (e) {
+      // noop
+    } finally {
+      setUpdatingId(null);
     }
   };
 
