@@ -301,13 +301,12 @@ export default function HomeScreen() {
 		};
 	}, [studentsVal, teachersVal, classesVal, hoursVal]);
 
-	// Auto-advance banner every 5 seconds
+	// Eğer kullanıcı giriş yapmışsa dashboard'a yönlendir
 	useEffect(() => {
-		const id = setInterval(() => {
-			nextBanner();
-		}, 5000);
-		return () => clearInterval(id);
-	}, [nextBanner]);
+		if (isAuthenticated) {
+			router.replace('/dashboard');
+		}
+	}, [isAuthenticated, router]);
 
 	return (
 		<>
@@ -544,9 +543,6 @@ export default function HomeScreen() {
 						</View>
 					</View>
 				</View>
-				{!!firstName && (
-					<ThemedText style={[styles.welcomeText, { marginTop: 0 }]}>Hoş geldin, {firstName}</ThemedText>
-				)}
 
 
 				{/* Stats Section */}

@@ -1,4 +1,6 @@
-// Geçici Mock AuthService - Veritabanı bağlantısı olmadan test için
+// Gerçek AuthService - Backend API ile konuşur ve Zustand durumunu günceller
+import { useAuthStore } from '@/store/authStore';
+
 export interface AuthResult {
   success: boolean;
   user?: any;
@@ -6,122 +8,114 @@ export interface AuthResult {
   error?: string;
 }
 
+const API_BASE = (process.env.EXPO_PUBLIC_API_BASE || '/api').replace(/\/$/, '');
+
+async function http<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    credentials: 'include',
+    ...options,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((data && (data.error || data.message)) || `HTTP ${res.status}`);
+  }
+  return data as T;
+}
+
 export class AuthService {
-  // Mock kullanıcı kaydı
   static async register(userData: {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
-    role?: 'student' | 'teacher';
+    role?: 'student' | 'teacher' | 'admin';
   }): Promise<AuthResult> {
     try {
-      console.log('Mock register:', userData);
-      
-      // Geçici mock kullanıcı
-      const mockUser = {
-        id: 1,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        role: userData.role || 'student',
-        status: 'active',
-        isEmailVerified: false,
-        isPhoneVerified: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastLoginAt: null,
-        loginCount: 0
-      };
-
-      // Mock token
-      const mockToken = 'mock-token-' + Date.now();
-
-      return { success: true, user: mockUser, token: mockToken };
-    } catch (error) {
-      console.error('Mock register error:', error);
-      return { success: false, error: 'Kayıt sırasında bir hata oluştu' };
+      const resp = await http<AuthResult>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      });
+      if (resp.success && resp.token && resp.user) {
+        localStorage.setItem('auth_token', resp.token);
+        const displayName = `${resp.user.firstName || ''} ${resp.user.lastName || ''}`.trim();
+        useAuthStore.getState().setUser({
+          uid: String(resp.user.id),
+          email: resp.user.email,
+          displayName,
+        } as any);
+        useAuthStore.getState().setUserProfile({
+          uid: String(resp.user.id),
+          email: resp.user.email,
+          displayName,
+          role: resp.user.role,
+          createdAt: new Date(),
+        } as any);
+      }
+      return resp;
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Kayıt sırasında bir hata oluştu' };
     }
   }
 
-  // Mock kullanıcı girişi
+  static async signInWithEmail(email: string, password: string): Promise<AuthResult> {
+    return this.login(email, password);
+  }
+
   static async login(email: string, password: string): Promise<AuthResult> {
     try {
-      console.log('Mock login:', email);
-      
-      // Geçici mock kullanıcı
-      const mockUser = {
-        id: 1,
-        email: email,
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'student',
-        status: 'active',
-        isEmailVerified: true,
-        isPhoneVerified: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastLoginAt: new Date().toISOString(),
-        loginCount: 1
-      };
-
-      // Mock token
-      const mockToken = 'mock-token-' + Date.now();
-
-      return { success: true, user: mockUser, token: mockToken };
-    } catch (error) {
-      console.error('Mock login error:', error);
-      return { success: false, error: 'Giriş sırasında bir hata oluştu' };
+      const resp = await http<AuthResult>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      if (resp.success && resp.token && resp.user) {
+        localStorage.setItem('auth_token', resp.token);
+        const displayName = `${resp.user.firstName || ''} ${resp.user.lastName || ''}`.trim();
+        useAuthStore.getState().setUser({
+          uid: String(resp.user.id),
+          email: resp.user.email,
+          displayName,
+        } as any);
+        useAuthStore.getState().setUserProfile({
+          uid: String(resp.user.id),
+          email: resp.user.email,
+          displayName,
+          role: resp.user.role,
+          createdAt: new Date(),
+        } as any);
+      }
+      return resp;
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Giriş sırasında bir hata oluştu' };
     }
   }
 
-  // Mock token doğrulama
   static async verifyToken(token: string): Promise<any> {
     try {
-      console.log('Mock verify token:', token);
-      
-      // Geçici mock kullanıcı
-      const mockUser = {
-        id: 1,
-        email: 'test@test.com',
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'student',
-        status: 'active',
-        isEmailVerified: true,
-        isPhoneVerified: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastLoginAt: new Date().toISOString(),
-        loginCount: 1
-      };
-
-      return mockUser;
-    } catch (error) {
-      console.error('Mock verify token error:', error);
+      const resp = await http<{ success: boolean; user?: any }>('/auth/me', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return resp.success ? resp.user : null;
+    } catch {
       return null;
     }
   }
 
-  // Mock şifre sıfırlama
   static async resetPassword(email: string): Promise<AuthResult> {
     try {
-      console.log('Mock reset password:', email);
-      return { success: true };
-    } catch (error) {
-      console.error('Mock reset password error:', error);
-      return { success: false, error: 'Şifre sıfırlama sırasında bir hata oluştu' };
+      const resp = await http<AuthResult>('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      return resp;
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Şifre sıfırlama sırasında bir hata oluştu' };
     }
   }
 
-  // Google OAuth (geçici mock)
-  static async signInWithGoogle(idToken: string): Promise<AuthResult> {
-    try {
-      console.log('Mock Google OAuth:', idToken);
-      return { success: true, user: {} as any, token: 'mock-google-token' };
-    } catch (error) {
-      console.error('Mock Google OAuth error:', error);
-      return { success: false, error: 'Google girişi sırasında bir hata oluştu' };
-    }
+  static async signInWithGoogle(_idToken: any): Promise<AuthResult> {
+    // Gelecekte OAuth backend ile entegre edilecek
+    return { success: false, error: 'Google girişi henüz aktif değil' };
   }
 }

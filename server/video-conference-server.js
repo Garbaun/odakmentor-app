@@ -6,6 +6,7 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
+require('dotenv').config();
 
 // CORS yapılandırması
 const io = socketIo(server, {
@@ -187,6 +188,111 @@ function updateParticipantsList(roomId) {
 }
 
 // API endpoints
+// --- AUTH API (login/register/me/reset-password) ---
+const { Pool } = require('pg');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const pool = new Pool({
+  host: process.env.DB_HOST || '192.168.1.200',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || 'odakmentor_db',
+  user: process.env.DB_USER || 'odakmentor',
+  password: process.env.DB_PASSWORD || 'OdakMentor2024!DB',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
+
+function signToken(payload) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+}
+
+async function findUserByEmail(email) {
+  const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  return rows[0] || null;
+}
+
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, firstName, lastName, role = 'student' } = req.body || {};
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({ success: false, error: 'Eksik alanlar' });
+    }
+    const existing = await findUserByEmail(email);
+    if (existing) return res.status(409).json({ success: false, error: 'E-posta zaten kayıtlı' });
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const ures = await client.query(
+        `INSERT INTO users (email, first_name, last_name, role, status, is_email_verified, is_phone_verified, preferences, subscription)
+         VALUES ($1,$2,$3,$4,'active',true,false,'{}','{}') RETURNING *`,
+        [email, firstName, lastName, role]
+      );
+      const user = ures.rows[0];
+      const hash = await bcrypt.hash(password, 10);
+      await client.query(
+        `INSERT INTO passwords (user_id, password_hash) VALUES ($1,$2)
+         ON CONFLICT (user_id) DO UPDATE SET password_hash=$2, updated_at=NOW()`,
+        [user.id, hash]
+      );
+      await client.query('COMMIT');
+      const token = signToken({ sub: user.id, role: user.role });
+      res.json({ success: true, user: user, token });
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('register error', error);
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) return res.status(400).json({ success: false, error: 'Eksik alanlar' });
+    const user = await findUserByEmail(email);
+    if (!user) return res.status(401).json({ success: false, error: 'Geçersiz bilgiler' });
+    const ph = await pool.query('SELECT password_hash FROM passwords WHERE user_id = $1', [user.id]);
+    const hash = ph.rows[0]?.password_hash;
+    if (!hash) return res.status(401).json({ success: false, error: 'Şifre bulunamadı' });
+    const ok = await bcrypt.compare(password, hash);
+    if (!ok) return res.status(401).json({ success: false, error: 'Geçersiz bilgiler' });
+    await pool.query('UPDATE users SET last_login_at = NOW(), login_count = login_count + 1 WHERE id=$1', [user.id]);
+    const token = signToken({ sub: user.id, role: user.role });
+    res.json({ success: true, user, token });
+  } catch (error) {
+    console.error('login error', error);
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
+});
+
+app.get('/api/auth/me', async (req, res) => {
+  try {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, error: 'Token yok' });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.sub]);
+    const user = rows[0];
+    if (!user) return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı' });
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(401).json({ success: false, error: 'Yetkisiz' });
+  }
+});
+
+app.post('/api/auth/reset-password', async (req, res) => {
+  // Gelecekte email ile reset akışı
+  res.json({ success: true });
+});
 app.get('/api/rooms', (req, res) => {
   const roomsList = Array.from(rooms.entries()).map(([id, room]) => ({
     id,

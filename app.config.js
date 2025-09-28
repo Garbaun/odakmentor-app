@@ -1,5 +1,9 @@
-module.exports = ({ config }) => {
+	module.exports = ({ config }) => {
 	const isProd = process.env.NODE_ENV === 'production';
+	// Determine router basePath: use GH_PAGES or explicit EXPO_PUBLIC_BASE_PATH; default to '' for NGINX/site root
+	const explicitBase = process.env.EXPO_PUBLIC_BASE_PATH || '';
+	const isGhPages = process.env.GH_PAGES === '1' || explicitBase === '/odakmentor-app';
+	const basePath = isGhPages ? '/odakmentor-app' : '';
 	return {
 		...config,
 		expo: {
@@ -24,8 +28,8 @@ module.exports = ({ config }) => {
 			scheme: 'odak-mentor',
 			extra: {
 				router: {
-					// Only set basePath for production (e.g., GitHub Pages). In dev, leave empty.
-					basePath: isProd ? '/odakmentor-app' : '',
+					// Only set basePath for GH Pages; keep empty for NGINX/site root.
+					basePath,
 				},
 				eas: {
 					projectId: '1f90da54-2681-4ca4-9426-b006c1d79775',

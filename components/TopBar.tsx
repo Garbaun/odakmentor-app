@@ -4,6 +4,7 @@ import React from 'react';
 import { Image, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuthStore } from '@/store/authStore';
 import { colors, globalStyles } from '@/styles/globalStyles';
 
 interface TopBarProps {
@@ -16,6 +17,10 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
+  const user = useAuthStore((s) => s.user);
+  const userProfile = useAuthStore((s) => s.userProfile);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const firstName = (user?.displayName || userProfile?.displayName || '').split(' ')[0] || '';
 
   const handleCategoriesPress = () => {
     if (onCategoriesPress) {
@@ -27,6 +32,11 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
     if (onCartPress) {
       onCartPress();
     }
+  };
+
+  const handleLogout = () => {
+    useAuthStore.getState().logout();
+    router.replace('/');
   };
 
   return (
@@ -107,15 +117,37 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
               <MaterialIcons name="shopping-cart" size={20} color={colors.secondary} />
             </TouchableOpacity>
             
-            {/* Oturum Aç */}
-            <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/student')}>
-              <Text style={globalStyles.actionLinkText}>Oturum Aç</Text>
-            </TouchableOpacity>
-            
-            {/* Kayıt Ol */}
-            <TouchableOpacity style={globalStyles.registerButton} onPress={() => router.push('/register')}>
-              <Text style={globalStyles.registerButtonText}>Kayıt Ol</Text>
-            </TouchableOpacity>
+            {/* Kullanıcı giriş yapmışsa farklı butonlar göster */}
+            {isAuthenticated ? (
+              <>
+                {/* Kullanıcı Adı */}
+                <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/dashboard')}>
+                  <Text style={globalStyles.actionLinkText}>Merhaba, {firstName}</Text>
+                </TouchableOpacity>
+                
+                {/* Dashboard */}
+                <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/dashboard')}>
+                  <Text style={globalStyles.actionLinkText}>Dashboard</Text>
+                </TouchableOpacity>
+                
+                {/* Çıkış Yap */}
+                <TouchableOpacity style={globalStyles.registerButton} onPress={handleLogout}>
+                  <Text style={globalStyles.registerButtonText}>Çıkış Yap</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {/* Oturum Aç */}
+                <TouchableOpacity style={globalStyles.actionLink} onPress={() => router.push('/student')}>
+                  <Text style={globalStyles.actionLinkText}>Oturum Aç</Text>
+                </TouchableOpacity>
+                
+                {/* Kayıt Ol */}
+                <TouchableOpacity style={globalStyles.registerButton} onPress={() => router.push('/register')}>
+                  <Text style={globalStyles.registerButtonText}>Kayıt Ol</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </View>

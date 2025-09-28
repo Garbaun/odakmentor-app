@@ -38,7 +38,7 @@
     ],
     "scheme": "odak-mentor",
     "extra": {
-      "router": { "basePath": "/odakmentor-app" },
+      "router": { "basePath": "" },
       "eas": {
         "projectId": "1f90da54-2681-4ca4-9426-b006c1d79775"
       }
