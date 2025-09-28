@@ -44,17 +44,21 @@ export class VideoConferenceService {
   }
 
   private setupWebRTC() {
-    // WebRTC yapılandırması
-    const configuration = {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-      ],
-    };
-
     // Global RTCPeerConnection yapılandırması
     (global as any).RTCPeerConnection = RTCPeerConnection;
+  }
+
+  private getIceServers() {
+    const turnUser = process.env.EXPO_PUBLIC_TURN_USER || 'odakmentor';
+    const turnPass = process.env.EXPO_PUBLIC_TURN_PASS || 'StrongTurnPass123';
+    const turnHost = process.env.EXPO_PUBLIC_TURN_HOST || 'odakmentor.com';
+
+    return [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: `turn:${turnHost}:3478`, username: turnUser, credential: turnPass },
+      { urls: `turns:${turnHost}:5349`, username: turnUser, credential: turnPass },
+    ];
   }
 
   async initialize(config: VideoConferenceConfig, callbacks: VideoConferenceCallbacks): Promise<boolean> {
@@ -155,9 +159,7 @@ export class VideoConferenceService {
   private async createPeerConnection(userId: string, userName: string, userRole: 'teacher' | 'student'): Promise<void> {
     try {
       const peerConnection = new RTCPeerConnection({
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-        ],
+        iceServers: this.getIceServers(),
       });
 
       // Yerel akışı ekle
@@ -212,9 +214,7 @@ export class VideoConferenceService {
       if (!peerConnection) {
         // Yeni peer connection oluştur
         peerConnection = new RTCPeerConnection({
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-          ],
+          iceServers: this.getIceServers(),
         });
 
         // Yerel akışı ekle
