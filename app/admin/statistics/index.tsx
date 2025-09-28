@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Statistics = {
   users: {
@@ -60,6 +60,9 @@ export default function StatisticsPage() {
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(''); // YYYY-MM-DD
+  const [endDate, setEndDate] = useState('');   // YYYY-MM-DD
+  const [allBlogsState, setAllBlogsState] = useState<any[]>([]);
 
   useEffect(() => {
     loadStatistics();
@@ -76,6 +79,7 @@ export default function StatisticsPage() {
       ]);
       const adminStats = await adminStatsRes.json();
       const allBlogs = await blogsRes.json();
+      setAllBlogsState(Array.isArray(allBlogs) ? allBlogs : []);
 
       const now = new Date();
       const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -117,6 +121,48 @@ export default function StatisticsPage() {
     }
   };
 
+  const filteredBlogs = useMemo(() => {
+    if (!allBlogsState || (!startDate && !endDate)) return allBlogsState || [];
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    return (allBlogsState || []).filter((b: any) => {
+      const d = b?.created_at ? new Date(b.created_at) : null;
+      if (!d) return false;
+      if (start && d < start) return false;
+      if (end) {
+        const e = new Date(end);
+        e.setHours(23,59,59,999);
+        if (d > e) return false;
+      }
+      return true;
+    });
+  }, [allBlogsState, startDate, endDate]);
+
+  const exportCsv = () => {
+    try {
+      const rows: string[] = [];
+      rows.push('type,title,status,created_at');
+      (filteredBlogs || []).forEach((b: any) => {
+        const t = (b?.title || '').replaceAll('"', '""');
+        rows.push(`blog,"${t}",${b?.status || ''},${b?.created_at || ''}`);
+      });
+      const csv = rows.join('\n');
+      if (Platform.OS === 'web') {
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'admin_stats_blogs.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        alert('CSV dışa aktarma web üzerinde desteklenir.');
+      }
+    } catch (e) {
+      console.error('CSV export error', e);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -128,6 +174,47 @@ export default function StatisticsPage() {
   return (
     <ScrollView style={styles.container}>
       <ThemedText type="title" style={styles.title}>İstatistikler</ThemedText>
+
+      {/* Tarih Filtresi + CSV */}
+      <View style={styles.filterBar}>
+        <View style={styles.filterRow}>
+          <View style={styles.filterItem}>
+            <ThemedText style={styles.filterLabel}>Başlangıç (YYYY-MM-DD)</ThemedText>
+            <TextInput
+              placeholder="2025-09-01"
+              placeholderTextColor="#6b7280"
+              value={startDate}
+              onChangeText={setStartDate}
+              style={styles.filterInput}
+              autoCapitalize="none"
+            />
+          </View>
+          <View style={styles.filterItem}>
+            <ThemedText style={styles.filterLabel}>Bitiş (YYYY-MM-DD)</ThemedText>
+            <TextInput
+              placeholder="2025-09-30"
+              placeholderTextColor="#6b7280"
+              value={endDate}
+              onChangeText={setEndDate}
+              style={styles.filterInput}
+              autoCapitalize="none"
+            />
+          </View>
+        </View>
+        <View style={styles.actionsRow}>
+          <TouchableOpacity style={styles.primaryBtn} onPress={() => { /* useMemo tetikleniyor */ }}>
+            <ThemedText style={styles.primaryBtnText}>Uygula</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={exportCsv}>
+            <ThemedText style={styles.secondaryBtnText}>CSV Dışa Aktar</ThemedText>
+          </TouchableOpacity>
+        </View>
+        {(startDate || endDate) && (
+          <ThemedText style={{ color: '#374151', marginBottom: 8 }}>
+            Filtrelenen blog sayısı: {filteredBlogs.length}
+          </ThemedText>
+        )}
+      </View>
 
       {/* Kullanıcı İstatistikleri */}
       <View style={styles.section}>
@@ -254,6 +341,67 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 24,
+  },
+  filterBar: {
+    backgroundColor: '#ffffff',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+  filterItem: {
+    flex: 1,
+  },
+  filterLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 4,
+  },
+  filterInput: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    color: '#1f2937',
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  primaryBtn: {
+    backgroundColor: '#1e3a8a',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  primaryBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+  secondaryBtn: {
+    backgroundColor: '#f3f4f6',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  secondaryBtnText: {
+    color: '#111827',
+    fontWeight: '700',
   },
   sectionTitle: {
     fontSize: 18,
