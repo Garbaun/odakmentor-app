@@ -1,11 +1,12 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/store/authStore';
 import { colors, globalStyles } from '@/styles/globalStyles';
+import { useLangStore } from '@/store/langStore';
 
 interface TopBarProps {
   currentPage?: string;
@@ -21,6 +22,11 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
   const userProfile = useAuthStore((s) => s.userProfile);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const firstName = (user?.displayName || userProfile?.displayName || '').split(' ')[0] || '';
+  const lang = useLangStore((s) => s.lang);
+  const setLang = useLangStore((s) => s.setLang);
+  const initLang = useLangStore((s) => s.init);
+
+  useEffect(() => { initLang(); }, [initLang]);
 
   const handleCategoriesPress = () => {
     if (onCategoriesPress) {
@@ -92,7 +98,7 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
           </TouchableOpacity>
           <View style={globalStyles.topBarActions}>
             {/* Dil Seçici */}
-            <View style={globalStyles.languageSelector}>
+            <TouchableOpacity style={globalStyles.languageSelector} onPress={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
               <View style={globalStyles.languageIcon}>
                 <View style={globalStyles.languageIconLeft}>
                   <Text style={globalStyles.languageIconText}>A</Text>
@@ -101,8 +107,8 @@ export function TopBar({ currentPage, onCategoriesPress, onCartPress }: TopBarPr
                   <Text style={globalStyles.languageIconText}>文</Text>
                 </View>
               </View>
-              <Text style={globalStyles.languageText}>TR</Text>
-            </View>
+              <Text style={globalStyles.languageText}>{lang.toUpperCase()}</Text>
+            </TouchableOpacity>
 
             {/* Özel Ders Al */}
             <TouchableOpacity style={globalStyles.actionLink} onPress={handleCategoriesPress}>
