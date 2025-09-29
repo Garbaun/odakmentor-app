@@ -127,6 +127,12 @@ export default function UserManagement() {
 
   const stats = getRoleStats();
 
+  const nextRole = (role: 'student' | 'teacher' | 'admin'): 'student' | 'teacher' | 'admin' => {
+    if (role === 'student') return 'teacher';
+    if (role === 'teacher') return 'admin';
+    return 'student';
+  };
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
@@ -279,14 +285,25 @@ export default function UserManagement() {
             
             <View style={styles.userFooter}>
               <ThemedText style={styles.userMeta}>
-                {user.role === 'student' ? 'Öğrenci' : 'Öğretmen'} • 
+                {(user.role === 'student' ? 'Öğrenci' : user.role === 'teacher' ? 'Öğretmen' : 'Admin')} • 
                 Kayıt: {formatDate(user.createdAt)}
               </ThemedText>
-              {user.lastLoginAt && (
-                <ThemedText style={styles.userMeta}>
-                  Son giriş: {formatDate(user.lastLoginAt)}
-                </ThemedText>
-              )}
+              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                {user.lastLoginAt && (
+                  <ThemedText style={styles.userMeta}>
+                    Son giriş: {formatDate(user.lastLoginAt)}
+                  </ThemedText>
+                )}
+                <TouchableOpacity
+                  onPress={() => updateUser(user.id, { role: nextRole(user.role) })}
+                  disabled={updatingId === user.id}
+                  style={{ paddingVertical: 6, paddingHorizontal: 10, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 6 }}
+                >
+                  <ThemedText style={{ fontSize: 12, fontWeight: '600', color: '#1f2937' }}>
+                    {updatingId === user.id ? 'Kaydediliyor...' : `Rol: ${user.role === 'student' ? 'Öğrenci' : user.role === 'teacher' ? 'Öğretmen' : 'Admin'}`}
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         ))}

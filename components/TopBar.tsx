@@ -4,10 +4,10 @@ import React, { useEffect } from 'react';
 import { Image, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useTranslator } from '@/i18n/translations';
 import { useAuthStore } from '@/store/authStore';
 import { useLangStore } from '@/store/langStore';
 import { colors, globalStyles } from '@/styles/globalStyles';
-import { useTranslator } from '@/i18n/translations';
 
 interface TopBarProps {
   currentPage?: string;

@@ -6,7 +6,15 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-require('dotenv').config();
+// Ensure env vars are loaded from a valid .env (prefer server/.env)
+const fs = require('fs');
+const mainDir = path.dirname((require.main && require.main.filename) || process.cwd());
+const envPaths = [
+  path.join(mainDir, '.env'),
+  path.join(process.cwd(), '.env')
+];
+const foundEnv = envPaths.find((p) => fs.existsSync(p));
+require('dotenv').config(foundEnv ? { path: foundEnv } : undefined);
 
 // CORS yapılandırması
 const io = socketIo(server, {
@@ -284,7 +292,7 @@ app.get('/api/auth/me', async (req, res) => {
     const user = rows[0];
     if (!user) return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı' });
     res.json({ success: true, user });
-  } catch (error) {
+  } catch (_e) {
     res.status(401).json({ success: false, error: 'Yetkisiz' });
   }
 });
@@ -306,7 +314,7 @@ function requireAdmin(req, res, next) {
     }
     req.user = decoded;
     next();
-  } catch (e) {
+  } catch (_e) {
     return res.status(401).json({ success: false, error: 'Yetkisiz' });
   }
 }
@@ -330,8 +338,8 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
       `SELECT id,email,first_name,last_name,role,status,created_at,last_login_at FROM users ORDER BY created_at DESC`
     );
     res.json(rows.map(mapUserRow));
-  } catch (e) {
-    console.error('admin/users error', e);
+  } catch (_e) {
+    console.error('admin/users error', _e);
     res.status(500).json({ success: false, error: 'Sunucu hatası' });
   }
 });
@@ -378,7 +386,7 @@ app.get('/api/blogs', requireAdmin, async (req, res) => {
     } catch {
       res.json([]);
     }
-  } catch (e) {
+  } catch (_e) {
     res.json([]);
   }
 });
@@ -415,7 +423,7 @@ function requireAuth(req, res, next) {
     if (!decoded) return res.status(401).json({ success: false, error: 'Yetkisiz' });
     req.user = decoded; // { sub, role }
     next();
-  } catch (e) {
+  } catch (_e) {
     return res.status(401).json({ success: false, error: 'Yetkisiz' });
   }
 }
@@ -483,7 +491,7 @@ app.get('/api/user/stats', requireAuth, async (req, res) => {
       completedLessons,
       currentStreak,
     });
-  } catch (e) {
+  } catch (_e) {
     res.status(500).json({ success: false, error: 'Sunucu hatası' });
   }
 });
@@ -513,7 +521,7 @@ app.get('/api/user/activity', requireAuth, async (req, res) => {
     } catch {
       res.json({ success: true, items: [] });
     }
-  } catch (e) {
+  } catch (_e) {
     res.status(500).json({ success: false, error: 'Sunucu hatası' });
   }
 });
@@ -542,7 +550,7 @@ app.get('/api/teacher/stats', requireAuth, async (req, res) => {
       activeEnrollments = enr.rows[0]?.active || 0;
     } catch {}
     res.json({ success: true, totalCourses, activeCourses, totalEnrollments, activeEnrollments });
-  } catch (e) {
+  } catch (_e) {
     res.status(500).json({ success: false, error: 'Sunucu hatası' });
   }
 });

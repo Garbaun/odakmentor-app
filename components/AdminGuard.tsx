@@ -4,6 +4,7 @@ import { ActivityIndicator } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { AuthService } from '@/services/authService';
 import { useAuthStore } from '@/store/authStore';
 
 type AdminGuardProps = {
@@ -33,13 +34,35 @@ export function AdminGuard({ children }: AdminGuardProps) {
   const isAdminByEmail = user?.email ? adminEmails.has(user.email.toLowerCase()) : false;
   const isAdmin = !!(isAdminByProfile || isAdminByEmail);
 
-  // Geçici çözüm: 3 saniye sonra loading'i false yap
+  // Token varsa kullanıcıyı doğrula ve store'u doldur
   useEffect(() => {
-    const timer = setTimeout(() => {
-      useAuthStore.getState().setLoading(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    const run = async () => {
+      try {
+        const token = typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
+        if (token && !user) {
+          const verified = await AuthService.verifyToken(token);
+          if (verified && verified.id) {
+            const displayName = `${verified.firstName || ''} ${verified.lastName || ''}`.trim();
+            useAuthStore.getState().setUser({
+              uid: String(verified.id),
+              email: verified.email,
+              displayName,
+            } as any);
+            useAuthStore.getState().setUserProfile({
+              uid: String(verified.id),
+              email: verified.email,
+              displayName,
+              role: verified.role,
+              createdAt: new Date(verified.created_at || Date.now()),
+            } as any);
+          }
+        }
+      } finally {
+        useAuthStore.getState().setLoading(false);
+      }
+    };
+    run();
+  }, [user]);
 
   // Admin değilse login sayfasına yönlendir
   useEffect(() => {

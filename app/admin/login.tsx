@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -11,6 +11,14 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Eğer token zaten varsa, doğrudan admin sayfasına yönlendir
+  useEffect(() => {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    if (token) {
+      router.replace('/admin/statistics');
+    }
+  }, [router]);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -26,9 +34,11 @@ export default function AdminLogin() {
         if (result.user.role !== 'admin') {
           Alert.alert('Yetkisiz', 'Bu alana erişmek için admin hesabı gerekir.');
         } else {
-          Alert.alert('Başarılı', 'Admin paneline hoş geldiniz!', [
-            { text: 'Tamam', onPress: () => router.push('/admin') }
-          ]);
+          // Web'de güvenli yönlendirme
+          router.replace('/admin/statistics');
+          if (Platform.OS === 'web' && typeof window !== 'undefined') {
+            window.location.assign('/admin/statistics');
+          }
         }
       } else {
         Alert.alert('Hata', result.error || 'Geçersiz e-posta veya şifre');
