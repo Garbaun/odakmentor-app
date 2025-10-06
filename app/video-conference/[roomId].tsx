@@ -9,15 +9,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Dimensions,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    Dimensions,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
 
@@ -82,7 +82,7 @@ export default function VideoConferenceScreen() {
   const initializeConference = async () => {
     try {
       const config: VideoConferenceConfig = {
-        serverUrl: Platform.OS === 'web' ? 'https://odakmentor.com' : 'http://localhost:3001',
+        serverUrl: 'http://localhost:3001', // Local development için
         roomId: roomId || 'default-room',
         userId: 'user-' + Date.now(), // Geçici kullanıcı ID'si
         userName: 'Kullanıcı', // Geçici kullanıcı adı

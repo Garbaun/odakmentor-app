@@ -5,6 +5,7 @@ Yapay zeka destekli, öğretmen ve öğrencileri bir araya getiren, web / iOS / 
 ## Özellikler
 
 ### Sayfa Yapısı
+
 - **Ana Sayfa**: Logo, kategoriler, öğretmen galerisi, animasyonlu sayaçlar
 - **Blog Sayfası**: Makale listesi, filtreleme ve arama özellikleri
 - **Eğitmenler Sayfası**: Eğitmen seçim süreci ve kalite standartları
@@ -12,6 +13,7 @@ Yapay zeka destekli, öğretmen ve öğrencileri bir araya getiren, web / iOS / 
 - **Kayıt/Giriş Sayfaları**: Email/şifre ve Google OAuth entegrasyonu
 
 ### UI/UX Özellikleri
+
 - **Tutarlı TopBar**: Tüm sayfalarda standardize edilmiş header (kategoriler barı + logo barı)
 - **Ortak Modaller**: Kategoriler ve alışveriş sepeti modalları tüm sayfalarda aynı stil
 - **Responsive Tasarım**: Web, tablet ve mobil uyumlu
@@ -19,6 +21,7 @@ Yapay zeka destekli, öğretmen ve öğrencileri bir araya getiren, web / iOS / 
 - **Animasyonlar**: Sayaç animasyonları, hover efektleri, geçiş animasyonları
 
 ### Teknik Özellikler
+
 - **Firebase Auth**: Email/şifre ve Google OAuth 2.0 entegrasyonu
 - **Firestore Database**: Kullanıcı profilleri, kurslar, oturumlar için tam şema
 - **Zustand State Management**: Kullanıcı durumu yönetimi
@@ -146,15 +149,18 @@ npm run web:deploy       # GitHub Pages'e deploy
 ## Geliştirme Notları
 
 ### Modal Sistemi
+
 - Tüm sayfalarda `CategoryModal` ve `CartModal` ortak bileşenleri kullanılır
 - Tutarlı stil ve davranış için tek yerden kontrol edilir
 
 ### TopBar Yapısı
+
 - İki katmanlı: Kategoriler barı (üst) + Logo barı (alt)
 - Tüm sayfalarda standardize edilmiş boyutlar ve stiller
 - Aktif sayfa vurgulama sistemi
 
 ### Stil Sistemi
+
 - `globalStyles.ts`: Tüm sayfalarda ortak stiller
 - Neomorfik tasarım dili
 - Responsive breakpoint'ler

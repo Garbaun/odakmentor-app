@@ -2,14 +2,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { GOOGLE_AUTH_CONFIG } from '@/config/authProviders';
 import { Colors } from '@/constants/Colors';
-import { globalStyles } from '@/styles/globalStyles';
 import { AuthService } from '@/services/authService';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { globalStyles } from '@/styles/globalStyles';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Google from 'expo-auth-session/providers/google';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, Dimensions, Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -224,12 +223,14 @@ export default function StudentScreen() {
 										<TouchableOpacity disabled={loading} onPress={onLogin} style={[globalStyles.primaryButton, { backgroundColor: loading ? '#2E2E2E' : '#0053f5' }]}>
 											<ThemedText style={globalStyles.primaryButtonText}>{loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}</ThemedText>
 										</TouchableOpacity>
-										<TouchableOpacity onPress={handleGoogle} style={[globalStyles.secondaryButton, { borderColor: colors.border }]}>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-												<MaterialCommunityIcons name="google" size={20} color="#4285F4" />
-												<ThemedText style={[globalStyles.secondaryButtonText, { color: colors.textPrimary }]}>Google ile Giriş Yap</ThemedText>
+									<TouchableOpacity onPress={handleGoogle} style={styles.googleButton}>
+										<View style={styles.googleButtonContent}>
+											<View style={styles.googleIconContainer}>
+												<ThemedText style={styles.googleIcon}>G</ThemedText>
 											</View>
-										</TouchableOpacity>
+											<ThemedText style={styles.googleButtonText}>Google ile Giriş Yap</ThemedText>
+										</View>
+									</TouchableOpacity>
 									</View>
 
 									{/* Alt - Kayıt Ol */}
@@ -410,5 +411,44 @@ const styles = StyleSheet.create({
 		width: '104%', // %30 büyütülmüş (80% * 1.3 = 104%)
 		height: '78%', // %30 büyütülmüş (60% * 1.3 = 78%)
 		opacity: 0.08, // Çok silik arkada duracak
+	},
+	googleButton: {
+		backgroundColor: '#ffffff',
+		borderWidth: 1,
+		borderColor: '#dadce0',
+		borderRadius: 8,
+		height: 42,
+		justifyContent: 'center',
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 2,
+		elevation: 2,
+	},
+	googleButtonContent: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+	},
+	googleIconContainer: {
+		width: 20,
+		height: 20,
+		borderRadius: 2,
+		backgroundColor: '#4285f4',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	googleIcon: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '600',
+		fontFamily: 'Arial, sans-serif',
+	},
+	googleButtonText: {
+		color: '#3c4043',
+		fontSize: 14,
+		fontWeight: '500',
+		fontFamily: 'Nunito, sans-serif',
 	},
 });

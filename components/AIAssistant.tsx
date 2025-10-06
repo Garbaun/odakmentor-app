@@ -1,3 +1,4 @@
+import aiService from '@/services/aiService';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -62,29 +63,47 @@ export function AIAssistant({ onPress }: AIAssistantProps) {
   }, []);
 
   // Send message function
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (inputText.trim() === '') return;
 
-    const newMessage: ChatMessage = {
+    const userMessage: ChatMessage = {
       id: Date.now().toString(),
       text: inputText.trim(),
       isUser: true,
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    setMessages(prev => [...prev, userMessage]);
+    const userInput = inputText.trim();
     setInputText('');
 
-    // Simulate AI response (you can replace this with actual AI API call)
-    setTimeout(() => {
+    try {
+      // Gerçek AI backend'e bağlanma
+      const response = await aiService.sendMessage({
+        question: userInput,
+        userType: 'student', // Default student olarak ayarlandı
+        context: 'chat'
+      });
+
       const aiResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        text: 'Bu konuda size yardımcı olmaya çalışıyorum. Lütfen daha detaylı bilgi verebilir misiniz?',
+        text: response.success ? response.answer : 'Üzgünüm, şu anda size yardımcı olamıyorum. Lütfen daha sonra tekrar deneyin.',
         isUser: false,
         timestamp: new Date()
       };
+      
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    } catch (error) {
+      const errorResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.',
+        isUser: false,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorResponse]);
+      console.error('AI Service Error:', error);
+    }
   };
 
   return (

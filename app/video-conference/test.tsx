@@ -76,7 +76,7 @@ export default function VideoConferenceTestScreen() {
     // Test 3: Socket.IO bağlantısı
     try {
       const { io } = await import('socket.io-client');
-      const serverUrl = Platform.OS === 'web' ? 'https://odakmentor.com' : 'http://localhost:3001';
+      const serverUrl = 'http://localhost:3001'; // Local development için
       
       const socket = io(serverUrl, {
         transports: ['websocket'],

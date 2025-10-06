@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Odak Mentor",
-    "slug": "odak-mentor",
+    "slug": "odakmentor-app",
     "version": "1.0.0",
     "platforms": ["web"],
     "orientation": "default",

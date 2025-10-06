@@ -5,7 +5,6 @@ import { GOOGLE_AUTH_CONFIG } from '@/config/authProviders';
 import { Colors } from '@/constants/Colors';
 import { AuthService } from '@/services/authService';
 import { globalStyles } from '@/styles/globalStyles';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Google from 'expo-auth-session/providers/google';
 import { useRouter } from 'expo-router';
@@ -203,7 +202,7 @@ export default function RegisterScreen() {
 	
 	const handleClose = () => {
 		setShowSuccessModal(false);
-		router.back();
+		router.push('/student');
 	};
 
 	return (
@@ -365,10 +364,12 @@ export default function RegisterScreen() {
 										<TouchableOpacity disabled={!canSubmit} onPress={onRegister} style={[globalStyles.primaryButton, { width: '100%', backgroundColor: canSubmit ? '#0053f5' : '#9ca3af' }]}>
 											<ThemedText style={[globalStyles.primaryButtonText, { color: canSubmit ? '#ffffff' : '#ffffff' }]}>{loading ? 'Kayıt oluşturuluyor...' : 'Kayıt Ol'}</ThemedText>
 										</TouchableOpacity>
-										<TouchableOpacity onPress={() => promptAsync()} style={[globalStyles.secondaryButton, { width: '100%', borderColor: colors.border }]}>
-											<View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-												<MaterialCommunityIcons name="google" size={20} color="#4285F4" />
-												<ThemedText style={[globalStyles.secondaryButtonText, { color: colors.textPrimary }]}>Google ile Giriş</ThemedText>
+										<TouchableOpacity onPress={() => promptAsync()} style={styles.googleButton}>
+											<View style={styles.googleButtonContent}>
+												<View style={styles.googleIconContainer}>
+													<ThemedText style={styles.googleIcon}>G</ThemedText>
+												</View>
+												<ThemedText style={styles.googleButtonText}>Google ile Kayıt Ol</ThemedText>
 											</View>
 										</TouchableOpacity>
 									</View>
@@ -444,11 +445,11 @@ export default function RegisterScreen() {
 							</View>
 							
 							<ThemedText style={styles.successModalMessage}>
-								Hesabınız başarıyla oluşturuldu. E-posta adresinize gönderilen onay linkine tıklayarak hesabınızı aktifleştirebilirsiniz.
+								Kaydınız tamamlandı. Mailinizi kontrol edip size gönderilen linki lütfen onaylayın.
 							</ThemedText>
 							
 							<TouchableOpacity style={styles.successModalButton} onPress={handleClose}>
-								<ThemedText style={styles.successModalButtonText}>Tamam</ThemedText>
+								<ThemedText style={styles.successModalButtonText}>Onay</ThemedText>
 							</TouchableOpacity>
 						</View>
 					</View>
@@ -872,5 +873,45 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	googleButton: {
+		backgroundColor: '#ffffff',
+		borderWidth: 1,
+		borderColor: '#dadce0',
+		borderRadius: 8,
+		height: 42,
+		justifyContent: 'center',
+		alignItems: 'center',
+		width: '100%',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 2,
+		elevation: 2,
+	},
+	googleButtonContent: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+	},
+	googleIconContainer: {
+		width: 20,
+		height: 20,
+		borderRadius: 2,
+		backgroundColor: '#4285f4',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	googleIcon: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '600',
+		fontFamily: 'Arial, sans-serif',
+	},
+	googleButtonText: {
+		color: '#3c4043',
+		fontSize: 14,
+		fontWeight: '500',
+		fontFamily: 'Nunito, sans-serif',
 	},
 });

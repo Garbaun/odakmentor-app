@@ -22,7 +22,9 @@ const io = socketIo(server, {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://odakmentor.com"],
     methods: ["GET", "POST"],
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true
 });
 
 // Middleware
@@ -601,7 +603,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Port ve başlatma
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   console.log(`Video Conference Server çalışıyor: http://localhost:${PORT}`);
