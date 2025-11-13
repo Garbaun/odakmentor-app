@@ -2,7 +2,7 @@
 # Bu dosya sunucu konfigürasyonunu içerir
 
 # Server Configuration
-PORT=3001
+PORT=3002
 NODE_ENV=production
 
 # Logging

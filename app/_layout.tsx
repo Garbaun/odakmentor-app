@@ -54,6 +54,17 @@ export default function RootLayout() {
               animation: 'fade'
             }} 
           />
+          {/* Creator Panel Routes */}
+          <Stack.Screen name="creator-panel/index" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/login" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/statistics" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/users" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/blog" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/blog/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/blog/new" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/approvals/students" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/approvals/teachers" options={{ headerShown: false }} />
+          <Stack.Screen name="creator-panel/settings" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />

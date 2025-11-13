@@ -202,7 +202,7 @@ export default function RegisterScreen() {
 	
 	const handleClose = () => {
 		setShowSuccessModal(false);
-		router.push('/student');
+		router.push('/');
 	};
 
 	return (

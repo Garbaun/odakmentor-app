@@ -351,7 +351,7 @@ success "Server.js oluşturuldu"
 # 4. Environment dosyası oluşturma
 echo "🔧 Environment dosyası oluşturuluyor..."
 cat > .env << 'EOF'
-PORT=3001
+PORT=3002
 NODE_ENV=production
 LOG_LEVEL=info
 RATE_LIMIT_WINDOW_MS=900000
@@ -371,11 +371,11 @@ module.exports = {
     exec_mode: 'fork',
     env: {
       NODE_ENV: 'development',
-      PORT: 3001
+      PORT: 3002
     },
     env_production: {
       NODE_ENV: 'production',
-      PORT: 3001
+      PORT: 3002
     },
     log_file: './logs/combined.log',
     out_file: './logs/out.log',
@@ -410,10 +410,10 @@ success "Servis başlatıldı"
 echo "📊 Kurulum Özeti:"
 echo "=================================================="
 echo "Proje Dizini: $PROJECT_DIR"
-echo "Port: 3001"
+echo "Port: 3002"
 echo "PM2 Status:"
 pm2 status
-echo "Health Check: http://localhost:3001/api/health"
+echo "Health Check: http://localhost:3002/api/health"
 echo "=================================================="
 
 success "Kurulum tamamlandı! 🎉"

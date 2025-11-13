@@ -804,7 +804,7 @@ export default function HomeScreen() {
 							</View>
 						</View>
 
-						<TouchableOpacity style={styles.modalItem} onPress={() => { setSettingsOpen(false); router.push('/student'); }}>
+						<TouchableOpacity style={styles.modalItem} onPress={() => { setSettingsOpen(false); router.push(isAuthenticated ? '/dashboard' : '/student'); }}>
 							<MaterialIcons name="account-circle" size={20} color={TEXT} />
 							<ThemedText style={styles.modalItemLabel}>{t('profile')}</ThemedText>
 						</TouchableOpacity>

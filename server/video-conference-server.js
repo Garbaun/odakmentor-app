@@ -15,6 +15,7 @@ const envPaths = [
 ];
 const foundEnv = envPaths.find((p) => fs.existsSync(p));
 require('dotenv').config(foundEnv ? { path: foundEnv } : undefined);
+const USE_MOCK = process.env.MOCK_DB === '1';
 
 // CORS yapılandırması
 const io = socketIo(server, {
@@ -28,8 +29,17 @@ const io = socketIo(server, {
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://odakmentor.com'
+  ],
+  credentials: true
+}));
 app.use(express.json());
+
+// Static dosyaları serve et (docs klasörü)
+app.use(express.static(path.join(__dirname, '../docs')));
 
 // Oda yönetimi
 const rooms = new Map();
@@ -215,6 +225,15 @@ const pool = new Pool({
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://odakmentor.com';
+
+// Mail servisi
+let mailService = null;
+try {
+  mailService = require('./mailService');
+} catch (e) {
+  console.warn('Mail servisi yüklenemedi, e-posta gönderimi devre dışı:', e?.message || e);
+}
 
 function signToken(payload) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
@@ -231,6 +250,17 @@ app.post('/api/auth/register', async (req, res) => {
     if (!email || !password || !firstName || !lastName) {
       return res.status(400).json({ success: false, error: 'Eksik alanlar' });
     }
+    if (USE_MOCK) {
+      const mockUser = {
+        id: 1,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        role,
+      };
+      const token = signToken({ sub: mockUser.id, role: mockUser.role });
+      return res.json({ success: true, user: mockUser, token });
+    }
     const existing = await findUserByEmail(email);
     if (existing) return res.status(409).json({ success: false, error: 'E-posta zaten kayıtlı' });
 
@@ -239,7 +269,7 @@ app.post('/api/auth/register', async (req, res) => {
       await client.query('BEGIN');
       const ures = await client.query(
         `INSERT INTO users (email, first_name, last_name, role, status, is_email_verified, is_phone_verified, preferences, subscription)
-         VALUES ($1,$2,$3,$4,'active',true,false,'{}','{}') RETURNING *`,
+         VALUES ($1,$2,$3,$4,'pending',false,false,'{}','{}') RETURNING *`,
         [email, firstName, lastName, role]
       );
       const user = ures.rows[0];
@@ -250,8 +280,27 @@ app.post('/api/auth/register', async (req, res) => {
         [user.id, hash]
       );
       await client.query('COMMIT');
+
+      // E-posta doğrulama token'ı üret
+      const emailVerifyToken = jwt.sign({ sub: user.id, type: 'verify-email' }, JWT_SECRET, { expiresIn: '24h' });
+
+      // Mail gönderimi (opsiyonel başarısız olabilir, kullanıcıya bilgi ver)
+      if (mailService && mailService.sendEmailVerification) {
+        mailService.sendEmailVerification(email, emailVerifyToken, firstName).catch((e) => {
+          console.warn('Email verification send failed:', e?.message || e);
+        });
+      }
+
       const token = signToken({ sub: user.id, role: user.role });
-      res.json({ success: true, user: user, token });
+      res.json({
+        success: true,
+        user: { ...user, is_email_verified: false, status: 'pending' },
+        token,
+        verifyEmail: {
+          sent: !!(mailService && mailService.sendEmailVerification),
+          link: `${FRONTEND_URL}/verify-email?token=${emailVerifyToken}`
+        }
+      });
     } catch (e) {
       await client.query('ROLLBACK');
       throw e;
@@ -268,6 +317,16 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
     if (!email || !password) return res.status(400).json({ success: false, error: 'Eksik alanlar' });
+    if (USE_MOCK) {
+      const adminEmail = process.env.ADMIN_EMAIL || 'admin@odakmentor.com';
+      const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+      if (email === adminEmail && password === adminPass) {
+        const mockUser = { id: 1, email: adminEmail, first_name: 'Admin', last_name: 'User', role: 'admin' };
+        const token = signToken({ sub: mockUser.id, role: mockUser.role });
+        return res.json({ success: true, user: mockUser, token });
+      }
+      return res.status(401).json({ success: false, error: 'Geçersiz bilgiler' });
+    }
     const user = await findUserByEmail(email);
     if (!user) return res.status(401).json({ success: false, error: 'Geçersiz bilgiler' });
     const ph = await pool.query('SELECT password_hash FROM passwords WHERE user_id = $1', [user.id]);
@@ -290,6 +349,10 @@ app.get('/api/auth/me', async (req, res) => {
     const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
     if (!token) return res.status(401).json({ success: false, error: 'Token yok' });
     const decoded = jwt.verify(token, JWT_SECRET);
+    if (USE_MOCK) {
+      // Minimal mock user derived from token
+      return res.json({ success: true, user: { id: decoded.sub || 1, email: 'admin@odakmentor.com', first_name: 'Admin', last_name: 'User', role: decoded.role || 'admin' } });
+    }
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.sub]);
     const user = rows[0];
     if (!user) return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı' });
@@ -302,6 +365,35 @@ app.get('/api/auth/me', async (req, res) => {
 app.post('/api/auth/reset-password', async (req, res) => {
   // Gelecekte email ile reset akışı
   res.json({ success: true });
+});
+
+// E-posta doğrulama endpoint'i
+app.post('/api/auth/verify-email', async (req, res) => {
+  try {
+    const token = req.body?.token || req.query?.token;
+    if (!token) return res.status(400).json({ success: false, error: 'Token gerekli' });
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (_e) {
+      return res.status(400).json({ success: false, error: 'Geçersiz veya süresi dolmuş token' });
+    }
+    if (!decoded || decoded.type !== 'verify-email' || !decoded.sub) {
+      return res.status(400).json({ success: false, error: 'Geçersiz token' });
+    }
+    if (USE_MOCK) {
+      return res.json({ success: true });
+    }
+    const { rowCount } = await pool.query(
+      `UPDATE users SET is_email_verified = true, status = CASE WHEN status='pending' THEN 'active' ELSE status END, updated_at = NOW() WHERE id = $1`,
+      [decoded.sub]
+    );
+    if (rowCount === 0) return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı' });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('verify-email error', e);
+    res.status(500).json({ success: false, error: 'Sunucu hatası' });
+  }
 });
 
 // ---- ADMIN GUARD & ADMIN ENDPOINTS ----
@@ -336,6 +428,9 @@ function mapUserRow(row) {
 
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
   try {
+    if (USE_MOCK) {
+      return res.json([]);
+    }
     const { rows } = await pool.query(
       `SELECT id,email,first_name,last_name,role,status,created_at,last_login_at FROM users ORDER BY created_at DESC`
     );
@@ -348,6 +443,12 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
 
 app.get('/api/admin/stats', requireAdmin, async (req, res) => {
   try {
+    if (USE_MOCK) {
+      return res.json({
+        users: { totalStudents: 0, totalTeachers: 0, pendingStudents: 0, pendingTeachers: 0 },
+        courses: { total: 0, active: 0 },
+      });
+    }
     const totals = await pool.query(
       `SELECT 
          SUM(CASE WHEN role='student' THEN 1 ELSE 0 END)::int as total_students,
@@ -382,12 +483,11 @@ app.get('/api/admin/stats', requireAdmin, async (req, res) => {
 
 app.get('/api/blogs', requireAdmin, async (req, res) => {
   try {
-    try {
-      const { rows } = await pool.query(`SELECT * FROM blog_posts ORDER BY created_at DESC`);
-      res.json(rows);
-    } catch {
-      res.json([]);
+    if (USE_MOCK) {
+      return res.json([]);
     }
+    const { rows } = await pool.query(`SELECT * FROM blog_posts ORDER BY created_at DESC`);
+    res.json(rows);
   } catch (_e) {
     res.json([]);
   }
@@ -398,6 +498,9 @@ app.patch('/api/admin/users/:id', requireAdmin, async (req, res) => {
     const id = parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ success: false, error: 'Geçersiz id' });
     const { status, role } = req.body || {};
+    if (USE_MOCK) {
+      return res.json({ success: true, user: { id, status: status || 'active', role: role || 'student' } });
+    }
     const fields = [];
     const values = [];
     let p = 1;
@@ -590,6 +693,157 @@ app.get('/api/rooms/:roomId', (req, res) => {
     participantCount: room.participants.size,
     createdAt: room.createdAt,
   });
+});
+
+// Creator Panel API Endpoints
+app.post('/api/auth/admin-login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Mock admin kullanıcı kontrolü
+    if (email === 'admin@odakmentor.com' && password === 'admin123') {
+      res.json({
+        success: true,
+        message: 'Giriş başarılı',
+        user: {
+          id: 1,
+          email: 'admin@odakmentor.com',
+          name: 'Admin User',
+          role: 'admin'
+        }
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        error: 'Geçersiz e-posta veya şifre'
+      });
+    }
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+  }
+});
+
+app.get('/api/admin/statistics', async (req, res) => {
+  try {
+    // Mock istatistikler
+    const statistics = {
+      totalUsers: 150,
+      totalStudents: 120,
+      totalTeachers: 25,
+      totalBlogs: 45,
+      activeVideoRooms: rooms.size,
+      totalVideoSessions: 300
+    };
+    
+    res.json({
+      success: true,
+      statistics
+    });
+  } catch (error) {
+    console.error('Statistics error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+  }
+});
+
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    // Mock kullanıcı listesi
+    const users = [
+      {
+        id: 1,
+        email: 'student1@example.com',
+        name: 'Ahmet Yılmaz',
+        role: 'student',
+        status: 'active',
+        createdAt: '2024-01-15'
+      },
+      {
+        id: 2,
+        email: 'teacher1@example.com',
+        name: 'Ayşe Demir',
+        role: 'teacher',
+        status: 'active',
+        createdAt: '2024-01-10'
+      },
+      {
+        id: 3,
+        email: 'student2@example.com',
+        name: 'Mehmet Kaya',
+        role: 'student',
+        status: 'pending',
+        createdAt: '2024-01-20'
+      }
+    ];
+    
+    res.json({
+      success: true,
+      users
+    });
+  } catch (error) {
+    console.error('Users error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+  }
+});
+
+app.post('/api/admin/users/:userId/activate', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    res.json({
+      success: true,
+      message: 'Kullanıcı aktifleştirildi'
+    });
+  } catch (error) {
+    console.error('Activate user error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+  }
+});
+
+app.post('/api/admin/users/:userId/deactivate', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    res.json({
+      success: true,
+      message: 'Kullanıcı pasifleştirildi'
+    });
+  } catch (error) {
+    console.error('Deactivate user error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+  }
+});
+
+app.post('/api/admin/users/:userId/delete', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    res.json({
+      success: true,
+      message: 'Kullanıcı silindi'
+    });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+  }
 });
 
 // Health check

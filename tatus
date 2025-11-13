@@ -1,0 +1,35 @@
+warning: in the working copy of '.idea/caches/deviceStreaming.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.idea/misc.xml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/404.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'install-ai-backend.sh', LF will be replaced by CRLF the next time Git touches it
+ .idea/caches/deviceStreaming.xml                   |  157 [32m+[m[31m-[m
+ .idea/misc.xml                                     |    2 [32m+[m[31m-[m
+ DAILY-CHECKLIST.md                                 |  116 [32m+[m[31m-[m
+ app/(tabs)/index.tsx                               |    2 [32m+[m[31m-[m
+ app/_layout.tsx                                    |   11 [32m+[m
+ app/admin/approvals/students.tsx                   |   77 [31m-[m
+ app/admin/approvals/teachers.tsx                   |   77 [31m-[m
+ app/admin/blog/[id].tsx                            |   94 [31m-[m
+ app/admin/blog/index.tsx                           |  351 [31m----[m
+ app/admin/blog/new.tsx                             |   74 [31m-[m
+ app/admin/index.tsx                                |   11 [31m-[m
+ app/admin/login.tsx                                |  191 [31m--[m
+ app/admin/settings/footer.tsx                      |   62 [31m-[m
+ app/admin/statistics/index.tsx                     |  488 [31m-----[m
+ app/admin/users/index.tsx                          |  498 [31m-----[m
+ app/register/index.tsx                             |    2 [32m+[m[31m-[m
+ docs/404.html                                      |    4 [32m+[m[31m-[m
+ ...dal.module-33361d5c796745334f151cac6c469469.css |    1 [31m-[m
+ .../web/entry-e2805ea1e31168035b8a0488a55bc2c3.js  | 2129 [31m--------------------[m
+ docs/index.html                                    |    4 [32m+[m[31m-[m
+ ecosystem.config.js                                |   78 [32m+[m[31m-[m
+ env-example.txt                                    |    2 [32m+[m[31m-[m
+ install-ai-backend.sh                              |   10 [32m+[m[31m-[m
+ package-lock.json                                  |    8 [32m+[m[31m-[m
+ package.json                                       |    4 [32m+[m[31m-[m
+ server/package.json                                |    3 [32m+[m[31m-[m
+ server/video-conference-server.js                  |  270 [32m++[m[31m-[m
+ services/authService.ts                            |    2 [32m+[m[31m-[m
+ unutma.md                                          |  259 [32m++[m[31m-[m
+ 29 files changed, 799 insertions(+), 4188 deletions(-)
